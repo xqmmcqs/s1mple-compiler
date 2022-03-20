@@ -7,16 +7,9 @@ RUN apt-get update && \
     g++ \
     cmake \
     make \
-    unzip \
     build-essential \
-    pkg-config \
-    uuid-dev \
-    git \
-    lsb-release \
-    wget \
-    software-properties-common \
-    gpg-agent \
-    zlib1g-dev 
+    zlib1g-dev && \
+    apt-get clean -y
 
 RUN curl https://www.antlr.org/download/antlr-4.9.3-complete.jar -o /usr/local/lib/antlr-4.9.3-complete.jar && \
     echo -e "export CLASSPATH=\".:/usr/local/lib/antlr-4.9.3-complete.jar:\$CLASSPATH\"\nalias antlr4='java -Xmx500M -cp \"/usr/local/lib/antlr-4.9.3-complete.jar:\$CLASSPATH\" org.antlr.v4.Tool'\nalias grun='java -Xmx500M -cp \"/usr/local/lib/antlr-4.9.3-complete.jar:\$CLASSPATH\" org.antlr.v4.gui.TestRig'" >> ~/.bashrc && \
@@ -24,18 +17,43 @@ RUN curl https://www.antlr.org/download/antlr-4.9.3-complete.jar -o /usr/local/l
 
 WORKDIR /work/cpp/build
 
-RUN curl https://www.antlr.org/download/antlr4-cpp-runtime-4.9.3-source.zip -o ../../antlr4-cpp-runtime-4.9.3-source.zip && \
+RUN apt-get install -y --no-install-recommends \
+    pkg-config \
+    uuid-dev \
+    git \
+    unzip && \
+    curl https://www.antlr.org/download/antlr4-cpp-runtime-4.9.3-source.zip -o ../../antlr4-cpp-runtime-4.9.3-source.zip && \
     unzip ../../antlr4-cpp-runtime-4.9.3-source.zip -d ../ && \
     cmake .. -DANTLR_JAR_LOCATION=/usr/local/lib/antlr-4.9.3-complete.jar -DWITH_DEMO=True && \
     make && \
     make install && \
-    rm -rf /work
+    rm -rf /work && \
+    apt-get purge -y --auto-remove \
+    pkg-config \
+    uuid-dev \
+    git \
+    unzip && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /
 
-RUN wget https://apt.llvm.org/llvm.sh && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gpg-agent \
+    lsb-release \
+    wget \
+    software-properties-common && \
+    wget https://apt.llvm.org/llvm.sh && \
     chmod +x llvm.sh && \
-    ./llvm.sh 13
+    ./llvm.sh 13 && \
+    apt-get purge -y --auto-remove \
+    gpg-agent \
+    lsb-release \
+    wget \
+    software-properties-common && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
