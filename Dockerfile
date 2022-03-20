@@ -9,7 +9,8 @@ RUN apt-get update && \
     make \
     build-essential \
     zlib1g-dev && \
-    apt-get clean -y
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN curl https://www.antlr.org/download/antlr-4.9.3-complete.jar -o /usr/local/lib/antlr-4.9.3-complete.jar && \
     echo -e "export CLASSPATH=\".:/usr/local/lib/antlr-4.9.3-complete.jar:\$CLASSPATH\"\nalias antlr4='java -Xmx500M -cp \"/usr/local/lib/antlr-4.9.3-complete.jar:\$CLASSPATH\" org.antlr.v4.Tool'\nalias grun='java -Xmx500M -cp \"/usr/local/lib/antlr-4.9.3-complete.jar:\$CLASSPATH\" org.antlr.v4.gui.TestRig'" >> ~/.bashrc && \
@@ -17,7 +18,8 @@ RUN curl https://www.antlr.org/download/antlr-4.9.3-complete.jar -o /usr/local/l
 
 WORKDIR /work/cpp/build
 
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     pkg-config \
     uuid-dev \
     git \
