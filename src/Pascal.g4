@@ -36,453 +36,430 @@ Adapted from pascal.g by  Hakki Dogusan, Piet Schoutteten and Marton Papp
 grammar Pascal;
 
 program
-   : programHeading (INTERFACE)? block DOT
+   : programHeading (INTERFACE)? block DOT   #programWhole
    ;
 
 programHeading
-   : PROGRAM identifier (LPAREN identifierList RPAREN)? SEMI
-   | UNIT identifier SEMI
+   : PROGRAM identifier (LPAREN identifierList RPAREN)? SEMI   #programHead
    ;
 
 identifier
-   : IDENT
+   : IDENT  #id
    ;
 
 block
-   : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION)* compoundStatement
-   ;
-
-usesUnitsPart
-   : USES identifierList SEMI
-   ;
-
-labelDeclarationPart
-   : LABEL label (COMMA label)* SEMI
-   ;
-
-label
-   : unsignedInteger
+   : (constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | IMPLEMENTATION)* compoundStatement   #programBody
    ;
 
 constantDefinitionPart
-   : CONST (constantDefinition SEMI) +
+   : CONST (constantDefinition SEMI) + #constPart
    ;
 
 constantDefinition
-   : identifier EQUAL constant
+   : identifier EQUAL constant   #const
    ;
 
 constantChr
-   : CHR LPAREN unsignedInteger RPAREN
+   : CHR LPAREN unsignedInteger RPAREN #constChr
    ;
 
 constant
-   : unsignedNumber
-   | sign unsignedNumber
-   | identifier
-   | sign identifier
-   | string
-   | constantChr
+   : unsignedNumber        #const_unsignedNumber
+   | sign unsignedNumber   #const_signedNumber
+   | identifier            #const_identifier
+   | sign identifier       #const_signedIdentifier
+   | string                #const_string
+   | constantChr           #const_constantChr
    ;
 
 unsignedNumber
-   : unsignedInteger
-   | unsignedReal
+   : unsignedInteger #unsignedNumber_int
+   | unsignedReal    #unsignedNumber_real
    ;
 
 unsignedInteger
-   : NUM_INT
+   : NUM_INT         #type_unsigned_int
    ;
 
 unsignedReal
-   : NUM_REAL
+   : NUM_REAL        #type_unsigned_real
    ;
 
 sign
-   : PLUS
-   | MINUS
+   : PLUS            #type_signed_plus
+   | MINUS           #type_signed_minus
    ;
 
 bool_
-   : TRUE
-   | FALSE
+   : TRUE            #type_bool_true
+   | FALSE           #type_bool_false
    ;
 
 string
-   : STRING_LITERAL
+   : STRING_LITERAL  #type_string
    ;
 
 typeDefinitionPart
-   : TYPE (typeDefinition SEMI) +
+   : TYPE (typeDefinition SEMI) +   #typePart
    ;
 
 typeDefinition
-   : identifier EQUAL (type_ | functionType | procedureType)
-   ;
-
-functionType
-   : FUNCTION (formalParameterList)? COLON resultType
+   : identifier EQUAL (type_ | procedureType)   #type
    ;
 
 procedureType
-   : PROCEDURE (formalParameterList)?
+   : PROCEDURE (formalParameterList)?  #type_procedureType
    ;
 
 type_
-   : simpleType
-   | structuredType
-   | pointerType
+   : simpleType      #type_simpleType
+   | structuredType  #type_structuredType
+   | pointerType     #type_pointerType
    ;
 
 simpleType
-   : scalarType
-   | subrangeType
-   | typeIdentifier
-   | stringtype
+   : scalarType      #type_simpleType_scalarType
+   | subrangeType    #type_simpleType_subrangeType
+   | typeIdentifier  #type_simpleType_typeIdentifier
+   | stringtype      #type_simpleType_stringtype
    ;
 
 scalarType
-   : LPAREN identifierList RPAREN
+   : LPAREN identifierList RPAREN   #type_simpleType_scalarType_scalar
    ;
 
 subrangeType
-   : constant DOTDOT constant
+   : constant DOTDOT constant #type_simpleType_subrangeType_subrange
    ;
 
 typeIdentifier
-   : identifier
-   | (CHAR | BOOLEAN | INTEGER | REAL | STRING)
+   : identifier                                    #type_simpleType_typeIdentifier_id
+   | (CHAR | BOOLEAN | INTEGER | REAL | STRING)    #type_simpleType_typeIdentifier_type
    ;
 
 structuredType
-   : PACKED unpackedStructuredType
-   | unpackedStructuredType
+   : PACKED unpackedStructuredType  #type_structuredType_pacaked
+   | unpackedStructuredType         #type_structuredType_unpacked
    ;
 
 unpackedStructuredType
-   : arrayType
-   | recordType
-   | setType
-   | fileType
+   : arrayType    #type_structuredType_unpacked_arrayType
+   | recordType   #type_structuredType_unpacked_recordType
+   | setType      #type_structuredType_unpacked_setType
+   | fileType     #type_structuredType_unpacked_fileType
    ;
 
 stringtype
-   : STRING LBRACK (identifier | unsignedNumber) RBRACK
+   : STRING LBRACK (identifier | unsignedNumber) RBRACK  #type_simpleType_stringtype_str
    ;
 
 arrayType
-   : ARRAY LBRACK typeList RBRACK OF componentType
-   | ARRAY LBRACK2 typeList RBRACK2 OF componentType
+   : ARRAY LBRACK typeList RBRACK OF componentType    #type_structuredType_unpacked_arrayType_array1
+   | ARRAY LBRACK2 typeList RBRACK2 OF componentType  #type_structuredType_unpacked_arrayType_array2
    ;
 
 typeList
-   : indexType (COMMA indexType)*
+   : indexType (COMMA indexType)*   #type_structuredType_unpacked_arrayType_array_typeList
    ;
 
 indexType
-   : simpleType
+   : simpleType   #type_structuredType_unpacked_arrayType_array_typeList_index
    ;
 
-componentType
-   : type_
+componentType  
+   : type_  #type_structuredType_unpacked_arrayType_array_component
    ;
 
 recordType
-   : RECORD fieldList? END
+   : RECORD fieldList? END #type_structuredType_unpacked_recordType_record
    ;
 
 fieldList
-   : fixedPart (SEMI variantPart)?
-   | variantPart
+   : fixedPart (SEMI variantPart)?  #type_structuredType_unpacked_recordType_record_fixed
+   | variantPart                    #type_structuredType_unpacked_recordType_record_variable
    ;
 
 fixedPart
-   : recordSection (SEMI recordSection)*
+   : recordSection (SEMI recordSection)*  #type_structuredType_unpacked_recordType_record_fixed_fix
    ;
 
 recordSection
-   : identifierList COLON type_
+   : identifierList COLON type_  #type_structuredType_unpacked_recordType_record_fixed_fix_recordSection
    ;
 
 variantPart
-   : CASE tag OF variant (SEMI variant)*
+   : CASE tag OF variant (SEMI variant)*  #type_structuredType_unpacked_recordType_record_variable_var
    ;
 
 tag
-   : identifier COLON typeIdentifier
-   | typeIdentifier
+   : identifier COLON typeIdentifier   #type_structuredType_unpacked_recordType_record_variable_var_id
+   | typeIdentifier                    #type_structuredType_unpacked_recordType_record_variable_var_typeId
    ;
 
 variant
-   : constList COLON LPAREN fieldList RPAREN
+   : constList COLON LPAREN fieldList RPAREN #type_structuredType_unpacked_recordType_record_variable_var_value
    ;
 
 setType
-   : SET OF baseType
+   : SET OF baseType #type_structuredType_unpacked_setType_set
    ;
 
 baseType
-   : simpleType
+   : simpleType   #type_structuredType_unpacked_setType_set_base
    ;
 
 fileType
-   : FILE OF type_
-   | FILE
+   : FILE OF type_   #type_structuredType_unpacked_fileType_file1
+   | FILE            #type_structuredType_unpacked_fileType_file2
    ;
 
 pointerType
-   : POINTER typeIdentifier
+   : POINTER typeIdentifier   #type_pointerType_pointer
    ;
 
 variableDeclarationPart
-   : VAR variableDeclaration (SEMI variableDeclaration)* SEMI
+   : VAR variableDeclaration (SEMI variableDeclaration)* SEMI  #variablePart
    ;
 
 variableDeclaration
-   : identifierList COLON type_
+   : identifierList COLON type_  #varDeclaration
    ;
 
 procedureAndFunctionDeclarationPart
-   : procedureOrFunctionDeclaration SEMI
+   : procedureOrFunctionDeclaration SEMI  #procedurePart
    ;
 
 procedureOrFunctionDeclaration
-   : procedureDeclaration
-   | functionDeclaration
+   : procedureDeclaration  #procedure_pro
+   | functionDeclaration   #procedure_func
    ;
 
 procedureDeclaration
-   : PROCEDURE identifier (formalParameterList)? SEMI block
+   : PROCEDURE identifier (formalParameterList)? SEMI block    #procedure_pro
    ;
 
 formalParameterList
-   : LPAREN formalParameterSection (SEMI formalParameterSection)* RPAREN
+   : LPAREN formalParameterSection (SEMI formalParameterSection)* RPAREN   #procedure_pro_parameterList
    ;
 
 formalParameterSection
-   : parameterGroup
-   | VAR parameterGroup
-   | FUNCTION parameterGroup
-   | PROCEDURE parameterGroup
+   : parameterGroup              #procedure_pro_parameterList_group
+   | VAR parameterGroup          #procedure_pro_parameterList_varGroup
+   | FUNCTION parameterGroup     #procedure_pro_parameterList_funcGroup
+   | PROCEDURE parameterGroup    #procedure_pro_parameterList_proGroup
    ;
 
 parameterGroup
-   : identifierList COLON typeIdentifier
+   : identifierList COLON typeIdentifier  #procedure_pro_parameterList_group_id
    ;
 
 identifierList
-   : identifier (COMMA identifier)*
+   : identifier (COMMA identifier)* #idList
    ;
 
 constList
-   : constant (COMMA constant)*
+   : constant (COMMA constant)*  #constantList
    ;
 
 functionDeclaration
-   : FUNCTION identifier (formalParameterList)? COLON resultType SEMI block
+   : FUNCTION identifier (formalParameterList)? COLON resultType SEMI block #procedure_func
    ;
 
 resultType
-   : typeIdentifier
+   : typeIdentifier  #procedure_func_result
    ;
 
 statement
-   : label COLON unlabelledStatement
-   | unlabelledStatement
+   : unlabelledStatement   #statementPart
    ;
 
 unlabelledStatement
-   : simpleStatement
-   | structuredStatement
+   : simpleStatement       #statement_simple
+   | structuredStatement   #statement_structured
    ;
 
 simpleStatement
-   : assignmentStatement
-   | procedureStatement
-   | gotoStatement
-   | emptyStatement_
+   : assignmentStatement   #statement_simple_assignment
+   | procedureStatement    #statement_simple_procedure
+   | emptyStatement_       #statement_simple_empty
    ;
 
 assignmentStatement
-   : variable ASSIGN expression
+   : variable ASSIGN expression  #statement_simple_assignment_assign
    ;
 
 variable
-   : (AT identifier | identifier) (LBRACK expression (COMMA expression)* RBRACK | LBRACK2 expression (COMMA expression)* RBRACK2 | DOT identifier | POINTER)*
+   : (AT identifier | identifier) (LBRACK expression (COMMA expression)* RBRACK | LBRACK2 expression (COMMA expression)* RBRACK2 | DOT identifier | POINTER)*  #var
    ;
 
 expression
-   : simpleExpression (relationaloperator expression)?
+   : simpleExpression (relationaloperator expression)?   #expr
    ;
 
 relationaloperator
-   : EQUAL
-   | NOT_EQUAL
-   | LT
-   | LE
-   | GE
-   | GT
-   | IN
+   : EQUAL        #operator_equal
+   | NOT_EQUAL    #operator_notEqual
+   | LT           #operator_LT
+   | LE           #operator_LE
+   | GE           #operator_GE
+   | GT           #operator_GT
+   | IN           #operator_IN
    ;
 
 simpleExpression
-   : term (additiveoperator simpleExpression)?
+   : term (additiveoperator simpleExpression)?  #expr_simple
    ;
 
 additiveoperator
-   : PLUS
-   | MINUS
-   | OR
+   : PLUS   #operator_plus
+   | MINUS  #operator_minus
+   | OR     #operator_or
    ;
 
 term
-   : signedFactor (multiplicativeoperator term)?
+   : signedFactor (multiplicativeoperator term)?   #expr_simple_term
    ;
 
 multiplicativeoperator
-   : STAR
-   | SLASH
-   | DIV
-   | MOD
-   | AND
+   : STAR   #operator_star
+   | SLASH  #operator_slash
+   | DIV    #operator_div
+   | MOD    #operator_mod
+   | AND    #operator_and
    ;
 
 signedFactor
-   : (PLUS | MINUS)? factor
+   : (PLUS | MINUS)? factor   #expr_simple_term_signedFactor
    ;
 
 factor
-   : variable
-   | LPAREN expression RPAREN
-   | functionDesignator
-   | unsignedConstant
-   | set_
-   | NOT factor
-   | bool_
+   : variable                    #expr_simple_term_signedFactor_var
+   | LPAREN expression RPAREN    #expr_simple_term_signedFactor_expr
+   | functionDesignator          #expr_simple_term_signedFactor_func
+   | unsignedConstant            #expr_simple_term_signedFactor_const
+   | set_                        #expr_simple_term_signedFactor_set
+   | NOT factor                  #expr_simple_term_signedFactor_not
+   | bool_                       #expr_simple_term_signedFactor_bool
    ;
 
 unsignedConstant
-   : unsignedNumber
-   | constantChr
-   | string
-   | NIL
+   : unsignedNumber  #expr_simple_term_signedFactor_const_unsignedNumber
+   | constantChr     #expr_simple_term_signedFactor_const_constChr
+   | string          #expr_simple_term_signedFactor_const_str
+   | NIL             #expr_simple_term_signedFactor_const_nil
    ;
 
 functionDesignator
-   : identifier LPAREN parameterList RPAREN
+   : identifier LPAREN parameterList RPAREN  #expr_simple_term_signedFactor_func_id
    ;
 
 parameterList
-   : actualParameter (COMMA actualParameter)*
+   : actualParameter (COMMA actualParameter)*   #paraList
    ;
 
 set_
-   : LBRACK elementList RBRACK
-   | LBRACK2 elementList RBRACK2
+   : LBRACK elementList RBRACK      #expr_simple_term_signedFactor_set_1
+   | LBRACK2 elementList RBRACK2    #expr_simple_term_signedFactor_set_2
    ;
 
 elementList
-   : element (COMMA element)*
-   |
+   : element (COMMA element)* #eleList
+   |                          #eleList_empty
    ;
 
 element
-   : expression (DOTDOT expression)?
+   : expression (DOTDOT expression)?   #ele
    ;
 
 procedureStatement
-   : identifier (LPAREN parameterList RPAREN)?
+   : identifier (LPAREN parameterList RPAREN)?  #statement_simple_procedure_pro
    ;
 
 actualParameter
-   : expression parameterwidth*
+   : expression parameterwidth*  #paraList_actual
    ;
 
 parameterwidth
-   : ':' expression
-   ;
-
-gotoStatement
-   : GOTO label
+   : ':' expression  #paraList_actual_width
    ;
 
 emptyStatement_
-   :
+   :  #empty
    ;
 
 empty_
-   :
+   :  #empty
    /* empty */
    ;
 
 structuredStatement
-   : compoundStatement
-   | conditionalStatement
-   | repetetiveStatement
-   | withStatement
+   : compoundStatement     #statement_structured_compound
+   | conditionalStatement  #statement_structured_condition
+   | repetetiveStatement   #statement_structured_repetetive
+   | withStatement         #statement_structured_with
    ;
 
 compoundStatement
-   : BEGIN statements END
+   : BEGIN statements END  #compoundState
    ;
 
 statements
-   : statement (SEMI statement)*
+   : statement (SEMI statement)* #states
    ;
 
 conditionalStatement
-   : ifStatement
-   | caseStatement
+   : ifStatement     #conditionalState_if
+   | caseStatement   #conditionalState_case
    ;
 
 ifStatement
-   : IF expression THEN statement (: ELSE statement)?
+   : IF expression THEN statement (: ELSE statement)? #conditionalState_ifState
    ;
 
 caseStatement
-   : CASE expression OF caseListElement (SEMI caseListElement)* (SEMI ELSE statements)? END
+   : CASE expression OF caseListElement (SEMI caseListElement)* (SEMI ELSE statements)? END  #conditionalState_caseState
    ;
 
 caseListElement
-   : constList COLON statement
+   : constList COLON statement   #caseState_list
    ;
 
 repetetiveStatement
-   : whileStatement
-   | repeatStatement
-   | forStatement
+   : whileStatement     #repetetiveState_while
+   | repeatStatement    #repetetivetState_repeat
+   | forStatement       #repetetivetState_for
    ;
 
 whileStatement
-   : WHILE expression DO statement
+   : WHILE expression DO statement  #repetetiveState_whileState
    ;
 
 repeatStatement
-   : REPEAT statements UNTIL expression
+   : REPEAT statements UNTIL expression   #repetetiveState_repeatState
    ;
 
 forStatement
-   : FOR identifier ASSIGN forList DO statement
+   : FOR identifier ASSIGN forList DO statement #repetetiveState_forState
    ;
 
 forList
-   : initialValue (TO | DOWNTO) finalValue
+   : initialValue (TO | DOWNTO) finalValue   #forState_list
    ;
 
 initialValue
-   : expression
+   : expression   #forState_list_init
    ;
 
 finalValue
-   : expression
+   : expression   #forState_list_final
    ;
 
 withStatement
-   : WITH recordVariableList DO statement
+   : WITH recordVariableList DO statement #withState
    ;
 
 recordVariableList
-   : variable (COMMA variable)*
+   : variable (COMMA variable)*  #withState_list
    ;
 
 
@@ -696,11 +673,6 @@ FUNCTION
    ;
 
 
-GOTO
-   : G O T O
-   ;
-
-
 IF
    : I F
    ;
@@ -713,11 +685,6 @@ IN
 
 INTEGER
    : I N T E G E R
-   ;
-
-
-LABEL
-   : L A B E L
    ;
 
 
