@@ -235,7 +235,7 @@ procedureOrFunctionDeclaration
    ;
 
 procedureDeclaration
-   : PROCEDURE identifier (formalParameterList)? SEMI block    #procedure_pro
+   : PROCEDURE identifier (formalParameterList)? SEMI block    #procedure_pro_dec
    ;
 
 formalParameterList
@@ -262,7 +262,7 @@ constList
    ;
 
 functionDeclaration
-   : FUNCTION identifier (formalParameterList)? COLON resultType SEMI block #procedure_func
+   : FUNCTION identifier (formalParameterList)? COLON resultType SEMI block #procedure_func_dec
    ;
 
 resultType
@@ -384,7 +384,7 @@ parameterwidth
    ;
 
 emptyStatement_
-   :  #empty
+   :  #emptyState
    ;
 
 empty_
