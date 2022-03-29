@@ -1,3 +1,7 @@
 # s1mple-compiler
 
-ANTLR + LLVM 编译器
+Pascal-S Compiler using ANTLR4 & LLVM.
+
+## Collaborator
+
+- [@xqmmcqs](https://github.com/xqmmcqs/)
