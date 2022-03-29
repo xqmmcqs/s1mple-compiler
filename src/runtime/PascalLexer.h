@@ -1,5 +1,5 @@
 
-// Generated from /usr/src/app/src/Pascal.g4 by ANTLR 4.9.3
+// Generated from /usr/src/app/s1mple-compiler/src/Pascal.g4 by ANTLR 4.9.3
 
 #pragma once
 
@@ -14,17 +14,17 @@ public:
   enum {
     AND = 1, ARRAY = 2, BEGIN = 3, BOOLEAN = 4, CASE = 5, CHAR = 6, CHR = 7, 
     CONST = 8, DIV = 9, DO = 10, DOWNTO = 11, ELSE = 12, END = 13, FILE = 14, 
-    FOR = 15, FUNCTION = 16, GOTO = 17, IF = 18, IN = 19, INTEGER = 20, 
-    LABEL = 21, MOD = 22, NIL = 23, NOT = 24, OF = 25, OR = 26, PACKED = 27, 
-    PROCEDURE = 28, PROGRAM = 29, REAL = 30, RECORD = 31, REPEAT = 32, SET = 33, 
-    THEN = 34, TO = 35, TYPE = 36, UNTIL = 37, VAR = 38, WHILE = 39, WITH = 40, 
-    PLUS = 41, MINUS = 42, STAR = 43, SLASH = 44, ASSIGN = 45, COMMA = 46, 
-    SEMI = 47, COLON = 48, EQUAL = 49, NOT_EQUAL = 50, LT = 51, LE = 52, 
-    GE = 53, GT = 54, LPAREN = 55, RPAREN = 56, LBRACK = 57, LBRACK2 = 58, 
-    RBRACK = 59, RBRACK2 = 60, POINTER = 61, AT = 62, DOT = 63, DOTDOT = 64, 
-    LCURLY = 65, RCURLY = 66, UNIT = 67, INTERFACE = 68, USES = 69, STRING = 70, 
-    IMPLEMENTATION = 71, TRUE = 72, FALSE = 73, WS = 74, COMMENT_1 = 75, 
-    COMMENT_2 = 76, IDENT = 77, STRING_LITERAL = 78, NUM_INT = 79, NUM_REAL = 80
+    FOR = 15, FUNCTION = 16, IF = 17, IN = 18, INTEGER = 19, MOD = 20, NIL = 21, 
+    NOT = 22, OF = 23, OR = 24, PACKED = 25, PROCEDURE = 26, PROGRAM = 27, 
+    REAL = 28, RECORD = 29, REPEAT = 30, SET = 31, THEN = 32, TO = 33, TYPE = 34, 
+    UNTIL = 35, VAR = 36, WHILE = 37, WITH = 38, PLUS = 39, MINUS = 40, 
+    STAR = 41, SLASH = 42, ASSIGN = 43, COMMA = 44, SEMI = 45, COLON = 46, 
+    EQUAL = 47, NOT_EQUAL = 48, LT = 49, LE = 50, GE = 51, GT = 52, LPAREN = 53, 
+    RPAREN = 54, LBRACK = 55, LBRACK2 = 56, RBRACK = 57, RBRACK2 = 58, POINTER = 59, 
+    AT = 60, DOT = 61, DOTDOT = 62, LCURLY = 63, RCURLY = 64, UNIT = 65, 
+    INTERFACE = 66, USES = 67, STRING = 68, IMPLEMENTATION = 69, TRUE = 70, 
+    FALSE = 71, WS = 72, COMMENT_1 = 73, COMMENT_2 = 74, IDENT = 75, STRING_LITERAL = 76, 
+    NUM_INT = 77, NUM_REAL = 78
   };
 
   explicit PascalLexer(antlr4::CharStream *input);
