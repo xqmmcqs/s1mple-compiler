@@ -31,4 +31,10 @@
 *.out
 *.app
 
-build
+**/.DS_Store
+
+build/
+.antlr/
+
+.vscode/
+.idea/
