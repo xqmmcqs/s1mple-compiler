@@ -103,10 +103,6 @@ public:
 
     virtual antlrcpp::Any visitFormalParaSecVarGroup(PascalSParser::FormalParaSecVarGroupContext *context) = 0;
 
-    virtual antlrcpp::Any visitFormalParaSecFuncGroup(PascalSParser::FormalParaSecFuncGroupContext *context) = 0;
-
-    virtual antlrcpp::Any visitFormalParaSecProcGroup(PascalSParser::FormalParaSecProcGroupContext *context) = 0;
-
     virtual antlrcpp::Any visitParameterGroup(PascalSParser::ParameterGroupContext *context) = 0;
 
     virtual antlrcpp::Any visitIdentifierList(PascalSParser::IdentifierListContext *context) = 0;
@@ -115,11 +111,9 @@ public:
 
     virtual antlrcpp::Any visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext *context) = 0;
 
-    virtual antlrcpp::Any visitStatement(PascalSParser::StatementContext *context) = 0;
+    virtual antlrcpp::Any visitSimpleState(PascalSParser::SimpleStateContext *context) = 0;
 
-    virtual antlrcpp::Any visitUnlabelledStateSimple(PascalSParser::UnlabelledStateSimpleContext *context) = 0;
-
-    virtual antlrcpp::Any visitUnlabelledStateStructured(PascalSParser::UnlabelledStateStructuredContext *context) = 0;
+    virtual antlrcpp::Any visitStructuredState(PascalSParser::StructuredStateContext *context) = 0;
 
     virtual antlrcpp::Any visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context) = 0;
 
@@ -175,8 +169,6 @@ public:
 
     virtual antlrcpp::Any visitFactorUnsConst(PascalSParser::FactorUnsConstContext *context) = 0;
 
-    virtual antlrcpp::Any visitFactorSet(PascalSParser::FactorSetContext *context) = 0;
-
     virtual antlrcpp::Any visitFactorNotFact(PascalSParser::FactorNotFactContext *context) = 0;
 
     virtual antlrcpp::Any visitFactorBool(PascalSParser::FactorBoolContext *context) = 0;
@@ -188,16 +180,6 @@ public:
     virtual antlrcpp::Any visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context) = 0;
 
     virtual antlrcpp::Any visitParameterList(PascalSParser::ParameterListContext *context) = 0;
-
-    virtual antlrcpp::Any visitSet1(PascalSParser::Set1Context *context) = 0;
-
-    virtual antlrcpp::Any visitSet2(PascalSParser::Set2Context *context) = 0;
-
-    virtual antlrcpp::Any visitEleList(PascalSParser::EleListContext *context) = 0;
-
-    virtual antlrcpp::Any visitEleList2(PascalSParser::EleList2Context *context) = 0;
-
-    virtual antlrcpp::Any visitElement(PascalSParser::ElementContext *context) = 0;
 
     virtual antlrcpp::Any visitProcedureStatement(PascalSParser::ProcedureStatementContext *context) = 0;
 

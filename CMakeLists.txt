@@ -4,28 +4,32 @@ project(s1mple-compiler)
 
 set(CMAKE_CXX_STANDARD 14)
 
-find_package(LLVM REQUIRED CONFIG)
+set(CMAKE_CXX_COMPILER clang++)
+add_compile_options(-fexceptions)
 
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+link_libraries()
+execute_process(COMMAND llvm-config --libs OUTPUT_VARIABLE LIBS)
+execute_process(COMMAND llvm-config --system-libs OUTPUT_VARIABLE SYS_LIBS)
+execute_process(COMMAND llvm-config --ldflags OUTPUT_VARIABLE LDF)
 
-include_directories(${LLVM_INCLUDE_DIRS})
-separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
-add_definitions(${LLVM_DEFINITIONS_LIST})
+string(STRIP "${LIBS}" LIBS)
+string(STRIP "${SYS_LIBS}" SYS_LIBS)
+string(STRIP "${LDF}" LDF)
 
-file(GLOB SOURCES "src/*.cpp" "src/runtime/*.cpp")
+link_libraries(${LIBS} ${SYS_LIBS} ${LDF})
+
+execute_process(COMMAND llvm-config --cxxflags OUTPUT_VARIABLE CMAKE_CXX_FLAGS)
+string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+
+file(GLOB SOURCES "src/*.cpp" "src/runtime/*.cpp" "src/logic/*.cpp" "src/exceptions/*.cpp" "src/builtin/*.cpp")
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-llvm_map_components_to_libnames(llvm_libs support core irreader)
-
 target_include_directories(${PROJECT_NAME}
-    PRIVATE
+    PUBLIC
         /usr/local/include/antlr4-runtime
 )
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE
-        /usr/local/lib/libantlr4-runtime.a
-        ${llvm_libs}
+    /usr/local/lib/libantlr4-runtime.a
 )

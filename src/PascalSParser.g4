@@ -132,10 +132,8 @@ formalParameterList
    ;
 
 formalParameterSection
-   : parameterGroup             #FormalParaSecGroup
-   | VAR parameterGroup         #FormalParaSecVarGroup
-   | FUNCTION parameterGroup    #FormalParaSecFuncGroup
-   | PROCEDURE parameterGroup   #FormalParaSecProcGroup
+   : parameterGroup     #FormalParaSecGroup
+   | VAR parameterGroup #FormalParaSecVarGroup
    ;
 
 parameterGroup
@@ -155,12 +153,8 @@ functionDeclaration
    ;
 
 statement
-   : unlabelledStatement
-   ;
-
-unlabelledStatement
-   : simpleStatement        #UnlabelledStateSimple
-   | structuredStatement    #UnlabelledStateStructured
+   : simpleStatement        #SimpleState
+   | structuredStatement    #StructuredState
    ;
 
 simpleStatement
@@ -174,11 +168,11 @@ assignmentStatement
    ;
 
 variable
-   : (AT identifier | identifier) (LBRACK expression (COMMA expression)* RBRACK | LBRACK2 expression (COMMA expression)* RBRACK2 | DOT identifier | POINTER)*
+   : identifier (LBRACK expression (COMMA expression)* RBRACK | LBRACK2 expression (COMMA expression)* RBRACK2 | DOT identifier)*
    ;
 
 expression
-   : simpleExpression (relationaloperator expression)?
+   : simpleExpression (relationaloperator simpleExpression)?
    ;
 
 relationaloperator
@@ -191,7 +185,7 @@ relationaloperator
    ;
 
 simpleExpression
-   : term (additiveoperator simpleExpression)?
+   : term (additiveoperator term)?
    ;
 
 additiveoperator
@@ -201,7 +195,7 @@ additiveoperator
    ;
 
 term
-   : signedFactor (multiplicativeoperator term)?
+   : signedFactor (multiplicativeoperator signedFactor)?
    ;
 
 multiplicativeoperator
@@ -221,7 +215,6 @@ factor
    | LPAREN expression RPAREN   #FactorExpr
    | functionDesignator         #FactorFunc
    | unsignedConstant           #FactorUnsConst
-   | set_                       #FactorSet
    | NOT factor                 #FactorNotFact
    | bool_                      #FactorBool
    ;
@@ -237,20 +230,6 @@ functionDesignator
 
 parameterList
    : actualParameter (COMMA actualParameter)*
-   ;
-
-set_
-   : LBRACK elementList RBRACK      #Set1
-   | LBRACK2 elementList RBRACK2    #Set2
-   ;
-
-elementList
-   : element (COMMA element)*   #EleList
-   |                            #EleList2
-   ;
-
-element
-   : expression (DOTDOT expression)?
    ;
 
 procedureStatement

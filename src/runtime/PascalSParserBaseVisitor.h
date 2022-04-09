@@ -183,14 +183,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitFormalParaSecFuncGroup(PascalSParser::FormalParaSecFuncGroupContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitFormalParaSecProcGroup(PascalSParser::FormalParaSecProcGroupContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitParameterGroup(PascalSParser::ParameterGroupContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -207,15 +199,11 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitStatement(PascalSParser::StatementContext *ctx) override {
+  virtual antlrcpp::Any visitSimpleState(PascalSParser::SimpleStateContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitUnlabelledStateSimple(PascalSParser::UnlabelledStateSimpleContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitUnlabelledStateStructured(PascalSParser::UnlabelledStateStructuredContext *ctx) override {
+  virtual antlrcpp::Any visitStructuredState(PascalSParser::StructuredStateContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -327,10 +315,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitFactorSet(PascalSParser::FactorSetContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitFactorNotFact(PascalSParser::FactorNotFactContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -352,26 +336,6 @@ public:
   }
 
   virtual antlrcpp::Any visitParameterList(PascalSParser::ParameterListContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitSet1(PascalSParser::Set1Context *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitSet2(PascalSParser::Set2Context *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitEleList(PascalSParser::EleListContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitEleList2(PascalSParser::EleList2Context *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitElement(PascalSParser::ElementContext *ctx) override {
     return visitChildren(ctx);
   }
 
