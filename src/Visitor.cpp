@@ -109,6 +109,18 @@ void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *contex
 void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *context)
 {
     auto identifier = visitIdentifier(context->identifier());
+    if(getVariable(identifier))
+    {
+        // 调用
+    }
+    else if(StandardProcedure::hasProcedure(identifier))
+    {
+        // 获取原型
+        // 构造参数
+        // 调用
+    }
+    else 
+        throw ProcedureNotFoundException(identifier);
 }
 
 std::vector<llvm::Value *> *Visitor::visitParameterList(PascalSParser::ParameterListContext *context)

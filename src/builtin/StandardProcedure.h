@@ -14,6 +14,8 @@ namespace PascalS
 
         static void init();
 
+        static bool hasProcedure(std::string name);
+
         static llvm::Function *writelnPrototype(std::unique_ptr<llvm::Module> module);
 
         static void writelnArgsConstructor(llvm::IRBuilder<> *builder, std::vector<llvm::Value *> &args);

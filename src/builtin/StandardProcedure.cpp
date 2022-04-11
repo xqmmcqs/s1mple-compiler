@@ -18,6 +18,12 @@ void StandardProcedure::init()
     argsConstructorMap["writeln"] = writelnArgsConstructor;
 }
 
+bool StandardProcedure::hasProcedure(std::string name)
+{
+    return prototypeMap.find(name) != prototypeMap.end();
+}
+
+
 llvm::Function *StandardProcedure::writelnPrototype(std::unique_ptr<llvm::Module> module)
 {
     auto printf_type = llvm::FunctionType::get(llvm::Type::getVoidTy(module->getContext()), {llvm::Type::getInt8PtrTy(module->getContext())}, true);
