@@ -1,28 +1,62 @@
-#include <iostream>
-#include <string>
+#include <unistd.h>
 
-#include <antlr4-runtime.h>
-
-#include "runtime/PascalLexer.h"
-#include "runtime/PascalParser.h"
-
+#include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_ostream.h>
 
-using namespace antlr4;
+#include "Visitor.h"
+#include "ObjectEmitter.h"
+#include "builtin/StandardProcedure.h"
 
-int main(){
-    
-    ANTLRInputStream input("1+1");
+int main(int argc, char *argv[])
+{
+    if (argc < 2)
+    {
+        llvm::errs() << "Usage: s1mple-compiler <source-file> [-h] [-o <target-file (default: <filename>.o)>]\n";
+        return 1;
+    }
+    std::string sourcePath(argv[1]), targetPath;
+    while (int o = getopt(argc, argv, "ho:") != -1)
+    {
+        switch (o)
+        {
+        case 'h':
+            llvm::errs() << "Usage: s1mple-compiler <source-file> [-h] [-o <target-file (default: <filename>.o)>]\n";
+            return 1;
+        case 'o':
+            targetPath = optarg;
+            break;
+        case '?':
+            llvm::errs() << "Usage: s1mple-compiler <source-file> [-h] [-o <target-file (default: <filename>.o)>]\n";
+            return 1;
+        }
+    }
 
-    PascalLexer lexer(&input);
-    CommonTokenStream tokens(&lexer);
-    tokens.fill();
-    PascalParser parser(&tokens);
-    parser.setBuildParseTree(true);
+    PascalS::StandardProcedure::init();
 
-    std::cout << "Hello, World!" << std::endl;
+    PascalS::Visitor visitor(sourcePath);
+    try
+    {
+        visitor.fromFile(sourcePath);
+    }
+    catch (const std::ifstream::failure &e)
+    {
+        llvm::errs() << e.what();
+    }
 
-    llvm::errs() << "error\n";
+    if (targetPath.empty())
+        targetPath = sourcePath.substr(0, sourcePath.find_last_of('.')) + ".bc";
+
+    llvm::InitializeNativeTarget();
+    llvm::InitializeNativeTargetAsmPrinter();
+    llvm::InitializeNativeTargetAsmParser();
+
+    std::string error;
+    PascalS::ObjectEmitter::emit(visitor.module, targetPath, error);
+    if (!error.empty())
+    {
+        llvm::errs() << error << '\n';
+        return 1;
+    }
 
     return 0;
 }

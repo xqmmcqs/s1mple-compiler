@@ -1,5 +1,5 @@
 
-// Generated from /usr/src/app/src/Pascal.g4 by ANTLR 4.9.3
+// Generated from /usr/src/app/src/PascalSLexer.g4 by ANTLR 4.9.3
 
 #pragma once
 
@@ -9,26 +9,24 @@
 
 
 
-class  PascalLexer : public antlr4::Lexer {
+class  PascalSLexer : public antlr4::Lexer {
 public:
   enum {
-    AND = 1, ARRAY = 2, BEGIN = 3, BOOLEAN = 4, CASE = 5, CHAR = 6, CHR = 7, 
-    CONST = 8, DIV = 9, DO = 10, DOWNTO = 11, ELSE = 12, END = 13, FILE = 14, 
-    FOR = 15, FUNCTION = 16, GOTO = 17, IF = 18, IN = 19, INTEGER = 20, 
-    LABEL = 21, MOD = 22, NIL = 23, NOT = 24, OF = 25, OR = 26, PACKED = 27, 
-    PROCEDURE = 28, PROGRAM = 29, REAL = 30, RECORD = 31, REPEAT = 32, SET = 33, 
-    THEN = 34, TO = 35, TYPE = 36, UNTIL = 37, VAR = 38, WHILE = 39, WITH = 40, 
-    PLUS = 41, MINUS = 42, STAR = 43, SLASH = 44, ASSIGN = 45, COMMA = 46, 
-    SEMI = 47, COLON = 48, EQUAL = 49, NOT_EQUAL = 50, LT = 51, LE = 52, 
-    GE = 53, GT = 54, LPAREN = 55, RPAREN = 56, LBRACK = 57, LBRACK2 = 58, 
-    RBRACK = 59, RBRACK2 = 60, POINTER = 61, AT = 62, DOT = 63, DOTDOT = 64, 
-    LCURLY = 65, RCURLY = 66, UNIT = 67, INTERFACE = 68, USES = 69, STRING = 70, 
-    IMPLEMENTATION = 71, TRUE = 72, FALSE = 73, WS = 74, COMMENT_1 = 75, 
-    COMMENT_2 = 76, IDENT = 77, STRING_LITERAL = 78, NUM_INT = 79, NUM_REAL = 80
+    AND = 1, ARRAY = 2, BEGIN = 3, BOOLEAN = 4, CASE = 5, CHAR = 6, CONST = 7, 
+    DIV = 8, DO = 9, DOWNTO = 10, ELSE = 11, END = 12, FOR = 13, FUNCTION = 14, 
+    IF = 15, INTEGER = 16, MOD = 17, NOT = 18, OF = 19, OR = 20, PROCEDURE = 21, 
+    PROGRAM = 22, REAL = 23, RECORD = 24, REPEAT = 25, THEN = 26, TO = 27, 
+    TYPE = 28, UNTIL = 29, VAR = 30, WHILE = 31, PLUS = 32, MINUS = 33, 
+    STAR = 34, SLASH = 35, ASSIGN = 36, COMMA = 37, SEMI = 38, COLON = 39, 
+    EQUAL = 40, NOT_EQUAL = 41, LT = 42, LE = 43, GE = 44, GT = 45, LPAREN = 46, 
+    RPAREN = 47, LBRACK = 48, LBRACK2 = 49, RBRACK = 50, RBRACK2 = 51, DOT = 52, 
+    DOTDOT = 53, LCURLY = 54, RCURLY = 55, TRUE = 56, FALSE = 57, WS = 58, 
+    COMMENT_1 = 59, COMMENT_2 = 60, IDENT = 61, STRING_LITERAL = 62, NUM_INT = 63, 
+    NUM_REAL = 64
   };
 
-  explicit PascalLexer(antlr4::CharStream *input);
-  ~PascalLexer();
+  explicit PascalSLexer(antlr4::CharStream *input);
+  ~PascalSLexer();
 
   virtual std::string getGrammarFileName() const override;
   virtual const std::vector<std::string>& getRuleNames() const override;

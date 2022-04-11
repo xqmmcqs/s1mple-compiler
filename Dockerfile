@@ -49,6 +49,8 @@ RUN apt-get update && \
     wget https://apt.llvm.org/llvm.sh && \
     chmod +x llvm.sh && \
     ./llvm.sh 13 && \
+    echo -e "export PATH=\$PATH:/usr/lib/llvm-13/bin" >> ~/.bashrc && \
+    source ~/.bashrc && \
     apt-get purge -y --auto-remove \
     gpg-agent \
     lsb-release \
