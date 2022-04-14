@@ -76,6 +76,7 @@ namespace PascalS
 
         int visitSimpleType(PascalSParser::SimpleTypeContext *context);
 
+
         void visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context);
 
         void visitStructuredTypeRecord(PascalSParser::StructuredTypeRecordContext *context);
