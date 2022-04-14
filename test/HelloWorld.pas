@@ -1,4 +1,4 @@
 program HelloWorld;
 begin
-    writeln ('Hello, world!')
+    writeln (114514)
 end.
