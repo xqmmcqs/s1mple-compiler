@@ -38,23 +38,23 @@ namespace PascalS
 
         void visitConstantDefinition(PascalSParser::ConstantDefinitionContext *context);
 
-        void visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context);
+        llvm::Value* visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context);
 
-        void visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context);
+        llvm::Value* visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context);
 
-        void visitConstIdentifier(PascalSParser::ConstIdentifierContext *context);
+        llvm::Value* visitConstIdentifier(PascalSParser::ConstIdentifierContext *context);
 
-        void visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context);
+        llvm::Value* visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context);
 
-        void visitConstString(PascalSParser::ConstStringContext *context);
+        std::string visitConstString(PascalSParser::ConstStringContext *context);
 
-        void visitUnsignedNumberInteger(PascalSParser::UnsignedNumberIntegerContext *context);
+        int visitUnsignedNumberInteger(PascalSParser::UnsignedNumberIntegerContext *context);
 
-        void visitUnsignedNumberReal(PascalSParser::UnsignedNumberRealContext *context);
+        float visitUnsignedNumberReal(PascalSParser::UnsignedNumberRealContext *context);
 
-        void visitUnsignedInteger(PascalSParser::UnsignedIntegerContext *context);
+        int visitUnsignedInteger(PascalSParser::UnsignedIntegerContext *context);
 
-        void visitUnsignedReal(PascalSParser::UnsignedRealContext *context);
+        float visitUnsignedReal(PascalSParser::UnsignedRealContext *context);
 
         void visitSignPlus(PascalSParser::SignPlusContext *context);
 
@@ -64,17 +64,17 @@ namespace PascalS
 
         void visitBoolFalse(PascalSParser::BoolFalseContext *context);
 
-        void visitString(PascalSParser::StringContext *context);
+        std::string visitString(PascalSParser::StringContext *context);
 
         void visitTypeDefinitionPart(PascalSParser::TypeDefinitionPartContext *context);
 
         void visitTypeDefinition(PascalSParser::TypeDefinitionContext *context);
 
-        void visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context);
+        int visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context);
 
         void visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context);
 
-        void visitSimpleType(PascalSParser::SimpleTypeContext *context);
+        int visitSimpleType(PascalSParser::SimpleTypeContext *context);
 
         void visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context);
 
@@ -84,9 +84,9 @@ namespace PascalS
 
         void visitArrayType2(PascalSParser::ArrayType2Context *context);
 
-        void visitPeriods(PascalSParser::PeriodsContext *context);
+        std::vector<int> visitPeriods(PascalSParser::PeriodsContext *context);
 
-        void visitPeriod(PascalSParser::PeriodContext *context);
+        std::vector<int> visitPeriod(PascalSParser::PeriodContext *context);
 
         void visitRecordType(PascalSParser::RecordTypeContext *context);
 
@@ -112,7 +112,7 @@ namespace PascalS
 
         void visitParameterGroup(PascalSParser::ParameterGroupContext *context);
 
-        void visitIdentifierList(PascalSParser::IdentifierListContext *context);
+        std::vector<std::string> visitIdentifierList(PascalSParser::IdentifierListContext *context);
 
         void visitConstList(PascalSParser::ConstListContext *context);
 
