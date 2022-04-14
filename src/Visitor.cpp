@@ -71,9 +71,88 @@ void Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Function *f
     for (const auto &vDeclarePartContext : context->variableDeclarationPart()){
         visitVariableDeclarationPart(vDeclarePartContext);
     }
-    
+
+    for (const auto &typeDefinitionPartContext : context->typeDefinitionPart()){
+        visitTypeDefinitionPart(typeDefinitionPartContext);
+    }
+
+
     visitCompoundStatement(context->compoundStatement());
 }
+
+void Visitor::visitTypeDefinitionPart(PascalSParser::TypeDefinitionPartContext *context)
+{
+    for (const auto &typeDefinitionContext : context->typeDefinition()) {
+        visitTypeDefinition(typeDefinitionContext);
+    }
+    
+}
+
+void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
+{
+    auto identifier = visitIdentifier(context->identifier());
+
+    if (auto typeSimpleTypeContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
+    {
+        auto type = visitTypeSimpleType(typeSimpleTypeContext);
+        switch (type)
+        {
+        case 0:{
+            //CHAR
+            auto addr = builder.CreateAlloca(llvm::Type::getInt8Ty(*llvm_context), nullptr);
+            builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt8Ty(*llvm_context)), addr);
+            scopes.back().setVariable(identifier, addr);
+            // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
+            
+            break;
+        }
+        
+        case 1:{
+            //BOOL
+            auto addr = builder.CreateAlloca(llvm::Type::getInt1Ty(*llvm_context), nullptr);
+            builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt1Ty(*llvm_context)), addr);
+            scopes.back().setVariable(identifier, addr);
+                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
+
+            break;
+        }
+        
+        case 2:{
+           //INT
+            auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
+            builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt32Ty(*llvm_context)), addr);
+            scopes.back().setVariable(identifier, addr);
+                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
+            
+            break; 
+        }
+        
+        case 3:{
+            //REAL
+
+            auto addr = builder.CreateAlloca(llvm::Type::getFloatTy(*llvm_context), nullptr);
+            builder.CreateStore(llvm::UndefValue::get(llvm::Type::getFloatTy(*llvm_context)), addr);
+            scopes.back().setVariable(identifier, addr);
+                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
+            break;
+        }
+        
+        default:
+            throw NotImplementedException();
+            break;
+        }
+
+    }
+    else if(auto typeStructuredTypeContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
+    {
+        
+    }
+    else
+        throw NotImplementedException();
+}
+
+
+
 
 void Visitor::visitCompoundStatement(PascalSParser::CompoundStatementContext *context)
 {
