@@ -38,3 +38,6 @@ build/
 
 .vscode/
 .idea/
+
+test/
+!test/*.pas

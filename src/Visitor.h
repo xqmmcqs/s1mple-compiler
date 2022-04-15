@@ -3,9 +3,12 @@
 #include <vector>
 
 #include <llvm/IR/IRBuilder.h>
-
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Constants.h>
 #include "runtime/PascalSLexer.h"
 #include "runtime/PascalSParserBaseVisitor.h"
+
 #include "logic/Scope.h"
 
 namespace PascalS
@@ -70,31 +73,32 @@ namespace PascalS
 
         void visitTypeDefinition(PascalSParser::TypeDefinitionContext *context);
 
-        int visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context);
+        llvm::Type* visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context);
 
-        void visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context);
+        llvm::Type* visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context, std::vector<std::string> idList);
 
-        int visitSimpleType(PascalSParser::SimpleTypeContext *context);
+        llvm::Type* visitSimpleType(PascalSParser::SimpleTypeContext *context);
 
-        void visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context);
 
-        void visitStructuredTypeRecord(PascalSParser::StructuredTypeRecordContext *context);
+        llvm::Type* visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context, std::vector<std::string> idList);
 
-        void visitArrayType1(PascalSParser::ArrayType1Context *context);
+        llvm::Type* visitStructuredTypeRecord(PascalSParser::StructuredTypeRecordContext *context, std::vector<std::string> idList);
 
-        void visitArrayType2(PascalSParser::ArrayType2Context *context);
+        llvm::Type* visitArrayType1(PascalSParser::ArrayType1Context *context, std::vector<std::string> idList);
+
+        llvm::Type* visitArrayType2(PascalSParser::ArrayType2Context *context, std::vector<std::string> idList);
 
         std::vector<int> visitPeriods(PascalSParser::PeriodsContext *context);
 
         std::vector<int> visitPeriod(PascalSParser::PeriodContext *context);
 
-        void visitRecordType(PascalSParser::RecordTypeContext *context);
+        llvm::Type* visitRecordType(PascalSParser::RecordTypeContext *context, std::vector<std::string> idList);
 
-        void visitRecordField(PascalSParser::RecordFieldContext *context);
+        llvm::Type* visitRecordField(PascalSParser::RecordFieldContext *context, std::vector<std::string> idList);
 
         void visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context);
 
-        void visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context);
+        llvm::Type* visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context);
 
         void visitProcedureAndFunctionDeclarationPart(PascalSParser::ProcedureAndFunctionDeclarationPartContext *context);
 
