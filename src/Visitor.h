@@ -17,7 +17,8 @@ namespace PascalS
         llvm::IRBuilder<> builder;
         std::unique_ptr<llvm::Module> module;
         std::vector<Scope> scopes;
-
+        std::vector<std::string> FormalParaIdList;
+        
         Visitor(std::string filename) : llvm_context(std::make_unique<llvm::LLVMContext>()),
                                         builder(*llvm_context),
                                         module(std::make_unique<llvm::Module>(filename, *llvm_context)) {}
@@ -32,7 +33,7 @@ namespace PascalS
 
         std::string visitIdentifier(PascalSParser::IdentifierContext *context);
 
-        void visitBlock(PascalSParser::BlockContext *context, llvm::Function *function);
+        llvm::Value* visitBlock(PascalSParser::BlockContext *context, llvm::Function *function);
 
         void visitConstantDefinitionPart(PascalSParser::ConstantDefinitionPartContext *context);
 
@@ -73,8 +74,10 @@ namespace PascalS
         void visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context);
 
         void visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context);
+        
+        int visitSimpleType(PascalSParser::SimpleTypeContext *context);
 
-        void visitSimpleType(PascalSParser::SimpleTypeContext *context);
+        llvm::Type* visitSimpleType_ProFun(PascalSParser::SimpleTypeContext *context, bool isVar);
 
         void visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context);
 
@@ -104,15 +107,15 @@ namespace PascalS
 
         void visitProcedureDeclaration(PascalSParser::ProcedureDeclarationContext *context);
 
-        void visitFormalParameterList(PascalSParser::FormalParameterListContext *context);
+        void visitFormalParameterList(PascalSParser::FormalParameterListContext *context,llvm::SmallVector<llvm::Type *> &ParaTypes);
 
-        void visitFormalParaSecGroup(PascalSParser::FormalParaSecGroupContext *context);
+        void visitFormalParaSecGroup(PascalSParser::FormalParaSecGroupContext *context,llvm::SmallVector<llvm::Type *> &ParaTypes);
 
-        void visitFormalParaSecVarGroup(PascalSParser::FormalParaSecVarGroupContext *context);
+        void visitFormalParaSecVarGroup(PascalSParser::FormalParaSecVarGroupContext *context,llvm::SmallVector<llvm::Type *> &ParaTypes);
 
-        void visitParameterGroup(PascalSParser::ParameterGroupContext *context);
+        void visitParameterGroup(PascalSParser::ParameterGroupContext *context,llvm::SmallVector<llvm::Type *> &ParaTypes, bool isVar);
 
-        void visitIdentifierList(PascalSParser::IdentifierListContext *context);
+        std::vector<std::string> visitIdentifierList(PascalSParser::IdentifierListContext *context);
 
         void visitConstList(PascalSParser::ConstListContext *context);
 
@@ -204,9 +207,9 @@ namespace PascalS
 
         void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context);
 
-        void visitCompoundStatement(PascalSParser::CompoundStatementContext *context);
+        llvm::Value* visitCompoundStatement(PascalSParser::CompoundStatementContext *context);
 
-        void visitStatements(PascalSParser::StatementsContext *context);
+        llvm::Value* visitStatements(PascalSParser::StatementsContext *context);
 
         void visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context);
 
