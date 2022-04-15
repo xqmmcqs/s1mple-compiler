@@ -95,57 +95,15 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
     if (auto typeSimpleTypeContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
         auto type = visitTypeSimpleType(typeSimpleTypeContext);
-        switch (type)
-        {
-        case 0:{
-            //CHAR
-            auto addr = builder.CreateAlloca(llvm::Type::getInt8Ty(*llvm_context), nullptr);
-            builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt8Ty(*llvm_context)), addr);
-            scopes.back().setVariable(identifier, addr);
-            // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            
-            break;
-        }
+        auto addr = builder.CreateAlloca(type, nullptr);
+        builder.CreateStore(llvm::UndefValue::get(type), addr);
+        scopes.back().setVariable(identifier, addr);
         
-        case 1:{
-            //BOOL
-            auto addr = builder.CreateAlloca(llvm::Type::getInt1Ty(*llvm_context), nullptr);
-            builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt1Ty(*llvm_context)), addr);
-            scopes.back().setVariable(identifier, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-
-            break;
-        }
-        
-        case 2:{
-           //INT
-            auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
-            builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt32Ty(*llvm_context)), addr);
-            scopes.back().setVariable(identifier, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            
-            break; 
-        }
-        
-        case 3:{
-            //REAL
-
-            auto addr = builder.CreateAlloca(llvm::Type::getFloatTy(*llvm_context), nullptr);
-            builder.CreateStore(llvm::UndefValue::get(llvm::Type::getFloatTy(*llvm_context)), addr);
-            scopes.back().setVariable(identifier, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            break;
-        }
-        
-        default:
-            throw NotImplementedException();
-            break;
-        }
 
     }
     else if(auto typeStructuredTypeContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
     {
-        
+        // visitTypeStructuredType(typeStructuredTypeContext);
     }
     else
         throw NotImplementedException();
@@ -395,85 +353,47 @@ void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPar
     }
 }
 
-void Visitor::visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context){
+llvm::Type* Visitor::visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context){
     auto idList = visitIdentifierList(context->identifierList());
     if (auto typeSimpleContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_())){
         auto type = visitTypeSimpleType(typeSimpleContext);
-        switch (type)
-        {
-        case 0:
-        //CHAR
-            for(auto id : idList){
-                auto addr = builder.CreateAlloca(llvm::Type::getInt8Ty(*llvm_context), nullptr);
-                builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt8Ty(*llvm_context)), addr);
-                scopes.back().setVariable(id, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            }
-            break;
-        case 1:
-        //BOOL
-            for(auto id : idList){
-                auto addr = builder.CreateAlloca(llvm::Type::getInt1Ty(*llvm_context), nullptr);
-                builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt1Ty(*llvm_context)), addr);
-                scopes.back().setVariable(id, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            }
-            break;
-        case 2:
-        //INT
-            for(auto id : idList){
-                auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
-                builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt32Ty(*llvm_context)), addr);
-                scopes.back().setVariable(id, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            }
-            
-            break;
-        case 3:
-        //REAL
-            for(auto id : idList){
-                auto addr = builder.CreateAlloca(llvm::Type::getFloatTy(*llvm_context), nullptr);
-                builder.CreateStore(llvm::UndefValue::get(llvm::Type::getFloatTy(*llvm_context)), addr);
-                scopes.back().setVariable(id, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            }
-            break;
-        default:
-            throw NotImplementedException();
-            break;
+        for(auto id : idList){
+            auto addr = builder.CreateAlloca(type, nullptr);
+            builder.CreateStore(llvm::UndefValue::get(type), addr);
+            scopes.back().setVariable(id, addr);
         }
+        return type;
     }
     else if (auto typeStructureContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
     {
-        visitTypeStructuredType(typeStructureContext);
+        auto type = visitTypeStructuredType(typeStructureContext, idList);
         for(auto id : idList){
-            auto addr = builder.CreateAlloca(llvm::Type::getFloatTy(*llvm_context), nullptr);
-            builder.CreateStore(llvm::UndefValue::get(llvm::Type::getFloatTy(*llvm_context)), addr);
+            auto addr = builder.CreateAlloca(type, nullptr);
             scopes.back().setVariable(id, addr);
-            // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
         }
+        return type;
     }
     else{
         throw NotImplementedException();
     }
 }
 
-int Visitor::visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context){
+llvm::Type* Visitor::visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context){
     return visitSimpleType(context->simpleType());
 }
 
-int Visitor::visitSimpleType(PascalSParser::SimpleTypeContext *context){
+llvm::Type* Visitor::visitSimpleType(PascalSParser::SimpleTypeContext *context){
     if (auto type = context->CHAR()){
-        return 0;
+        return llvm::Type::getInt8Ty(*llvm_context);
     }
     else if(auto type = context->BOOLEAN()){
-        return 1;
+        return llvm::Type::getInt1Ty(*llvm_context);
     }
     else if(auto type = context->INTEGER()){
-        return 2;
+        return llvm::Type::getInt32Ty(*llvm_context);
     }
     else if(auto type = context->REAL()){
-        return 3;
+        return llvm::Type::getFloatTy(*llvm_context);
     }
     else{//error
         throw NotImplementedException();
@@ -488,123 +408,80 @@ std::vector<std::string> Visitor::visitIdentifierList(PascalSParser::IdentifierL
     return idList;
 }
 
-void Visitor::visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context){
+llvm::Type* Visitor::visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context, std::vector<std::string> idList){
     if (auto arrayContext = dynamic_cast<PascalSParser::StructuredTypeArrayContext *>(context->structuredType())){
-        visitStructuredTypeArray(arrayContext);
+        return visitStructuredTypeArray(arrayContext, idList);
     }
     else if(auto recordContext = dynamic_cast<PascalSParser::StructuredTypeRecordContext *>(context->structuredType())){
-        visitStructuredTypeRecord(recordContext);
+        return visitStructuredTypeRecord(recordContext, idList);
+        
     }
     else{
         throw NotImplementedException();
     }
 }
 
-void Visitor::visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context){
+llvm::Type* Visitor::visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context, std::vector<std::string> idList){
     if (auto array1Context = dynamic_cast<PascalSParser::ArrayType1Context *>(context->arrayType())){
-        visitArrayType1(array1Context);
+        return visitArrayType1(array1Context, idList);
     }
     else if(auto array2Context = dynamic_cast<PascalSParser::ArrayType2Context *>(context->arrayType())){
-        visitArrayType2(array2Context);
+        return visitArrayType2(array2Context, idList);
     }
     else{
         throw NotImplementedException();
     }
 }
 
-void Visitor::visitStructuredTypeRecord(PascalSParser::StructuredTypeRecordContext *context){
-    visitRecordType(context->recordType());
+llvm::Type* Visitor::visitStructuredTypeRecord(PascalSParser::StructuredTypeRecordContext *context, std::vector<std::string> idList){
+    return visitRecordType(context->recordType(), idList);
 }
 
-void Visitor::visitArrayType1(PascalSParser::ArrayType1Context *context){
-    std::vector<std::string> idList;
-    visitPeriods(context->periods());
+llvm::Type* Visitor::visitArrayType1(PascalSParser::ArrayType1Context *context, std::vector<std::string> idList){
+    auto ranges = visitPeriods(context->periods());
+    int space = 1;
+    //calculate the space of array
+    for(auto iter = ranges.begin(); iter != ranges.end(); iter++){
+        auto v1 = *iter;
+        auto v2 = *(++iter);
+        space *= (v2 - v1 + 1);
+    }
+
     if (auto typeSimpleContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_())){
         auto type = visitTypeSimpleType(typeSimpleContext);
-        switch (type)
-        {
-        case 0:
-        //CHAR
-            for(auto id : idList){
-                auto addr = builder.CreateAlloca(llvm::Type::getInt8Ty(*llvm_context), nullptr);
-                builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt8Ty(*llvm_context)), addr);
-                scopes.back().setVariable(id, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            }
-            break;
-        case 1:
-        //BOOL
-            for(auto id : idList){
-                auto addr = builder.CreateAlloca(llvm::Type::getInt1Ty(*llvm_context), nullptr);
-                builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt1Ty(*llvm_context)), addr);
-                scopes.back().setVariable(id, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            }
-            break;
-        case 2:
-        //INT
-            for(auto id : idList){
-                auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
-                builder.CreateStore(llvm::UndefValue::get(llvm::Type::getInt32Ty(*llvm_context)), addr);
-                scopes.back().setVariable(id, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            }
-            
-            break;
-        case 3:
-        //REAL
-            for(auto id : idList){
-                auto addr = builder.CreateAlloca(llvm::Type::getFloatTy(*llvm_context), nullptr);
-                builder.CreateStore(llvm::UndefValue::get(llvm::Type::getFloatTy(*llvm_context)), addr);
-                scopes.back().setVariable(id, addr);
-                // auto a = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), getVariable(id));
-            }
-            break;
-        default:
-            break;
-        }
+        return llvm::ArrayType::get(type, space);
     }
     else if (auto typeStructureContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
     {
-        visitTypeStructuredType(typeStructureContext);
+        auto type = visitTypeStructuredType(typeStructureContext, idList);
+        return llvm::ArrayType::get(type, space);
     }
     else{
-        
+        throw NotImplementedException();
     }
 }
 
-void Visitor::visitArrayType2(PascalSParser::ArrayType2Context *context){
-    std::vector<int> ranges = visitPeriods(context->periods());
+llvm::Type* Visitor::visitArrayType2(PascalSParser::ArrayType2Context *context, std::vector<std::string> idList){
+    auto ranges = visitPeriods(context->periods());
+    int space = 1;
+    //calculate the space of array
+    for(auto iter = ranges.begin(); iter != ranges.end(); iter++){
+        auto v1 = *iter;
+        auto v2 = *(++iter);
+        space *= (v2 - v1 + 1);
+    }
+
     if (auto typeSimpleContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_())){
         auto type = visitTypeSimpleType(typeSimpleContext);
-        switch (type)
-        {
-        case 0:
-        //CHAR
-            
-            break;
-        case 1:
-        //BOOL
-            
-            break;
-        case 2:
-        //INT
-            
-            break;
-        case 3:
-        //REAL
-            
-            break;
-        default:
-            break;
-        }
+        return llvm::ArrayType::get(type, space);
     }
     else if (auto typeStructureContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
     {
-        visitTypeStructuredType(typeStructureContext);
+        auto type = visitTypeStructuredType(typeStructureContext, idList);
+        return llvm::ArrayType::get(type, space);
     }
     else{
-        
+        throw NotImplementedException();
     }
 }
 
@@ -618,7 +495,7 @@ std::vector<int> Visitor::visitPeriods(PascalSParser::PeriodsContext *context){
     }
     return ranges;
 }
-
+//return 2 int
 std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context){
     auto vec = context->constant();
     if(vec.size() != 2){
@@ -639,14 +516,21 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context){
         }
         else if (auto ConstunumberCtx = dynamic_cast<PascalSParser::ConstUnsignedNumberContext *>(constContext))
         {
-            auto value = visitConstUnsignedNumber(ConstunumberCtx);
+            value1 = visitConstUnsignedNumber(ConstunumberCtx);
         }
         else if (auto ConstnumberCtx = dynamic_cast<PascalSParser::ConstSignedNumberContext *>(constContext))
         {
-            auto value = visitConstSignedNumber(ConstnumberCtx);
+            value1 = visitConstSignedNumber(ConstnumberCtx);
         }
         else if (auto ConstsIdentifierCtx = dynamic_cast<PascalSParser::ConstSignIdentifierContext *>(constContext)){
             auto addr = visitConstSignIdentifier(ConstsIdentifierCtx);
+            auto value = builder.CreateLoad(addr);
+            if(!value->getType()->isIntegerTy()){
+                throw NotImplementedException();
+            }
+            else{
+                value1 = value;
+            }
         }
         else{
             throw NotImplementedException();
@@ -666,14 +550,21 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context){
         }
         else if (auto ConstunumberCtx = dynamic_cast<PascalSParser::ConstUnsignedNumberContext *>(constContext))
         {
-            auto addr = visitConstUnsignedNumber(ConstunumberCtx);
+            value2 = visitConstUnsignedNumber(ConstunumberCtx);
         }
         else if (auto ConstnumberCtx = dynamic_cast<PascalSParser::ConstSignedNumberContext *>(constContext))
         {
-            auto addr = visitConstSignedNumber(ConstnumberCtx);
+            value2 = visitConstSignedNumber(ConstnumberCtx);
         }
         else if (auto ConstsIdentifierCtx = dynamic_cast<PascalSParser::ConstSignIdentifierContext *>(constContext)){
             auto addr = visitConstSignIdentifier(ConstsIdentifierCtx);
+            auto value = builder.CreateLoad(addr);
+            if(!value->getType()->isIntegerTy()){
+                throw NotImplementedException();
+            }
+            else{
+                value2 = value;
+            }
         }
         else{
             throw NotImplementedException();
@@ -697,14 +588,22 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context){
     return range;
 }
 
-void Visitor::visitRecordType(PascalSParser::RecordTypeContext *context){
-    visitRecordField(context->recordField());
+llvm::Type* Visitor::visitRecordType(PascalSParser::RecordTypeContext *context, std::vector<std::string> idList){
+    return visitRecordField(context->recordField(), idList);
 }
 
-void Visitor::visitRecordField(PascalSParser::RecordFieldContext *context){
+llvm::Type* Visitor::visitRecordField(PascalSParser::RecordFieldContext *context, std::vector<std::string> idList){
+    std::vector<llvm::Type*> elements;
     for (const auto &varDeclareCtx : context->variableDeclaration()){
-        visitVariableDeclaration(varDeclareCtx);
+        auto e = visitVariableDeclaration(varDeclareCtx);
+        elements.push_back(e);
     }
+    for(auto id : idList){
+        llvm::StructType *testStruct = llvm::StructType::create(*llvm_context, id);
+        testStruct->setBody(elements);
+        return testStruct;
+    }
+    return elements[0];
 }
 
 
