@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     }
 
     PascalS::StandardProcedure::init();
-
+    
     PascalS::Visitor visitor(sourcePath);
     try
     {
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
     if (targetPath.empty())
         targetPath = sourcePath.substr(0, sourcePath.find_last_of('.')) + ".bc";
-
+    
     llvm::InitializeNativeTarget();
     llvm::InitializeNativeTargetAsmPrinter();
     llvm::InitializeNativeTargetAsmParser();
@@ -57,6 +57,6 @@ int main(int argc, char *argv[])
         llvm::errs() << error << '\n';
         return 1;
     }
-
+    
     return 0;
 }
