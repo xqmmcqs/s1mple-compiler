@@ -134,9 +134,9 @@ namespace PascalS
 
         void visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context);
 
-        void visitVariable(PascalSParser::VariableContext *context);
+        llvm::Value* visitVariable(PascalSParser::VariableContext *context);
 
-        void visitExpression(PascalSParser::ExpressionContext *context);
+        llvm::Value* visitExpression(PascalSParser::ExpressionContext *context);
 
         void visitOpEqual(PascalSParser::OpEqualContext *context);
 
@@ -150,45 +150,45 @@ namespace PascalS
 
         void visitOpGt(PascalSParser::OpGtContext *context);
 
-        void visitSimpleExpression(PascalSParser::SimpleExpressionContext *context);
+        llvm::Value* visitSimpleExpression(PascalSParser::SimpleExpressionContext *context);
 
-        void visitOpPlus(PascalSParser::OpPlusContext *context);
+        llvm::Value* visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R);
 
-        void visitOpMinus(PascalSParser::OpMinusContext *context);
+        llvm::Value* visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R);
 
-        void visitOpOr(PascalSParser::OpOrContext *context);
+        llvm::Value* visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R);
 
-        void visitTerm(PascalSParser::TermContext *context);
+        llvm::Value* visitTerm(PascalSParser::TermContext *context);
 
-        void visitOpStar(PascalSParser::OpStarContext *context);
+        llvm::Value* visitOpStar(PascalSParser::OpStarContext *context, llvm::Value* L, llvm::Value* R);
 
-        void visitOpSlash(PascalSParser::OpSlashContext *context);
+        llvm::Value* visitOpSlash(PascalSParser::OpSlashContext *context, llvm::Value* L, llvm::Value* R);
 
-        void visitOpDiv(PascalSParser::OpDivContext *context);
+        llvm::Value* visitOpDiv(PascalSParser::OpDivContext *context, llvm::Value* L, llvm::Value* R);
 
-        void visitOpMod(PascalSParser::OpModContext *context);
+        llvm::Value* visitOpMod(PascalSParser::OpModContext *context, llvm::Value* L, llvm::Value* R);
 
-        void visitOpAnd(PascalSParser::OpAndContext *context);
+        llvm::Value* visitOpAnd(PascalSParser::OpAndContext *context, llvm::Value* L, llvm::Value* R);
 
-        void visitSignedFactor(PascalSParser::SignedFactorContext *context);
+        llvm::Value* visitSignedFactor(PascalSParser::SignedFactorContext *context);
 
-        void visitFactorVar(PascalSParser::FactorVarContext *context);
+        llvm::Value* visitFactorVar(PascalSParser::FactorVarContext *context);
 
-        void visitFactorExpr(PascalSParser::FactorExprContext *context);
+        llvm::Value* visitFactorExpr(PascalSParser::FactorExprContext *context);
 
-        void visitFactorFunc(PascalSParser::FactorFuncContext *context);
+        llvm::Value* visitFactorFunc(PascalSParser::FactorFuncContext *context);
 
-        void visitFactorUnsConst(PascalSParser::FactorUnsConstContext *context);
+        llvm::Value* visitFactorUnsConst(PascalSParser::FactorUnsConstContext *context);
 
-        void visitFactorNotFact(PascalSParser::FactorNotFactContext *context);
+        llvm::Value* visitFactorNotFact(PascalSParser::FactorNotFactContext *context);
 
-        void visitFactorBool(PascalSParser::FactorBoolContext *context);
+        llvm::Value* visitFactorBool(PascalSParser::FactorBoolContext *context);
 
-        void visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConstUnsignedNumContext *context);
+        llvm::Value* visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConstUnsignedNumContext *context);
 
-        void visitUnsignedConstStr(PascalSParser::UnsignedConstStrContext *context);
+        std::string visitUnsignedConstStr(PascalSParser::UnsignedConstStrContext *context);
 
-        void visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context);
+        llvm::Value* visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context);
 
         std::vector<llvm::Value *> *visitParameterList(PascalSParser::ParameterListContext *context);
 
