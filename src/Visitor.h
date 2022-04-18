@@ -79,7 +79,6 @@ namespace PascalS
 
         llvm::Type* visitSimpleType(PascalSParser::SimpleTypeContext *context);
 
-
         llvm::Type* visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context, std::vector<std::string> idList);
 
         llvm::Type* visitStructuredTypeRecord(PascalSParser::StructuredTypeRecordContext *context, std::vector<std::string> idList);
@@ -138,17 +137,17 @@ namespace PascalS
 
         llvm::Value* visitExpression(PascalSParser::ExpressionContext *context);
 
-        void visitOpEqual(PascalSParser::OpEqualContext *context);
+        llvm::Value* visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R);
 
-        void visitOpNotEqual(PascalSParser::OpNotEqualContext *context);
+        llvm::Value* visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R);
 
-        void visitOpLt(PascalSParser::OpLtContext *context);
+        llvm::Value* visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R);
 
-        void visitOpLe(PascalSParser::OpLeContext *context);
+        llvm::Value* visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R);
 
-        void visitOpGe(PascalSParser::OpGeContext *context);
+        llvm::Value* visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R);
 
-        void visitOpGt(PascalSParser::OpGtContext *context);
+        llvm::Value* visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R);
 
         llvm::Value* visitSimpleExpression(PascalSParser::SimpleExpressionContext *context);
 
