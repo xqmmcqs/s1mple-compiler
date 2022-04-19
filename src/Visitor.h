@@ -42,13 +42,13 @@ namespace PascalS
 
         void visitConstantDefinition(PascalSParser::ConstantDefinitionContext *context);
 
-        llvm::Value *visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context);
+        llvm::Constant *visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context);
 
-        llvm::Value *visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context);
+        llvm::Constant *visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context);
 
-        llvm::Value *visitConstIdentifier(PascalSParser::ConstIdentifierContext *context);
+        llvm::Constant *visitConstIdentifier(PascalSParser::ConstIdentifierContext *context);
 
-        llvm::Value *visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context);
+        llvm::Constant *visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context);
 
         std::string visitConstString(PascalSParser::ConstStringContext *context);
 
@@ -124,7 +124,7 @@ namespace PascalS
 
         void visitSimpleState(PascalSParser::SimpleStateContext *context);
 
-        void visitStructuredState(PascalSParser::StructuredStateContext *context);
+        void visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function=NULL);
 
         void visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context);
 
@@ -206,11 +206,11 @@ namespace PascalS
 
         void visitStructuredStateConditional(PascalSParser::StructuredStateConditionalContext *context);
 
-        void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context);
+        void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function=NULL);
 
-        llvm::Value *visitCompoundStatement(PascalSParser::CompoundStatementContext *context);
+        llvm::Value *visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function=NULL);
 
-        llvm::Value *visitStatements(PascalSParser::StatementsContext *context);
+        llvm::Value *visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function=NULL);
 
         void visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context);
 
@@ -226,19 +226,19 @@ namespace PascalS
 
         void visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context);
 
-        void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context);
+        void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function=NULL);
 
         void visitWhileStatement(PascalSParser::WhileStatementContext *context);
 
         void visitRepeatStatement(PascalSParser::RepeatStatementContext *context);
 
-        void visitForStatement(PascalSParser::ForStatementContext *context);
+        void visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function=NULL);
 
-        void visitForList(PascalSParser::ForListContext *context);
+        std::vector<llvm::Value*>  visitForList(PascalSParser::ForListContext *context);
 
-        void visitInitialValue(PascalSParser::InitialValueContext *context);
+        llvm::Value* visitInitialValue(PascalSParser::InitialValueContext *context);
 
-        void visitFinalValue(PascalSParser::FinalValueContext *context);
+        llvm::Value* visitFinalValue(PascalSParser::FinalValueContext *context);
 
         void visitRecordVariableList(PascalSParser::RecordVariableListContext *context);
     };
