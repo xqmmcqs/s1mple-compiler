@@ -82,7 +82,7 @@ llvm::Value *Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Fun
         visitTypeDefinitionPart(typeDefinitionPartContext);
     }
 
-    return visitCompoundStatement(context->compoundStatement());
+    return visitCompoundStatement(context->compoundStatement(), function);
 }
 
 void Visitor::visitTypeDefinitionPart(PascalSParser::TypeDefinitionPartContext *context)
@@ -116,19 +116,19 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
         throw NotImplementedException();
 }
 
-llvm::Value *Visitor::visitCompoundStatement(PascalSParser::CompoundStatementContext *context)
+llvm::Value *Visitor::visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function)
 {
     return visitStatements(context->statements());
 }
 
-llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context)
+llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function)
 {
     for (const auto &statementContext : context->statement())
     {
         if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(statementContext))
             visitSimpleState(simpleStatementContext);
-        // else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(statementContext))
-        //     visitStructuredState(structuredStatementContext);
+        else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(statementContext))
+            visitStructuredState(structuredStatementContext);
         else
             throw NotImplementedException();
     }
@@ -194,35 +194,44 @@ void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *
     // switch const
     if (auto constIdentifierContext = dynamic_cast<PascalSParser::ConstIdentifierContext *>(context->constant()))
     {
-        auto addr = visitConstIdentifier(constIdentifierContext);
-        scopes.back().setVariable(id, addr);
+        auto value = visitConstIdentifier(constIdentifierContext);
+        module->getOrInsertGlobal(id, value->getType());
+        auto global = module->getNamedGlobal(id);
+        global->setInitializer(value);
+        global->setConstant(true);
     }
     else if (auto constStringContext = dynamic_cast<PascalSParser::ConstStringContext *>(context->constant()))
     {
         auto v = visitConstString(constStringContext);
         auto value = llvm::ConstantDataArray::getString(*llvm_context, v);
-        auto addr = builder.CreateAlloca(value->getType(), nullptr);
-        builder.CreateStore(value, addr);
-        scopes.back().setVariable(id, addr);
+        module->getOrInsertGlobal(id, value->getType());
+        auto global = module->getNamedGlobal(id);
+        global->setInitializer(value);
+        global->setConstant(true);
     }
     else if (auto ConstunumberCtx = dynamic_cast<PascalSParser::ConstUnsignedNumberContext *>(context->constant()))
     {
         auto value = visitConstUnsignedNumber(ConstunumberCtx);
-        auto addr = builder.CreateAlloca(value->getType(), nullptr);
-        builder.CreateStore(value, addr);
-        scopes.back().setVariable(id, addr);
+        module->getOrInsertGlobal(id, value->getType());
+        auto global = module->getNamedGlobal(id);
+        global->setInitializer(value);
+        global->setConstant(true);
     }
     else if (auto ConstnumberCtx = dynamic_cast<PascalSParser::ConstSignedNumberContext *>(context->constant()))
     {
         auto value = visitConstSignedNumber(ConstnumberCtx);
-        auto addr = builder.CreateAlloca(value->getType(), nullptr);
-        builder.CreateStore(value, addr);
-        scopes.back().setVariable(id, addr);
+        module->getOrInsertGlobal(id, value->getType());
+        auto global = module->getNamedGlobal(id);
+        global->setInitializer(value);
+        global->setConstant(true);
     }
     else if (auto ConstsIdentifierCtx = dynamic_cast<PascalSParser::ConstSignIdentifierContext *>(context->constant()))
     {
-        auto addr = visitConstSignIdentifier(ConstsIdentifierCtx);
-        scopes.back().setVariable(id, addr);
+        auto value = visitConstSignIdentifier(ConstsIdentifierCtx);
+        module->getOrInsertGlobal(id, value->getType());
+        auto global = module->getNamedGlobal(id);
+        global->setInitializer(value);
+        global->setConstant(true);
     }
     else
     {
@@ -230,14 +239,27 @@ void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *
     }
 }
 
-llvm::Value *Visitor::visitConstIdentifier(PascalSParser::ConstIdentifierContext *context)
+llvm::Constant *Visitor::visitConstIdentifier(PascalSParser::ConstIdentifierContext *context)
 {
     auto s = visitIdentifier(context->identifier());
     if (getVariable(s))
     {
-        // connst cannot be altered, so i assume them in the same addr
         auto addr = getVariable(s);
-        return addr;
+        auto value = builder.CreateLoad(addr);
+        if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(value))
+        {
+            return CI;
+        }    
+        else
+        {
+            throw NotImplementedException();
+        }
+    }
+    else if(module->getNamedGlobal(s)){
+        auto global = module->getNamedGlobal(s);
+        llvm::ConstantInt * value = (llvm::ConstantInt *)(global->getInitializer());
+        return value;
+
     }
     else
     {
@@ -250,7 +272,7 @@ std::string Visitor::visitConstString(PascalSParser::ConstStringContext *context
     return visitString(context->string());
 }
 
-llvm::Value *Visitor::visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context)
+llvm::Constant *Visitor::visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context)
 {
     auto sign = context->sign()->getText();
     int flag = 1;
@@ -284,13 +306,12 @@ llvm::Value *Visitor::visitConstSignedNumber(PascalSParser::ConstSignedNumberCon
     }
 }
 
-llvm::Value *Visitor::visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context)
+llvm::Constant *Visitor::visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context)
 {
     if (auto intContext = dynamic_cast<PascalSParser::UnsignedNumberIntegerContext *>(context->unsignedNumber()))
     {
         auto v = visitUnsignedNumberInteger(intContext);
         auto value = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), v);
-        // std::cout<<value->getType()->isIntegerTy()<<std::endl;
         return value;
     }
     else if (auto realContext = dynamic_cast<PascalSParser::UnsignedNumberRealContext *>(context->unsignedNumber()))
@@ -305,7 +326,7 @@ llvm::Value *Visitor::visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumbe
     }
 }
 
-llvm::Value *Visitor::visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context)
+llvm::Constant *Visitor::visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context)
 {
     auto sign = context->sign()->getText();
     int flag = 1;
@@ -328,9 +349,15 @@ llvm::Value *Visitor::visitConstSignIdentifier(PascalSParser::ConstSignIdentifie
         auto value1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
         auto value2 = builder.CreateLoad(addr);
         auto dest = builder.CreateMul(value1, value2);
-        auto addr_dest = builder.CreateAlloca(dest->getType(), nullptr);
-        builder.CreateStore(dest, addr_dest);
-        return addr_dest;
+        return (llvm::Constant *)dest;
+    }
+    else if(module->getNamedGlobal(s)){
+        auto global = module->getNamedGlobal(s);
+        llvm::ConstantInt * value2 = (llvm::ConstantInt *)(global->getInitializer());
+        auto value1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
+        auto dest = builder.CreateMul(value1, value2);
+        return (llvm::Constant *)dest;
+
     }
     else
     {
@@ -534,8 +561,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     llvm::Value *value1, *value2;
     if (auto constIdentifierContext = dynamic_cast<PascalSParser::ConstIdentifierContext *>(constContext))
     {
-        auto addr = visitConstIdentifier(constIdentifierContext);
-        auto value = builder.CreateLoad(addr);
+        auto value = visitConstIdentifier(constIdentifierContext);
         if (!value->getType()->isIntegerTy())
         {
             throw NotImplementedException();
@@ -555,8 +581,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     }
     else if (auto ConstsIdentifierCtx = dynamic_cast<PascalSParser::ConstSignIdentifierContext *>(constContext))
     {
-        auto addr = visitConstSignIdentifier(ConstsIdentifierCtx);
-        auto value = builder.CreateLoad(addr);
+        auto value = visitConstSignIdentifier(ConstsIdentifierCtx);
         if (!value->getType()->isIntegerTy())
         {
             throw NotImplementedException();
@@ -574,8 +599,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     constContext = vec[1];
     if (auto constIdentifierContext = dynamic_cast<PascalSParser::ConstIdentifierContext *>(constContext))
     {
-        auto addr = visitConstIdentifier(constIdentifierContext);
-        auto value = builder.CreateLoad(addr);
+        auto value = visitConstIdentifier(constIdentifierContext);
         if (!value->getType()->isIntegerTy())
         {
             throw NotImplementedException();
@@ -595,8 +619,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     }
     else if (auto ConstsIdentifierCtx = dynamic_cast<PascalSParser::ConstSignIdentifierContext *>(constContext))
     {
-        auto addr = visitConstSignIdentifier(ConstsIdentifierCtx);
-        auto value = builder.CreateLoad(addr);
+        auto value = visitConstSignIdentifier(ConstsIdentifierCtx);
         if (!value->getType()->isIntegerTy())
         {
             throw NotImplementedException();
@@ -825,4 +848,84 @@ llvm::Type *Visitor::visitSimpleType(PascalSParser::SimpleTypeContext *context, 
     }
     else
         throw NotImplementedException();
+}
+
+void Visitor::visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function){
+    if (auto structuredStateRepetetiveContext = dynamic_cast<PascalSParser::StructuredStateRepetetiveContext *>(context->structuredStatement()))
+    {
+        visitStructuredStateRepetetive(structuredStateRepetetiveContext, function);
+    }
+    else
+        throw NotImplementedException();
+}
+void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function){
+    if (auto repetetiveStateForContext = dynamic_cast<PascalSParser::RepetetiveStateForContext *>(context->repetetiveStatement()))
+    {
+        visitRepetetiveStateFor(repetetiveStateForContext, function);
+    }
+    else
+        throw NotImplementedException();
+}
+
+void Visitor::visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function){
+    visitForStatement(context->forStatement(), function);
+}
+
+void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function){
+    
+    auto id = visitIdentifier(context->identifier());
+    auto v = visitForList(context->forList());
+    auto con_1 = llvm::ConstantInt::get(llvm::IntegerType::getInt32Ty(*llvm_context), 1);
+    auto initial = v[0];
+    auto final = v[1];
+    auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
+    builder.CreateStore(initial, addr);
+    scopes.back().setVariable(id, addr);
+
+    llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function);
+    llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function);
+	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function);
+    
+    builder.CreateBr(while_count);
+    builder.SetInsertPoint(while_count);
+    auto tmp_i = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), addr);
+    auto cmp = builder.CreateICmpSLE(tmp_i, final);
+
+
+    builder.CreateCondBr(cmp, while_body, while_end);
+
+
+    builder.SetInsertPoint(while_body);
+    // if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
+    //         visitSimpleState(simpleStatementContext);
+    // else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
+    //         visitStructuredState(structuredStatementContext);
+    // else
+    //     throw NotImplementedException();
+    auto i = builder.CreateLoad(llvm::IntegerType::getInt32Ty(*llvm_context), addr);
+    auto tmp = builder.CreateAdd(i, con_1);
+    builder.CreateStore(tmp, addr);
+
+
+    builder.CreateBr(while_count);
+
+    builder.SetInsertPoint(while_end);
+}
+
+std::vector<llvm::Value*> Visitor::visitForList(PascalSParser::ForListContext *context){
+    std::vector<llvm::Value*> v;
+    auto v1 = visitInitialValue(context->initialValue());
+    auto v2 = visitFinalValue(context->finalValue());
+    v.push_back(v1);
+    v.push_back(v2);
+    return v;
+
+}
+
+llvm::Value* Visitor::visitInitialValue(PascalSParser::InitialValueContext *context){
+    return llvm::ConstantInt::get(llvm::IntegerType::getInt32Ty(*llvm_context), 1);
+}
+
+llvm::Value* Visitor::visitFinalValue(PascalSParser::FinalValueContext *context){
+    return llvm::ConstantInt::get(llvm::IntegerType::getInt32Ty(*llvm_context), 10);
 }
