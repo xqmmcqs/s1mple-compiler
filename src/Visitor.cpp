@@ -81,7 +81,6 @@ llvm::Value *Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Fun
     {
         visitTypeDefinitionPart(typeDefinitionPartContext);
     }
-
     return visitCompoundStatement(context->compoundStatement(), function);
 }
 
@@ -116,6 +115,7 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
         throw NotImplementedException();
 }
 
+
 llvm::Value *Visitor::visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function)
 {
     return visitStatements(context->statements());
@@ -139,16 +139,379 @@ llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context,
 
 void Visitor::visitSimpleState(PascalSParser::SimpleStateContext *context)
 {
-    // if (auto assignmentStatementContext = dynamic_cast<PascalSParser::SimpleStateAssignContext *>(context->simpleStatement()))
-    //     visitSimpleStateAssign(assignmentStatementContext);
-    // else
-    if (auto procedureStatementContext = dynamic_cast<PascalSParser::SimpleStateProcContext *>(context->simpleStatement()))
+    if (auto assignmentStatementContext = dynamic_cast<PascalSParser::SimpleStateAssignContext *>(context->simpleStatement()))
+        visitSimpleStateAssign(assignmentStatementContext);
+    else if (auto procedureStatementContext = dynamic_cast<PascalSParser::SimpleStateProcContext *>(context->simpleStatement()))
         visitSimpleStateProc(procedureStatementContext);
     else if (auto emptyStatementContext = dynamic_cast<PascalSParser::SimpleStateEmptyContext *>(context->simpleStatement()))
         visitSimpleStateEmpty(emptyStatementContext);
     else
         throw NotImplementedException();
 }
+
+
+void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context)
+{
+    visitAssignmentStatement(context->assignmentStatement());
+}
+
+void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context)
+{
+    auto value = visitExpression(context->expression());
+    
+}
+
+llvm::Value* Visitor::visitVariable(PascalSParser::VariableContext *context)
+{
+    llvm::Value* v;
+    return v;
+}
+
+llvm::Value* Visitor::visitExpression(PascalSParser::ExpressionContext *context)
+{
+    if (!context->relationaloperator())
+    {
+        return visitSimpleExpression(context->simpleExpression(0));
+    }
+
+    auto L = visitSimpleExpression(context->simpleExpression(0));
+    auto R = visitSimpleExpression(context->simpleExpression(1));
+    if (auto equalContext = dynamic_cast<PascalSParser::OpEqualContext *>(context->relationaloperator()))
+    {
+        return visitOpEqual(equalContext, L, R);
+    }
+    else if (auto notEqualContext = dynamic_cast<PascalSParser::OpNotEqualContext *>(context->relationaloperator()))
+    {
+        return visitOpNotEqual(notEqualContext, L, R);
+    }
+    else if (auto ltContext = dynamic_cast<PascalSParser::OpLtContext *>(context->relationaloperator()))
+    {
+        return visitOpLt(ltContext, L, R);
+    }
+    else if (auto leContext = dynamic_cast<PascalSParser::OpLeContext *>(context->relationaloperator()))
+    {
+        return visitOpLe(leContext, L, R);
+    }
+    else if (auto geContext = dynamic_cast<PascalSParser::OpGeContext *>(context->relationaloperator()))
+    {
+        return visitOpGe(geContext, L, R);
+    }
+    else if (auto gtContext = dynamic_cast<PascalSParser::OpGtContext *>(context->relationaloperator()))
+    {
+        return visitOpGt(gtContext, L, R);
+    }
+    else
+    {
+        throw NotImplementedException();
+    }
+}
+
+llvm::Value* Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R)
+{
+    return builder.CreateFCmpOEQ(L, R);
+}
+
+llvm::Value* Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R)
+{
+    return builder.CreateFCmpONE(L, R);
+}
+
+llvm::Value* Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R)
+{
+    return builder.CreateFCmpOLT(L, R);
+}
+
+llvm::Value* Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R)
+{
+    return builder.CreateFCmpOLE(L, R);
+}
+
+llvm::Value* Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R)
+{
+    return builder.CreateFCmpOGE(L, R);
+}
+
+llvm::Value* Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R)
+{
+    return builder.CreateFCmpOGT(L, R);
+}
+
+llvm::Value* Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionContext *context)
+{
+    if (! context->additiveoperator())
+    {
+        return visitTerm(context->term(0));
+    }
+
+    auto L = visitTerm(context->term(0));
+    auto R = visitTerm(context->term(1));
+    if (auto plusContext = dynamic_cast<PascalSParser::OpPlusContext *>(context->additiveoperator()))
+    {
+        return visitOpPlus(plusContext, L, R);
+    }
+    else if (auto minusContext = dynamic_cast<PascalSParser::OpMinusContext *>(context->additiveoperator()))
+    {
+        return visitOpMinus(minusContext, L, R);
+    }
+    else if (auto orContext = dynamic_cast<PascalSParser::OpOrContext *>(context->additiveoperator()))
+    {
+        return visitOpOr(orContext, L, R);
+    }
+    else
+    {
+        throw NotImplementedException();
+    }
+}
+
+llvm::Value* Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R)
+{
+    return builder.CreateAdd(L, R);
+}
+
+llvm::Value* Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R)
+{
+    return builder.CreateSub(L, R);
+}
+
+llvm::Value* Visitor::visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R)
+{
+    return builder.CreateOr(L, R);
+}
+
+llvm::Value* Visitor::visitTerm(PascalSParser::TermContext *context)
+{
+    if (! context->multiplicativeoperator())
+    {
+        return visitSignedFactor(context->signedFactor(0));
+    }
+    
+    auto L = visitSignedFactor(context->signedFactor(0));
+    auto R = visitSignedFactor(context->signedFactor(1));
+    if (auto starContext = dynamic_cast<PascalSParser::OpStarContext *>(context->multiplicativeoperator()))
+    {
+        return visitOpStar(starContext, L, R);
+    }
+    else if (auto slashContext = dynamic_cast<PascalSParser::OpSlashContext *>(context->multiplicativeoperator()))
+    {
+        return visitOpSlash(slashContext, L, R);
+    }
+    else if (auto divContext = dynamic_cast<PascalSParser::OpDivContext *>(context->multiplicativeoperator()))
+    {
+        return visitOpDiv(divContext, L, R);
+    }
+    else if (auto modContext = dynamic_cast<PascalSParser::OpModContext *>(context->multiplicativeoperator()))
+    {
+        return visitOpMod(modContext, L, R);
+    }
+    else if (auto andContext = dynamic_cast<PascalSParser::OpAndContext *>(context->multiplicativeoperator()))
+    {
+        return visitOpAnd(andContext, L, R);
+    }
+    else
+    {
+        throw NotImplementedException();
+    }
+}
+
+llvm::Value* Visitor::visitOpStar(PascalSParser::OpStarContext *context, llvm::Value* L, llvm::Value* R)
+{
+    return builder.CreateMul(L, R);
+}
+
+llvm::Value* Visitor::visitOpSlash(PascalSParser::OpSlashContext *context, llvm::Value* L, llvm::Value* R)
+{
+    return builder.CreateFDiv(L, R);
+}
+
+llvm::Value* Visitor::visitOpDiv(PascalSParser::OpDivContext *context, llvm::Value* L, llvm::Value* R)
+{
+    return builder.CreateSDiv(L, R);
+}
+
+llvm::Value* Visitor::visitOpMod(PascalSParser::OpModContext *context, llvm::Value* L, llvm::Value* R)
+{
+    return builder.CreateSRem(L, R);
+}
+
+llvm::Value* Visitor::visitOpAnd(PascalSParser::OpAndContext *context, llvm::Value* L, llvm::Value* R)
+{
+    return builder.CreateAnd(L, R);
+}
+
+llvm::Value* Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *context)
+{
+    int flag = context->MINUS() ? -1 : 1;
+    auto flag_v = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
+    if (auto factorVarCtx = dynamic_cast<PascalSParser::FactorVarContext *>(context->factor()))
+    {
+        auto value = visitFactorVar(factorVarCtx);
+        return builder.CreateMul(flag_v, value);
+    }
+    else if (auto factorExprCtx = dynamic_cast<PascalSParser::FactorExprContext *>(context->factor()))
+    {
+        auto value = visitFactorExpr(factorExprCtx);
+        return builder.CreateMul(flag_v, value);
+    }
+    else if (auto factorFuncCtx = dynamic_cast<PascalSParser::FactorFuncContext *>(context->factor()))
+    {
+        auto value = visitFactorFunc(factorFuncCtx);
+        return builder.CreateMul(flag_v, value);
+    }
+    else if (auto factorUnsConstCtx = dynamic_cast<PascalSParser::FactorUnsConstContext *>(context->factor()))
+    {
+        auto value = visitFactorUnsConst(factorUnsConstCtx);
+        return builder.CreateMul(flag_v, value);
+    }
+    else if (auto factorNotFactCtx = dynamic_cast<PascalSParser::FactorNotFactContext *>(context->factor()))
+    {
+        auto value = visitFactorNotFact(factorNotFactCtx);
+        return builder.CreateMul(flag_v, value);
+    }
+    else if (auto factorBoolCtx = dynamic_cast<PascalSParser::FactorBoolContext *>(context->factor()))
+    {
+        auto value = visitFactorBool(factorBoolCtx);
+        return builder.CreateMul(flag_v, value);
+    }
+    else
+    {
+        throw NotImplementedException();
+    }
+    
+}
+
+llvm::Value* Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
+{
+    return visitVariable(context->variable());
+}
+
+llvm::Value* Visitor::visitFactorExpr(PascalSParser::FactorExprContext *context)
+{
+    return visitExpression(context->expression());
+}
+
+llvm::Value* Visitor::visitFactorFunc(PascalSParser::FactorFuncContext *context)
+{
+    return visitFunctionDesignator(context->functionDesignator());
+}
+
+llvm::Value* Visitor::visitFactorUnsConst(PascalSParser::FactorUnsConstContext *context)
+{
+    if (auto unsignedConstStrCtx = dynamic_cast<PascalSParser::UnsignedConstStrContext *>(context->unsignedConstant()))
+    {
+        auto v = visitUnsignedConstStr(unsignedConstStrCtx);
+        return llvm::ConstantDataArray::getString(*llvm_context, v);
+    }
+    else if (auto unsignedConstUnsignedNumCtx = dynamic_cast<PascalSParser::UnsignedConstUnsignedNumContext *>(context->unsignedConstant()))
+    {
+        return visitUnsignedConstUnsignedNum(unsignedConstUnsignedNumCtx);
+    }
+    else
+    {
+        throw NotImplementedException();
+    }
+}
+
+llvm::Value* Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *context)
+{
+    llvm::Value* value;
+    if (auto factorVarCtx = dynamic_cast<PascalSParser::FactorVarContext *>(context->factor()))
+    {
+        value = visitFactorVar(factorVarCtx);
+    }
+    else if (auto factorExprCtx = dynamic_cast<PascalSParser::FactorExprContext *>(context->factor()))
+    {
+        value = visitFactorExpr(factorExprCtx);
+    }
+    else if (auto factorFuncCtx = dynamic_cast<PascalSParser::FactorFuncContext *>(context->factor()))
+    {
+        value = visitFactorFunc(factorFuncCtx);
+    }
+    else if (auto factorUnsConstCtx = dynamic_cast<PascalSParser::FactorUnsConstContext *>(context->factor()))
+    {
+        value = visitFactorUnsConst(factorUnsConstCtx);
+    }
+    else if (auto factorNotFactCtx = dynamic_cast<PascalSParser::FactorNotFactContext *>(context->factor()))
+    {
+        value = visitFactorNotFact(factorNotFactCtx);
+    }
+    else if (auto factorBoolCtx = dynamic_cast<PascalSParser::FactorBoolContext *>(context->factor()))
+    {
+        value = visitFactorBool(factorBoolCtx);
+    }
+    else
+    {
+        throw NotImplementedException();
+    }
+
+    if (context->NOT())
+    {
+        return builder.CreateNot(value);
+    }
+    else
+    {
+        return value;
+    }
+    
+}
+
+llvm::Value* Visitor::visitFactorBool(PascalSParser::FactorBoolContext *context)
+{
+    auto bool_str = context->bool_()->getText();
+    if (bool_str == "TRUE")
+    {
+        return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*llvm_context),true);
+    }
+    else if (bool_str == "FALSE")
+    {
+        return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*llvm_context),false);
+    }
+    else
+    {
+        throw NotImplementedException();
+    }
+}
+
+llvm::Value* Visitor::visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConstUnsignedNumContext *context)
+{
+    if (auto intContext = dynamic_cast<PascalSParser::UnsignedNumberIntegerContext *>(context->unsignedNumber()))
+    {
+        auto v = visitUnsignedNumberInteger(intContext);
+        auto value = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), v);
+        return value;
+    }
+    else if (auto realContext = dynamic_cast<PascalSParser::UnsignedNumberRealContext *>(context->unsignedNumber()))
+    {
+        auto v = visitUnsignedNumberReal(realContext);
+        auto value = llvm::ConstantFP::get(llvm::Type::getFloatTy(*llvm_context), v);
+        return value;
+    }
+    else{
+        throw NotImplementedException();
+    }
+}
+
+std::string Visitor::visitUnsignedConstStr(PascalSParser::UnsignedConstStrContext *context)
+{
+    return visitString(context->string());
+}
+
+llvm::Value* Visitor::visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context)
+{
+    
+}
+
+void Visitor::visitActualParameter(PascalSParser::ActualParameterContext *context)
+{
+
+}
+
+void Visitor::visitParameterwidth(PascalSParser::ParameterwidthContext *context)
+{
+
+}
+
+void Visitor::visitEmpty_(PascalSParser::Empty_Context *context)
+{}
 
 void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *context)
 {
@@ -186,6 +549,8 @@ void Visitor::visitSimpleStateEmpty(PascalSParser::SimpleStateEmptyContext *cont
 void Visitor::visitEmptyStatement_(PascalSParser::EmptyStatement_Context *context)
 {
 }
+
+
 
 void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *context)
 {
@@ -399,6 +764,7 @@ void Visitor::visitConstantDefinitionPart(PascalSParser::ConstantDefinitionPartC
         visitConstantDefinition(constDefinitionContext);
     }
 }
+
 
 void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context)
 {
