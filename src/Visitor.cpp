@@ -98,10 +98,11 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
 
     if (auto typeSimpleTypeContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
-        // TODO: fix type defi
         auto type = visitTypeSimpleType(typeSimpleTypeContext);
-        auto addr = builder.CreateAlloca(type, nullptr);
-        builder.CreateStore(llvm::UndefValue::get(type), addr);
+        llvm::StructType *testStruct = llvm::StructType::create(*llvm_context, identifier);
+        testStruct->setBody(type);
+        auto addr = builder.CreateAlloca(testStruct, nullptr);
+        builder.CreateStore(llvm::UndefValue::get(testStruct), addr);
         scopes.back().setVariable(identifier, addr);
     }
     else if (auto typeStructuredTypeContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
