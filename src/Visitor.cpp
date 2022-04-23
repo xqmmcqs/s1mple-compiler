@@ -98,14 +98,12 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
 
     if (auto typeSimpleTypeContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
-        // TODO: fix type defi
         auto type = visitTypeSimpleType(typeSimpleTypeContext);
         llvm::StructType *testStruct = llvm::StructType::create(*llvm_context, identifier);
         testStruct->setBody(type);
         auto addr = builder.CreateAlloca(testStruct, nullptr);
         builder.CreateStore(llvm::UndefValue::get(testStruct), addr);
         scopes.back().setVariable(identifier, addr);
-        
     }
     else if (auto typeStructuredTypeContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
     {
@@ -118,7 +116,7 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
 
 llvm::Value *Visitor::visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function)
 {
-    return visitStatements(context->statements());
+    return visitStatements(context->statements(), function);
 }
 
 llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function)
@@ -128,7 +126,7 @@ llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context,
         if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(statementContext))
             visitSimpleState(simpleStatementContext);
         else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(statementContext))
-            visitStructuredState(structuredStatementContext);
+            visitStructuredState(structuredStatementContext, function);
         else
             throw NotImplementedException();
     }
@@ -1238,36 +1236,35 @@ void Visitor::visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *
 }
 
 void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function){
-    
     auto id = visitIdentifier(context->identifier());
     auto v = visitForList(context->forList());
-    auto con_1 = llvm::ConstantInt::get(llvm::IntegerType::getInt32Ty(*llvm_context), 1);
+    auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
     auto initial = v[0];
     auto final = v[1];
     auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
     builder.CreateStore(initial, addr);
-    scopes.back().setVariable(id, addr);
+    
 
-    llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function);
-    llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function);
-	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function);
+    auto while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
+    llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
+	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
     
     builder.CreateBr(while_count);
     builder.SetInsertPoint(while_count);
     auto tmp_i = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), addr);
     auto cmp = builder.CreateICmpSLE(tmp_i, final);
 
-
     builder.CreateCondBr(cmp, while_body, while_end);
 
-
     builder.SetInsertPoint(while_body);
+
     // if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
     //         visitSimpleState(simpleStatementContext);
     // else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
-    //         visitStructuredState(structuredStatementContext);
+    //         visitStructuredState(structuredStatementContext, function);
     // else
     //     throw NotImplementedException();
+
     auto i = builder.CreateLoad(llvm::IntegerType::getInt32Ty(*llvm_context), addr);
     auto tmp = builder.CreateAdd(i, con_1);
     builder.CreateStore(tmp, addr);
@@ -1278,8 +1275,8 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     builder.SetInsertPoint(while_end);
 }
 
-std::vector<llvm::Value*> Visitor::visitForList(PascalSParser::ForListContext *context){
-    std::vector<llvm::Value*> v;
+std::vector<llvm::Value *> Visitor::visitForList(PascalSParser::ForListContext *context){
+    std::vector<llvm::Value *> v;
     auto v1 = visitInitialValue(context->initialValue());
     auto v2 = visitFinalValue(context->finalValue());
     v.push_back(v1);
@@ -1289,9 +1286,9 @@ std::vector<llvm::Value*> Visitor::visitForList(PascalSParser::ForListContext *c
 }
 
 llvm::Value* Visitor::visitInitialValue(PascalSParser::InitialValueContext *context){
-    return llvm::ConstantInt::get(llvm::IntegerType::getInt32Ty(*llvm_context), 1);
+    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
 }
 
 llvm::Value* Visitor::visitFinalValue(PascalSParser::FinalValueContext *context){
-    return llvm::ConstantInt::get(llvm::IntegerType::getInt32Ty(*llvm_context), 10);
+    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 10);
 }

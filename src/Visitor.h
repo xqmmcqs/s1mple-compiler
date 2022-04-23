@@ -125,7 +125,7 @@ namespace PascalS
 
         void visitSimpleState(PascalSParser::SimpleStateContext *context);
 
-        void visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function=NULL);
+        void visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function);
 
         void visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context);
 
@@ -207,11 +207,11 @@ namespace PascalS
 
         void visitStructuredStateConditional(PascalSParser::StructuredStateConditionalContext *context);
 
-        void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function=NULL);
+        void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function);
 
-        llvm::Value *visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function=NULL);
+        llvm::Value *visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function);
 
-        llvm::Value *visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function=NULL);
+        llvm::Value *visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function);
 
         void visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context);
 
@@ -227,13 +227,13 @@ namespace PascalS
 
         void visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context);
 
-        void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function=NULL);
+        void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function);
 
         void visitWhileStatement(PascalSParser::WhileStatementContext *context);
 
         void visitRepeatStatement(PascalSParser::RepeatStatementContext *context);
 
-        void visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function=NULL);
+        void visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function);
 
         std::vector<llvm::Value*>  visitForList(PascalSParser::ForListContext *context);
 
