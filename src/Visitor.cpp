@@ -131,7 +131,7 @@ llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context,
             throw NotImplementedException();
     }
 
-    //此处只是示例，为了编译可以通过
+    //此处只是示例，为了编译可以��过
     return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
 }
 
@@ -230,7 +230,7 @@ llvm::Value* Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value
 }
 
 llvm::Value* Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R)
-{
+{   
     return builder.CreateFCmpOGT(L, R);
 }
 
@@ -240,7 +240,7 @@ llvm::Value* Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionConte
     {
         return visitTerm(context->term(0));
     }
-
+    
     auto L = visitTerm(context->term(0));
     auto R = visitTerm(context->term(1));
     if (auto plusContext = dynamic_cast<PascalSParser::OpPlusContext *>(context->additiveoperator()))
@@ -519,14 +519,14 @@ void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *contex
 void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *context)
 {
     auto identifier = visitIdentifier(context->identifier());
-    if (getVariable(identifier))
+    if (auto function = getVariable(identifier))
     {
-        // 调用
+        auto args=visitParameterList(context->parameterList());
     }
     else if (StandardProcedure::hasProcedure(identifier))
     {
         // 获取原型
-        // 构��参敄1�71ￄ1�77
+        // 构��参敄1�71ￄ1�771ￄ1�71ￄ1�777
         // 调用
     }
     else
@@ -536,6 +536,10 @@ void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *
 std::vector<llvm::Value *> *Visitor::visitParameterList(PascalSParser::ParameterListContext *context)
 {
     auto params = new std::vector<llvm::Value *>;
+    for (const auto &actualParameterContext : context->actualParameter())
+    {
+
+    }
     return params;
 }
 
@@ -1214,14 +1218,19 @@ llvm::Type *Visitor::visitSimpleType(PascalSParser::SimpleTypeContext *context, 
         throw NotImplementedException();
 }
 
-void Visitor::visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function){
-    if (auto structuredStateRepetetiveContext = dynamic_cast<PascalSParser::StructuredStateRepetetiveContext *>(context->structuredStatement()))
-    {
+void Visitor::visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function)
+{
+    if(auto compoundStatementContext = dynamic_cast<PascalSParser::StructuredStateCompoundContext *>(context->structuredStatement()))
+        visitStructuredStateCompound(compoundStatementContext,function);
+    else if(auto conditionalStatementContext = dynamic_cast<PascalSParser::StructuredStateConditionalContext *>(context->structuredStatement()))
+        visitStructuredStateConditional(conditionalStatementContext, function);
+    else if (auto structuredStateRepetetiveContext = dynamic_cast<PascalSParser::StructuredStateRepetetiveContext *>(context->structuredStatement()))
         visitStructuredStateRepetetive(structuredStateRepetetiveContext, function);
-    }
-    else
+    else{
         throw NotImplementedException();
+    }
 }
+
 void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function){
     if (auto repetetiveStateForContext = dynamic_cast<PascalSParser::RepetetiveStateForContext *>(context->repetetiveStatement()))
     {
@@ -1291,4 +1300,65 @@ llvm::Value* Visitor::visitInitialValue(PascalSParser::InitialValueContext *cont
 
 llvm::Value* Visitor::visitFinalValue(PascalSParser::FinalValueContext *context){
     return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 10);
+}
+
+
+//------------------------------
+
+void Visitor::visitStructuredStateCompound(PascalSParser::StructuredStateCompoundContext *context, llvm::Function *function)
+{
+    visitCompoundStatement(context->compoundStatement(),function);
+}
+void Visitor::visitStructuredStateConditional(PascalSParser::StructuredStateConditionalContext *context, llvm::Function *function)
+{
+    if(auto ifStatementContext = dynamic_cast<PascalSParser::ConditionalStateIfContext *>(context->conditionalStatement()))
+        visitConditionalStateIf(ifStatementContext,function);
+    else{
+        throw NotImplementedException();
+    }
+}
+void Visitor::visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context, llvm::Function *function)
+{
+    visitIfStatement(context->ifStatement(),function);
+}
+void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm::Function *function)
+{
+    // llvm::Value * exp_value = visitExpression(context->expression());
+
+    //为了测试，创建一个i32常量
+    llvm::Value *aValue=llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),-10);
+    llvm::Value *bValue=llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),20);
+    llvm::Value * exp_value = builder.CreateICmpSGT(aValue,bValue);
+    
+    //创建then else基本块
+    llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*llvm_context, "then", function);
+    llvm::BasicBlock *elseBB = llvm::BasicBlock::Create(*llvm_context, "else", function);
+    llvm::BasicBlock *end = llvm::BasicBlock::Create(*llvm_context, "if_end",function,0);
+    
+    //根据条件判断跳转到哪个块
+    builder.CreateCondBr(exp_value, thenBB, elseBB);
+    //如果执行then
+    builder.SetInsertPoint(thenBB);
+    visitStatement(context->statement(0));
+    builder.CreateBr(end);
+
+    //如果有else
+    if(context->statement().size() == 2)
+    {
+        builder.SetInsertPoint(elseBB);
+        visitStatement(context->statement(1));
+        builder.CreateBr(end);
+    }
+    builder.SetInsertPoint(end);
+
+}
+
+void Visitor::visitStatement(PascalSParser::StatementContext *context)
+{
+    if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context))
+        visitSimpleState(simpleStatementContext);
+    else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context))
+        visitStructuredState(structuredStatementContext);
+    else
+        throw NotImplementedException();
 }
