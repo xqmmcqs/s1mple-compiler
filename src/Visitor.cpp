@@ -92,6 +92,7 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
 
     if (auto typeSimpleTypeContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
+        
         auto type = visitTypeSimpleType(typeSimpleTypeContext);
         auto addr = builder.CreateAlloca(type, nullptr);
         builder.CreateStore(llvm::UndefValue::get(type), addr);
@@ -258,7 +259,7 @@ llvm::Value* Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::V
 llvm::Value* Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateSub(L, R);
-}
+} 
 
 llvm::Value* Visitor::visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R)
 {
