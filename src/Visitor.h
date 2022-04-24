@@ -20,6 +20,7 @@ namespace PascalS
         llvm::IRBuilder<> builder;
         std::unique_ptr<llvm::Module> module;
         std::vector<Scope> scopes;
+        std::vector<std::string> FormalParaIdList;
 
         Visitor(std::string filename) : llvm_context(std::make_unique<llvm::LLVMContext>()),
                                         builder(*llvm_context),
@@ -35,19 +36,19 @@ namespace PascalS
 
         std::string visitIdentifier(PascalSParser::IdentifierContext *context);
 
-        void visitBlock(PascalSParser::BlockContext *context, llvm::Function *function);
+        llvm::Value *visitBlock(PascalSParser::BlockContext *context, llvm::Function *function);
 
         void visitConstantDefinitionPart(PascalSParser::ConstantDefinitionPartContext *context);
 
         void visitConstantDefinition(PascalSParser::ConstantDefinitionContext *context);
 
-        llvm::Value* visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context);
+        llvm::Constant *visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context);
 
-        llvm::Value* visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context);
+        llvm::Constant *visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context);
 
-        llvm::Value* visitConstIdentifier(PascalSParser::ConstIdentifierContext *context);
+        llvm::Constant *visitConstIdentifier(PascalSParser::ConstIdentifierContext *context);
 
-        llvm::Value* visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context);
+        llvm::Constant *visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context);
 
         std::string visitConstString(PascalSParser::ConstStringContext *context);
 
@@ -73,31 +74,32 @@ namespace PascalS
 
         void visitTypeDefinition(PascalSParser::TypeDefinitionContext *context);
 
-        llvm::Type* visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context);
+        llvm::Type *visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context);
 
-        llvm::Type* visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context, std::vector<std::string> idList);
+        llvm::Type *visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context, std::vector<std::string> idList);
 
-        llvm::Type* visitSimpleType(PascalSParser::SimpleTypeContext *context);
+        llvm::Type *visitSimpleType(PascalSParser::SimpleTypeContext *context, bool isVar=false);
 
-        llvm::Type* visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context, std::vector<std::string> idList);
 
-        llvm::Type* visitStructuredTypeRecord(PascalSParser::StructuredTypeRecordContext *context, std::vector<std::string> idList);
+        llvm::Type *visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context, std::vector<std::string> idList);
 
-        llvm::Type* visitArrayType1(PascalSParser::ArrayType1Context *context, std::vector<std::string> idList);
+        llvm::Type *visitStructuredTypeRecord(PascalSParser::StructuredTypeRecordContext *context, std::vector<std::string> idList);
 
-        llvm::Type* visitArrayType2(PascalSParser::ArrayType2Context *context, std::vector<std::string> idList);
+        llvm::Type *visitArrayType1(PascalSParser::ArrayType1Context *context, std::vector<std::string> idList);
+
+        llvm::Type *visitArrayType2(PascalSParser::ArrayType2Context *context, std::vector<std::string> idList);
 
         std::vector<int> visitPeriods(PascalSParser::PeriodsContext *context);
 
         std::vector<int> visitPeriod(PascalSParser::PeriodContext *context);
 
-        llvm::Type* visitRecordType(PascalSParser::RecordTypeContext *context, std::vector<std::string> idList);
+        llvm::Type *visitRecordType(PascalSParser::RecordTypeContext *context, std::vector<std::string> idList);
 
-        llvm::Type* visitRecordField(PascalSParser::RecordFieldContext *context, std::vector<std::string> idList);
+        llvm::Type *visitRecordField(PascalSParser::RecordFieldContext *context, std::vector<std::string> idList);
 
         void visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context);
 
-        llvm::Type* visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context);
+        llvm::Type *visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context);
 
         void visitProcedureAndFunctionDeclarationPart(PascalSParser::ProcedureAndFunctionDeclarationPartContext *context);
 
@@ -107,13 +109,13 @@ namespace PascalS
 
         void visitProcedureDeclaration(PascalSParser::ProcedureDeclarationContext *context);
 
-        void visitFormalParameterList(PascalSParser::FormalParameterListContext *context);
+        void visitFormalParameterList(PascalSParser::FormalParameterListContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes);
 
-        void visitFormalParaSecGroup(PascalSParser::FormalParaSecGroupContext *context);
+        void visitFormalParaSecGroup(PascalSParser::FormalParaSecGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes);
 
-        void visitFormalParaSecVarGroup(PascalSParser::FormalParaSecVarGroupContext *context);
+        void visitFormalParaSecVarGroup(PascalSParser::FormalParaSecVarGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes);
 
-        void visitParameterGroup(PascalSParser::ParameterGroupContext *context);
+        void visitParameterGroup(PascalSParser::ParameterGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes, bool isVar);
 
         std::vector<std::string> visitIdentifierList(PascalSParser::IdentifierListContext *context);
 
@@ -123,7 +125,7 @@ namespace PascalS
 
         void visitSimpleState(PascalSParser::SimpleStateContext *context);
 
-        void visitStructuredState(PascalSParser::StructuredStateContext *context);
+        void visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function);
 
         void visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context);
 
@@ -205,11 +207,11 @@ namespace PascalS
 
         void visitStructuredStateConditional(PascalSParser::StructuredStateConditionalContext *context);
 
-        void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context);
+        void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function);
 
-        void visitCompoundStatement(PascalSParser::CompoundStatementContext *context);
+        llvm::Value *visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function);
 
-        void visitStatements(PascalSParser::StatementsContext *context);
+        llvm::Value *visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function);
 
         void visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context);
 
@@ -225,19 +227,19 @@ namespace PascalS
 
         void visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context);
 
-        void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context);
+        void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function);
 
         void visitWhileStatement(PascalSParser::WhileStatementContext *context);
 
         void visitRepeatStatement(PascalSParser::RepeatStatementContext *context);
 
-        void visitForStatement(PascalSParser::ForStatementContext *context);
+        void visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function);
 
-        void visitForList(PascalSParser::ForListContext *context);
+        std::vector<llvm::Value*>  visitForList(PascalSParser::ForListContext *context);
 
-        void visitInitialValue(PascalSParser::InitialValueContext *context);
+        llvm::Value* visitInitialValue(PascalSParser::InitialValueContext *context);
 
-        void visitFinalValue(PascalSParser::FinalValueContext *context);
+        llvm::Value* visitFinalValue(PascalSParser::FinalValueContext *context);
 
         void visitRecordVariableList(PascalSParser::RecordVariableListContext *context);
     };
