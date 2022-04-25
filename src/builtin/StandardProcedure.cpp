@@ -8,7 +8,7 @@
 
 using namespace PascalS;
 
-std::unordered_map<std::string, llvm::Function *(*)(std::unique_ptr<llvm::Module>)> StandardProcedure::prototypeMap;
+std::unordered_map<std::string, llvm::Function *(*)(std::unique_ptr<llvm::Module> &)> StandardProcedure::prototypeMap;
 
 std::unordered_map<std::string, void (*)(llvm::IRBuilder<> *, std::vector<llvm::Value *> &)> StandardProcedure::argsConstructorMap;
 
@@ -24,7 +24,7 @@ bool StandardProcedure::hasProcedure(std::string name)
 }
 
 
-llvm::Function *StandardProcedure::writelnPrototype(std::unique_ptr<llvm::Module> module)
+llvm::Function *StandardProcedure::writelnPrototype(std::unique_ptr<llvm::Module> &module)
 {
     auto printf_type = llvm::FunctionType::get(llvm::Type::getVoidTy(module->getContext()), {llvm::Type::getInt8PtrTy(module->getContext())}, true);
     auto func = module->getOrInsertFunction("printf", printf_type, llvm::AttributeList().addAttribute(module->getContext(), 1U, llvm::Attribute::NoAlias));
