@@ -156,12 +156,15 @@ void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *co
 
 void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context)
 {
-    // auto value = visitExpression(context->expression());
-    // if (auto varAddr = visitVariable(context->variable()))
-    // {
-    //     builder.CreateMemSet
-    // }
-    
+    auto value = visitExpression(context->expression());
+    if (auto varAddr = visitVariable(context->variable()))
+    {
+        builder.CreateStore(value,varAddr);
+    }
+    else
+    {
+        throw VariableNotFoundException(context->variable()->identifier(0)->IDENT()->getText());
+    }
     
 }
 
@@ -390,7 +393,7 @@ llvm::Value* Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
 
 llvm::Value* Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
-    return visitVariable(context->variable());
+    return builder.CreateLoad(visitVariable(context->variable()));
 }
 
 llvm::Value* Visitor::visitFactorExpr(PascalSParser::FactorExprContext *context)
