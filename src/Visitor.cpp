@@ -1300,9 +1300,11 @@ std::vector<llvm::Value *> Visitor::visitForList(PascalSParser::ForListContext *
 }
 
 llvm::Value* Visitor::visitInitialValue(PascalSParser::InitialValueContext *context){
-    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
+    auto value = visitExpression(context->expression());
+    return value;
 }
 
 llvm::Value* Visitor::visitFinalValue(PascalSParser::FinalValueContext *context){
-    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 10);
+    auto value = visitExpression(context->expression());
+    return value;
 }
