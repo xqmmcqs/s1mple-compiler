@@ -502,11 +502,10 @@ std::string Visitor::visitUnsignedConstStr(PascalSParser::UnsignedConstStrContex
     return visitString(context->string());
 }
 
-// TODO: 强制转换安全问题？
 llvm::Value *Visitor::visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context)
 {
     auto funcName = context->identifier()->IDENT()->getText();
-    if (auto function = static_cast<llvm::Function *>(getVariable(funcName)))
+    if (auto function = llvm::dyn_cast_or_null<llvm::Function>(getVariable(funcName)))
     {
         auto paraList = visitParameterList(context->parameterList());
         llvm::ArrayRef<llvm::Value *> argsRef(paraList);
@@ -523,7 +522,7 @@ llvm::Value *Visitor::visitFunctionDesignator(PascalSParser::FunctionDesignatorC
 std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterListContext *context)
 {
     std::vector<llvm::Value *> params;
-    if (!context)
+    if (context)
     {
         for (auto actualPara : context->actualParameter())
         {
@@ -549,12 +548,11 @@ void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *contex
     visitProcedureStatement(context->procedureStatement());
 }
 
-// TODO: 强制转换安全问题？
 // FIXME: 无法调用writeln
 void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *context)
 {
     auto identifier = visitIdentifier(context->identifier());
-    if (auto procedure = static_cast<llvm::Function *>(getVariable(identifier)))
+    if (auto procedure = llvm::dyn_cast_or_null<llvm::Function>(getVariable(identifier)))
     {
         auto paraList = visitParameterList(context->parameterList());
         llvm::ArrayRef<llvm::Value *> argsRef(paraList);

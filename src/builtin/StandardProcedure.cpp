@@ -15,8 +15,8 @@ std::unordered_map<std::string, void (*)(llvm::IRBuilder<> *, std::vector<llvm::
 void StandardProcedure::init()
 {
     prototypeMap["writeln"] = writelnPrototype;
-    prototypeMap["readln"] = writelnPrototype;
-    argsConstructorMap["writeln"] = readlnArgsConstructor;
+    prototypeMap["readln"] = readlnPrototype;
+    argsConstructorMap["writeln"] = writelnArgsConstructor;
     argsConstructorMap["readln"] = readlnArgsConstructor;
 }
 
@@ -64,7 +64,7 @@ llvm::Function *StandardProcedure::writelnPrototype(llvm::Module * module)
 void StandardProcedure::writelnArgsConstructor(llvm::IRBuilder<> *builder, std::vector<llvm::Value *> &args)
 {
     std::vector<std::string> formats;
-
+    
     for (const auto &arg : args)
     {
         auto type = arg->getType();
@@ -73,6 +73,7 @@ void StandardProcedure::writelnArgsConstructor(llvm::IRBuilder<> *builder, std::
         else
             throw NotImplementedException();
     }
+    formats.push_back("\n");
 
     std::ostringstream format;
     std::copy(formats.begin(), formats.end(), std::ostream_iterator<std::string>(format));
