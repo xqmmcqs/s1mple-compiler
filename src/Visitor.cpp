@@ -98,7 +98,6 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
 
     if (auto typeSimpleTypeContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
-        
         auto type = visitTypeSimpleType(typeSimpleTypeContext);
         llvm::StructType *testStruct = llvm::StructType::create(*llvm_context, identifier);
         testStruct->setBody(type);
@@ -125,7 +124,7 @@ llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context,
     {
         if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(statementContext))
             visitSimpleState(simpleStatementContext);
-        else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(statementContext))
+        else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(statementContext))
             visitStructuredState(structuredStatementContext, function);
         else
             throw NotImplementedException();
@@ -134,7 +133,6 @@ llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context,
     //此处只是示例，为了编译可以��过
     return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
 }
-
 
 void Visitor::visitSimpleState(PascalSParser::SimpleStateContext *context)
 {
@@ -158,7 +156,7 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
     auto value = visitExpression(context->expression());
     if (auto varAddr = visitVariable(context->variable()))
     {
-        builder.CreateStore(value,varAddr);
+        builder.CreateStore(value, varAddr);
     }
     else
     {
@@ -166,18 +164,18 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
     }
 }
 
-//return the address of variable
-llvm::Value* Visitor::visitVariable(PascalSParser::VariableContext *context)
+// return the address of variable
+llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
-    llvm::Value* addr = nullptr;
+    llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
-    //TODO: 数组元素访问、指针访问
+    // TODO: 数组元素访问、指针访问
     addr = getVariable(varName);
 
     return addr;
 }
 
-llvm::Value* Visitor::visitExpression(PascalSParser::ExpressionContext *context)
+llvm::Value *Visitor::visitExpression(PascalSParser::ExpressionContext *context)
 {
     if (!context->relationaloperator())
     {
@@ -216,43 +214,43 @@ llvm::Value* Visitor::visitExpression(PascalSParser::ExpressionContext *context)
     }
 }
 
-llvm::Value* Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R)
+llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateFCmpOEQ(L, R);
 }
 
-llvm::Value* Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R)
+llvm::Value *Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateFCmpONE(L, R);
 }
 
-llvm::Value* Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R)
+llvm::Value *Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateFCmpOLT(L, R);
 }
 
-llvm::Value* Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R)
+llvm::Value *Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateFCmpOLE(L, R);
 }
 
-llvm::Value* Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R)
+llvm::Value *Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateFCmpOGE(L, R);
 }
 
-llvm::Value* Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R)
-{   
+llvm::Value *Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R)
+{
     return builder.CreateFCmpOGT(L, R);
 }
 
-llvm::Value* Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionContext *context)
+llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionContext *context)
 {
-    if (! context->additiveoperator())
+    if (!context->additiveoperator())
     {
         return visitTerm(context->term(0));
     }
-    
+
     auto L = visitTerm(context->term(0));
     auto R = visitTerm(context->term(1));
     if (auto plusContext = dynamic_cast<PascalSParser::OpPlusContext *>(context->additiveoperator()))
@@ -273,28 +271,28 @@ llvm::Value* Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionConte
     }
 }
 
-llvm::Value* Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R)
+llvm::Value *Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateAdd(L, R);
 }
 
-llvm::Value* Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R)
+llvm::Value *Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateSub(L, R);
-} 
+}
 
-llvm::Value* Visitor::visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R)
+llvm::Value *Visitor::visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateOr(L, R);
 }
 
-llvm::Value* Visitor::visitTerm(PascalSParser::TermContext *context)
+llvm::Value *Visitor::visitTerm(PascalSParser::TermContext *context)
 {
-    if (! context->multiplicativeoperator())
+    if (!context->multiplicativeoperator())
     {
         return visitSignedFactor(context->signedFactor(0));
     }
-    
+
     auto L = visitSignedFactor(context->signedFactor(0));
     auto R = visitSignedFactor(context->signedFactor(1));
     if (auto starContext = dynamic_cast<PascalSParser::OpStarContext *>(context->multiplicativeoperator()))
@@ -323,32 +321,32 @@ llvm::Value* Visitor::visitTerm(PascalSParser::TermContext *context)
     }
 }
 
-llvm::Value* Visitor::visitOpStar(PascalSParser::OpStarContext *context, llvm::Value* L, llvm::Value* R)
+llvm::Value *Visitor::visitOpStar(PascalSParser::OpStarContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateMul(L, R);
 }
 
-llvm::Value* Visitor::visitOpSlash(PascalSParser::OpSlashContext *context, llvm::Value* L, llvm::Value* R)
+llvm::Value *Visitor::visitOpSlash(PascalSParser::OpSlashContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateFDiv(L, R);
 }
 
-llvm::Value* Visitor::visitOpDiv(PascalSParser::OpDivContext *context, llvm::Value* L, llvm::Value* R)
+llvm::Value *Visitor::visitOpDiv(PascalSParser::OpDivContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateSDiv(L, R);
 }
 
-llvm::Value* Visitor::visitOpMod(PascalSParser::OpModContext *context, llvm::Value* L, llvm::Value* R)
+llvm::Value *Visitor::visitOpMod(PascalSParser::OpModContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateSRem(L, R);
 }
 
-llvm::Value* Visitor::visitOpAnd(PascalSParser::OpAndContext *context, llvm::Value* L, llvm::Value* R)
+llvm::Value *Visitor::visitOpAnd(PascalSParser::OpAndContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateAnd(L, R);
 }
 
-llvm::Value* Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *context)
+llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *context)
 {
     int flag = context->MINUS() ? -1 : 1;
     auto flag_v = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
@@ -386,25 +384,24 @@ llvm::Value* Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
     {
         throw NotImplementedException();
     }
-    
 }
 
-llvm::Value* Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
+llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
     return builder.CreateLoad(visitVariable(context->variable()));
 }
 
-llvm::Value* Visitor::visitFactorExpr(PascalSParser::FactorExprContext *context)
+llvm::Value *Visitor::visitFactorExpr(PascalSParser::FactorExprContext *context)
 {
     return visitExpression(context->expression());
 }
 
-llvm::Value* Visitor::visitFactorFunc(PascalSParser::FactorFuncContext *context)
+llvm::Value *Visitor::visitFactorFunc(PascalSParser::FactorFuncContext *context)
 {
     return visitFunctionDesignator(context->functionDesignator());
 }
 
-llvm::Value* Visitor::visitFactorUnsConst(PascalSParser::FactorUnsConstContext *context)
+llvm::Value *Visitor::visitFactorUnsConst(PascalSParser::FactorUnsConstContext *context)
 {
     if (auto unsignedConstStrCtx = dynamic_cast<PascalSParser::UnsignedConstStrContext *>(context->unsignedConstant()))
     {
@@ -421,9 +418,9 @@ llvm::Value* Visitor::visitFactorUnsConst(PascalSParser::FactorUnsConstContext *
     }
 }
 
-llvm::Value* Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *context)
+llvm::Value *Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *context)
 {
-    llvm::Value* value;
+    llvm::Value *value;
     if (auto factorVarCtx = dynamic_cast<PascalSParser::FactorVarContext *>(context->factor()))
     {
         value = visitFactorVar(factorVarCtx);
@@ -461,19 +458,18 @@ llvm::Value* Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *co
     {
         return value;
     }
-    
 }
 
-llvm::Value* Visitor::visitFactorBool(PascalSParser::FactorBoolContext *context)
+llvm::Value *Visitor::visitFactorBool(PascalSParser::FactorBoolContext *context)
 {
     auto bool_str = context->bool_()->getText();
     if (bool_str == "TRUE")
     {
-        return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*llvm_context),true);
+        return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*llvm_context), true);
     }
     else if (bool_str == "FALSE")
     {
-        return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*llvm_context),false);
+        return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*llvm_context), false);
     }
     else
     {
@@ -481,7 +477,7 @@ llvm::Value* Visitor::visitFactorBool(PascalSParser::FactorBoolContext *context)
     }
 }
 
-llvm::Value* Visitor::visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConstUnsignedNumContext *context)
+llvm::Value *Visitor::visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConstUnsignedNumContext *context)
 {
     if (auto intContext = dynamic_cast<PascalSParser::UnsignedNumberIntegerContext *>(context->unsignedNumber()))
     {
@@ -495,7 +491,8 @@ llvm::Value* Visitor::visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConst
         auto value = llvm::ConstantFP::get(llvm::Type::getFloatTy(*llvm_context), v);
         return value;
     }
-    else{
+    else
+    {
         throw NotImplementedException();
     }
 }
@@ -506,13 +503,13 @@ std::string Visitor::visitUnsignedConstStr(PascalSParser::UnsignedConstStrContex
 }
 
 // TODO: 强制转换安全问题？
-llvm::Value* Visitor::visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context)
+llvm::Value *Visitor::visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context)
 {
     auto funcName = context->identifier()->IDENT()->getText();
     if (auto function = static_cast<llvm::Function *>(getVariable(funcName)))
     {
         auto paraList = visitParameterList(context->parameterList());
-        llvm::ArrayRef<llvm::Value* > argsRef(paraList);
+        llvm::ArrayRef<llvm::Value *> argsRef(paraList);
         auto retValue = builder.CreateCall(function, argsRef);
         builder.CreateRet(retValue);
         return retValue;
@@ -528,7 +525,7 @@ std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterL
     std::vector<llvm::Value *> params;
     if (!context)
     {
-        for(auto actualPara : context->actualParameter())
+        for (auto actualPara : context->actualParameter())
         {
             auto param = visitActualParameter(actualPara);
             params.push_back(param);
@@ -537,15 +534,14 @@ std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterL
     return params;
 }
 
-llvm::Value* Visitor::visitActualParameter(PascalSParser::ActualParameterContext *context)
+llvm::Value *Visitor::visitActualParameter(PascalSParser::ActualParameterContext *context)
 {
     return visitExpression(context->expression());
 }
 
-//TODO: 没见这个部分的用法
+// TODO: 没见这个部分的用法
 void Visitor::visitParameterwidth(PascalSParser::ParameterwidthContext *context)
 {
-
 }
 
 void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *context)
@@ -553,26 +549,23 @@ void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *contex
     visitProcedureStatement(context->procedureStatement());
 }
 
-//TODO: 强制转换安全问题？
-//FIXME: 无法调用writeln
+// TODO: 强制转换安全问题？
+// FIXME: 无法调用writeln
 void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *context)
 {
     auto identifier = visitIdentifier(context->identifier());
     if (auto procedure = static_cast<llvm::Function *>(getVariable(identifier)))
     {
         auto paraList = visitParameterList(context->parameterList());
-        llvm::ArrayRef<llvm::Value* > argsRef(paraList);
+        llvm::ArrayRef<llvm::Value *> argsRef(paraList);
         builder.CreateCall(procedure, argsRef);
     }
     else if (StandardProcedure::hasProcedure(identifier))
     {
-        // 获取原型
-        auto stdProcedure = StandardProcedure::prototypeMap[identifier](module);
-        // 构造参数
+        auto stdProcedure = StandardProcedure::prototypeMap[identifier](module.get());
         auto paraList = visitParameterList(context->parameterList());
         StandardProcedure::argsConstructorMap[identifier](&builder, paraList);
-        llvm::ArrayRef<llvm::Value* > argsRef(paraList);
-        // 调用
+        llvm::ArrayRef<llvm::Value *> argsRef(paraList);
         builder.CreateCall(stdProcedure, argsRef);
     }
     else
@@ -590,9 +583,7 @@ void Visitor::visitEmptyStatement_(PascalSParser::EmptyStatement_Context *contex
 
 void Visitor::visitEmpty_(PascalSParser::Empty_Context *context)
 {
-
 }
-
 
 void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *context)
 {
@@ -656,17 +647,17 @@ llvm::Constant *Visitor::visitConstIdentifier(PascalSParser::ConstIdentifierCont
         if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(value))
         {
             return CI;
-        }    
+        }
         else
         {
             throw NotImplementedException();
         }
     }
-    else if(module->getNamedGlobal(s)){
+    else if (module->getNamedGlobal(s))
+    {
         auto global = module->getNamedGlobal(s);
-        llvm::ConstantInt * value = (llvm::ConstantInt *)(global->getInitializer());
+        llvm::ConstantInt *value = (llvm::ConstantInt *)(global->getInitializer());
         return value;
-
     }
     else
     {
@@ -758,13 +749,13 @@ llvm::Constant *Visitor::visitConstSignIdentifier(PascalSParser::ConstSignIdenti
         auto dest = builder.CreateMul(value1, value2);
         return (llvm::Constant *)dest;
     }
-    else if(module->getNamedGlobal(s)){
+    else if (module->getNamedGlobal(s))
+    {
         auto global = module->getNamedGlobal(s);
-        llvm::ConstantInt * value2 = (llvm::ConstantInt *)(global->getInitializer());
+        llvm::ConstantInt *value2 = (llvm::ConstantInt *)(global->getInitializer());
         auto value1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
         auto dest = builder.CreateMul(value1, value2);
         return (llvm::Constant *)dest;
-
     }
     else
     {
@@ -1259,18 +1250,20 @@ llvm::Type *Visitor::visitSimpleType(PascalSParser::SimpleTypeContext *context, 
 
 void Visitor::visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function)
 {
-    if(auto compoundStatementContext = dynamic_cast<PascalSParser::StructuredStateCompoundContext *>(context->structuredStatement()))
-        visitStructuredStateCompound(compoundStatementContext,function);
-    else if(auto conditionalStatementContext = dynamic_cast<PascalSParser::StructuredStateConditionalContext *>(context->structuredStatement()))
+    if (auto compoundStatementContext = dynamic_cast<PascalSParser::StructuredStateCompoundContext *>(context->structuredStatement()))
+        visitStructuredStateCompound(compoundStatementContext, function);
+    else if (auto conditionalStatementContext = dynamic_cast<PascalSParser::StructuredStateConditionalContext *>(context->structuredStatement()))
         visitStructuredStateConditional(conditionalStatementContext, function);
     else if (auto structuredStateRepetetiveContext = dynamic_cast<PascalSParser::StructuredStateRepetetiveContext *>(context->structuredStatement()))
         visitStructuredStateRepetetive(structuredStateRepetetiveContext, function);
-    else{
+    else
+    {
         throw NotImplementedException();
     }
 }
 
-void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function){
+void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function)
+{
     if (auto repetetiveStateForContext = dynamic_cast<PascalSParser::RepetetiveStateForContext *>(context->repetetiveStatement()))
     {
         visitRepetetiveStateFor(repetetiveStateForContext, function);
@@ -1279,11 +1272,13 @@ void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepet
         throw NotImplementedException();
 }
 
-void Visitor::visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function){
+void Visitor::visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function)
+{
     visitForStatement(context->forStatement(), function);
 }
 
-void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function){
+void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function)
+{
     auto id = visitIdentifier(context->identifier());
     auto v = visitForList(context->forList());
     auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
@@ -1291,12 +1286,11 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     auto final = v[1];
     auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
     builder.CreateStore(initial, addr);
-    
 
     auto while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
     llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
-	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
-    
+    llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
+
     builder.CreateBr(while_count);
     builder.SetInsertPoint(while_count);
     auto tmp_i = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), addr);
@@ -1317,65 +1311,66 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     auto tmp = builder.CreateAdd(i, con_1);
     builder.CreateStore(tmp, addr);
 
-
     builder.CreateBr(while_count);
 
     builder.SetInsertPoint(while_end);
 }
 
-std::vector<llvm::Value *> Visitor::visitForList(PascalSParser::ForListContext *context){
+std::vector<llvm::Value *> Visitor::visitForList(PascalSParser::ForListContext *context)
+{
     std::vector<llvm::Value *> v;
     auto v1 = visitInitialValue(context->initialValue());
     auto v2 = visitFinalValue(context->finalValue());
     v.push_back(v1);
     v.push_back(v2);
     return v;
-
 }
 
-llvm::Value* Visitor::visitInitialValue(PascalSParser::InitialValueContext *context){
+llvm::Value *Visitor::visitInitialValue(PascalSParser::InitialValueContext *context)
+{
     auto value = visitExpression(context->expression());
     return value;
 }
 
-llvm::Value* Visitor::visitFinalValue(PascalSParser::FinalValueContext *context){
+llvm::Value *Visitor::visitFinalValue(PascalSParser::FinalValueContext *context)
+{
     auto value = visitExpression(context->expression());
     return value;
 }
-
 
 //------------------------------
 
 void Visitor::visitStructuredStateCompound(PascalSParser::StructuredStateCompoundContext *context, llvm::Function *function)
 {
-    visitCompoundStatement(context->compoundStatement(),function);
+    visitCompoundStatement(context->compoundStatement(), function);
 }
 void Visitor::visitStructuredStateConditional(PascalSParser::StructuredStateConditionalContext *context, llvm::Function *function)
 {
-    if(auto ifStatementContext = dynamic_cast<PascalSParser::ConditionalStateIfContext *>(context->conditionalStatement()))
-        visitConditionalStateIf(ifStatementContext,function);
-    else{
+    if (auto ifStatementContext = dynamic_cast<PascalSParser::ConditionalStateIfContext *>(context->conditionalStatement()))
+        visitConditionalStateIf(ifStatementContext, function);
+    else
+    {
         throw NotImplementedException();
     }
 }
 void Visitor::visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context, llvm::Function *function)
 {
-    visitIfStatement(context->ifStatement(),function);
+    visitIfStatement(context->ifStatement(), function);
 }
 void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm::Function *function)
 {
     // llvm::Value * exp_value = visitExpression(context->expression());
 
     //为了测试，创建一个i32常量
-    llvm::Value *aValue=llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),-10);
-    llvm::Value *bValue=llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),20);
-    llvm::Value * exp_value = builder.CreateICmpSGT(aValue,bValue);
-    
+    llvm::Value *aValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
+    llvm::Value *bValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 20);
+    llvm::Value *exp_value = builder.CreateICmpSGT(aValue, bValue);
+
     //创建then else基本块
     llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*llvm_context, "then", function);
     llvm::BasicBlock *elseBB = llvm::BasicBlock::Create(*llvm_context, "else", function);
-    llvm::BasicBlock *end = llvm::BasicBlock::Create(*llvm_context, "if_end",function,0);
-    
+    llvm::BasicBlock *end = llvm::BasicBlock::Create(*llvm_context, "if_end", function, 0);
+
     //根据条件判断跳转到哪个块
     builder.CreateCondBr(exp_value, thenBB, elseBB);
     //如果执行then
@@ -1384,21 +1379,20 @@ void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm:
     builder.CreateBr(end);
 
     //如果有else
-    if(context->statement().size() == 2)
+    if (context->statement().size() == 2)
     {
         builder.SetInsertPoint(elseBB);
         visitStatement(context->statement(1));
         builder.CreateBr(end);
     }
     builder.SetInsertPoint(end);
-
 }
 
 void Visitor::visitStatement(PascalSParser::StatementContext *context)
 {
     if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context))
         visitSimpleState(simpleStatementContext);
-    else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context))
+    else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context))
         visitStructuredState(structuredStatementContext);
     else
         throw NotImplementedException();
