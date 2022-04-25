@@ -169,7 +169,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
     llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
-    // TODO: 数组元素访问、指针访问
+    // TODO: 数组元素访问
     addr = getVariable(varName);
 
     return addr;
@@ -394,8 +394,8 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
     if(!visitVariable(context->variable()))
     {
-        auto a = module->getNamedGlobal(visitIdentifier(context->variable()->identifier(0)));
-        return a;
+        auto value = module->getNamedGlobal(visitIdentifier(context->variable()->identifier(0)));
+        return value;
     }
     return builder.CreateLoad(visitVariable(context->variable()));
 }
@@ -547,7 +547,6 @@ llvm::Value *Visitor::visitActualParameter(PascalSParser::ActualParameterContext
     return visitExpression(context->expression());
 }
 
-// TODO: 没见这个部分的用法
 void Visitor::visitParameterwidth(PascalSParser::ParameterwidthContext *context)
 {
 }
@@ -557,7 +556,6 @@ void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *contex
     visitProcedureStatement(context->procedureStatement());
 }
 
-// FIXME: 无法调用writeln
 void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *context)
 {
     auto identifier = visitIdentifier(context->identifier());
