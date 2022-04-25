@@ -114,7 +114,6 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
         throw NotImplementedException();
 }
 
-
 llvm::Value *Visitor::visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function)
 {
     return visitStatements(context->statements(), function);
@@ -136,6 +135,7 @@ llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context,
     return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
 }
 
+
 void Visitor::visitSimpleState(PascalSParser::SimpleStateContext *context)
 {
     if (auto assignmentStatementContext = dynamic_cast<PascalSParser::SimpleStateAssignContext *>(context->simpleStatement()))
@@ -147,7 +147,6 @@ void Visitor::visitSimpleState(PascalSParser::SimpleStateContext *context)
     else
         throw NotImplementedException();
 }
-
 
 void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context)
 {
@@ -163,9 +162,8 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
     }
     else
     {
-        throw VariableNotFoundException(context->variable()->identifier(0)->IDENT()->getText());
+        throw VariableNotFoundException(visitIdentifier(context->variable()->identifier(0)));
     }
-    
 }
 
 //return the address of variable
@@ -507,54 +505,78 @@ std::string Visitor::visitUnsignedConstStr(PascalSParser::UnsignedConstStrContex
     return visitString(context->string());
 }
 
+// TODO: 强制转换安全问题？
 llvm::Value* Visitor::visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context)
 {
-    
+    auto funcName = context->identifier()->IDENT()->getText();
+    if (auto function = static_cast<llvm::Function *>(getVariable(funcName)))
+    {
+        auto paraList = visitParameterList(context->parameterList());
+        llvm::ArrayRef<llvm::Value* > argsRef(paraList);
+        auto retValue = builder.CreateCall(function, argsRef);
+        builder.CreateRet(retValue);
+        return retValue;
+    }
+    else
+    {
+        throw VariableNotFoundException(funcName);
+    }
 }
 
-void Visitor::visitActualParameter(PascalSParser::ActualParameterContext *context)
+std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterListContext *context)
 {
-
+    std::vector<llvm::Value *> params;
+    if (!context)
+    {
+        for(auto actualPara : context->actualParameter())
+        {
+            auto param = visitActualParameter(actualPara);
+            params.push_back(param);
+        }
+    }
+    return params;
 }
 
+llvm::Value* Visitor::visitActualParameter(PascalSParser::ActualParameterContext *context)
+{
+    return visitExpression(context->expression());
+}
+
+//TODO: 没见这个部分的用法
 void Visitor::visitParameterwidth(PascalSParser::ParameterwidthContext *context)
 {
 
 }
-
-void Visitor::visitEmpty_(PascalSParser::Empty_Context *context)
-{}
 
 void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *context)
 {
     visitProcedureStatement(context->procedureStatement());
 }
 
+//TODO: 强制转换安全问题？
+//FIXME: 无法调用writeln
 void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *context)
 {
     auto identifier = visitIdentifier(context->identifier());
-    if (auto function = getVariable(identifier))
+    if (auto procedure = static_cast<llvm::Function *>(getVariable(identifier)))
     {
-        auto args=visitParameterList(context->parameterList());
+        auto paraList = visitParameterList(context->parameterList());
+        llvm::ArrayRef<llvm::Value* > argsRef(paraList);
+        builder.CreateCall(procedure, argsRef);
     }
     else if (StandardProcedure::hasProcedure(identifier))
     {
         // 获取原型
-        // 构��参敄1�71ￄ1�771ￄ1�71ￄ1�777
+        auto stdProcedure = StandardProcedure::prototypeMap[identifier](module);
+        // 构造参数
+        auto paraList = visitParameterList(context->parameterList());
+        StandardProcedure::argsConstructorMap[identifier](&builder, paraList);
+        llvm::ArrayRef<llvm::Value* > argsRef(paraList);
         // 调用
+        builder.CreateCall(stdProcedure, argsRef);
     }
     else
         throw ProcedureNotFoundException(identifier);
-}
-
-std::vector<llvm::Value *> *Visitor::visitParameterList(PascalSParser::ParameterListContext *context)
-{
-    auto params = new std::vector<llvm::Value *>;
-    for (const auto &actualParameterContext : context->actualParameter())
-    {
-
-    }
-    return params;
 }
 
 void Visitor::visitSimpleStateEmpty(PascalSParser::SimpleStateEmptyContext *context)
@@ -566,6 +588,10 @@ void Visitor::visitEmptyStatement_(PascalSParser::EmptyStatement_Context *contex
 {
 }
 
+void Visitor::visitEmpty_(PascalSParser::Empty_Context *context)
+{
+
+}
 
 
 void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *context)
@@ -780,7 +806,6 @@ void Visitor::visitConstantDefinitionPart(PascalSParser::ConstantDefinitionPartC
         visitConstantDefinition(constDefinitionContext);
     }
 }
-
 
 void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context)
 {
