@@ -181,7 +181,6 @@ llvm::Value *Visitor::visitExpression(PascalSParser::ExpressionContext *context)
     {
         return visitSimpleExpression(context->simpleExpression(0));
     }
-
     auto L = visitSimpleExpression(context->simpleExpression(0));
     auto R = visitSimpleExpression(context->simpleExpression(1));
     if (auto equalContext = dynamic_cast<PascalSParser::OpEqualContext *>(context->relationaloperator()))
@@ -253,6 +252,7 @@ llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionConte
 
     auto L = visitTerm(context->term(0));
     auto R = visitTerm(context->term(1));
+    
     if (auto plusContext = dynamic_cast<PascalSParser::OpPlusContext *>(context->additiveoperator()))
     {
         return visitOpPlus(plusContext, L, R);
@@ -348,11 +348,15 @@ llvm::Value *Visitor::visitOpAnd(PascalSParser::OpAndContext *context, llvm::Val
 
 llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *context)
 {
+    
     int flag = context->MINUS() ? -1 : 1;
+    
     auto flag_v = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
     if (auto factorVarCtx = dynamic_cast<PascalSParser::FactorVarContext *>(context->factor()))
     {
+        
         auto value = visitFactorVar(factorVarCtx);
+        
         return builder.CreateMul(flag_v, value);
     }
     else if (auto factorExprCtx = dynamic_cast<PascalSParser::FactorExprContext *>(context->factor()))
@@ -388,6 +392,11 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
 
 llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
+    if(!visitVariable(context->variable()))
+    {
+        auto a = module->getNamedGlobal(visitIdentifier(context->variable()->identifier(0)));
+        return a;
+    }
     return builder.CreateLoad(visitVariable(context->variable()));
 }
 
@@ -1159,6 +1168,7 @@ void Visitor::visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext
     if (ret->getType() != simpleType)
         throw NotImplementedException();
 
+    scopes.pop_back();
     builder.CreateRet(ret);
 }
 
@@ -1357,25 +1367,21 @@ void Visitor::visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *
 }
 void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm::Function *function)
 {
-    // llvm::Value * exp_value = visitExpression(context->expression());
-
-    //为了测试，创建一个i32常量
-    llvm::Value *aValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
-    llvm::Value *bValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 20);
-    llvm::Value *exp_value = builder.CreateICmpSGT(aValue, bValue);
+    llvm::Value * exp_value = visitExpression(context->expression());
+    // //为了测试，创建一个i32常量
+    // llvm::Value *aValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
+    // llvm::Value *bValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 20);
+    // llvm::Value *exp_value = builder.CreateICmpSGT(aValue, bValue);
 
     //创建then else基本块
     llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*llvm_context, "then", function);
     llvm::BasicBlock *elseBB = llvm::BasicBlock::Create(*llvm_context, "else", function);
-    llvm::BasicBlock *end = llvm::BasicBlock::Create(*llvm_context, "if_end", function, 0);
+    llvm::BasicBlock *end = llvm::BasicBlock::Create(*llvm_context, "if_end", function);
 
-    //根据条件判断跳转到哪个块
-    builder.CreateCondBr(exp_value, thenBB, elseBB);
     //如果执行then
     builder.SetInsertPoint(thenBB);
     visitStatement(context->statement(0));
     builder.CreateBr(end);
-
     //如果有else
     if (context->statement().size() == 2)
     {
@@ -1383,6 +1389,13 @@ void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm:
         visitStatement(context->statement(1));
         builder.CreateBr(end);
     }
+
+    //根据条件判断跳转到哪个块
+    if(context->statement().size() == 2)
+        builder.CreateCondBr(exp_value, thenBB, elseBB);
+    else
+        builder.CreateCondBr(exp_value, thenBB, end);
+
     builder.SetInsertPoint(end);
 }
 
