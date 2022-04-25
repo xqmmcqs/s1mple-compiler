@@ -156,14 +156,24 @@ void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *co
 
 void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context)
 {
-    auto value = visitExpression(context->expression());
+    // auto value = visitExpression(context->expression());
+    // if (auto varAddr = visitVariable(context->variable()))
+    // {
+    //     builder.CreateMemSet
+    // }
+    
     
 }
 
+//return the address of variable
 llvm::Value* Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
-    llvm::Value* v;
-    return v;
+    llvm::Value* addr = nullptr;
+    std::string varName = visitIdentifier(context->identifier(0));
+    //TODO: 数组元素访问、指针访问
+    addr = getVariable(varName);
+
+    return addr;
 }
 
 llvm::Value* Visitor::visitExpression(PascalSParser::ExpressionContext *context)
