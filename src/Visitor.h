@@ -191,11 +191,11 @@ namespace PascalS
 
         llvm::Value* visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context);
 
-        std::vector<llvm::Value *> *visitParameterList(PascalSParser::ParameterListContext *context);
+        std::vector<llvm::Value *> visitParameterList(PascalSParser::ParameterListContext *context);
 
         void visitProcedureStatement(PascalSParser::ProcedureStatementContext *context);
 
-        void visitActualParameter(PascalSParser::ActualParameterContext *context);
+        llvm::Value* visitActualParameter(PascalSParser::ActualParameterContext *context);
 
         void visitParameterwidth(PascalSParser::ParameterwidthContext *context);
 
