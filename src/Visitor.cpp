@@ -98,6 +98,7 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
 
     if (auto typeSimpleTypeContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
+        
         auto type = visitTypeSimpleType(typeSimpleTypeContext);
         llvm::StructType *testStruct = llvm::StructType::create(*llvm_context, identifier);
         testStruct->setBody(type);
@@ -156,13 +157,26 @@ void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *co
 void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context)
 {
     auto value = visitExpression(context->expression());
+    if (auto varAddr = visitVariable(context->variable()))
+    {
+        builder.CreateStore(value,varAddr);
+    }
+    else
+    {
+        throw VariableNotFoundException(context->variable()->identifier(0)->IDENT()->getText());
+    }
     
 }
 
+//return the address of variable
 llvm::Value* Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
-    llvm::Value* v;
-    return v;
+    llvm::Value* addr = nullptr;
+    std::string varName = visitIdentifier(context->identifier(0));
+    //TODO: 数组元素访问、指针访问
+    addr = getVariable(varName);
+
+    return addr;
 }
 
 llvm::Value* Visitor::visitExpression(PascalSParser::ExpressionContext *context)
@@ -269,7 +283,7 @@ llvm::Value* Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::V
 llvm::Value* Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateSub(L, R);
-}
+} 
 
 llvm::Value* Visitor::visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R)
 {
@@ -379,7 +393,7 @@ llvm::Value* Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
 
 llvm::Value* Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
-    return visitVariable(context->variable());
+    return builder.CreateLoad(visitVariable(context->variable()));
 }
 
 llvm::Value* Visitor::visitFactorExpr(PascalSParser::FactorExprContext *context)
@@ -1295,11 +1309,13 @@ std::vector<llvm::Value *> Visitor::visitForList(PascalSParser::ForListContext *
 }
 
 llvm::Value* Visitor::visitInitialValue(PascalSParser::InitialValueContext *context){
-    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
+    auto value = visitExpression(context->expression());
+    return value;
 }
 
 llvm::Value* Visitor::visitFinalValue(PascalSParser::FinalValueContext *context){
-    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 10);
+    auto value = visitExpression(context->expression());
+    return value;
 }
 
 

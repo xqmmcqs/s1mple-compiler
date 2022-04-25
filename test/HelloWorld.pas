@@ -11,8 +11,6 @@ begin
 end;
 
 begin
-    
-    for i := 1 to 10 do b:=1;
-
+    for i := 1 to 100 do b:=1;
     writeln (114514)
 end.
