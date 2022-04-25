@@ -125,7 +125,7 @@ namespace PascalS
 
         void visitSimpleState(PascalSParser::SimpleStateContext *context);
 
-        void visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function);
+        void visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function=nullptr);
 
         void visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context);
 
@@ -203,21 +203,21 @@ namespace PascalS
 
         void visitEmpty_(PascalSParser::Empty_Context *context);
 
-        void visitStructuredStateCompound(PascalSParser::StructuredStateCompoundContext *context);
+        void visitStructuredStateCompound(PascalSParser::StructuredStateCompoundContext *context, llvm::Function *function);
 
-        void visitStructuredStateConditional(PascalSParser::StructuredStateConditionalContext *context);
+        void visitStructuredStateConditional(PascalSParser::StructuredStateConditionalContext *context, llvm::Function *function);
 
         void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function);
 
         llvm::Value *visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function);
 
-        llvm::Value *visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function);
+        llvm::Value *visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function=nullptr);
 
-        void visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context);
+        void visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context, llvm::Function *function);
 
         void visitConditionalStateCase(PascalSParser::ConditionalStateCaseContext *context);
 
-        void visitIfStatement(PascalSParser::IfStatementContext *context);
+        void visitIfStatement(PascalSParser::IfStatementContext *context, llvm::Function *function);
 
         void visitCaseStatement(PascalSParser::CaseStatementContext *context);
 
@@ -242,5 +242,7 @@ namespace PascalS
         llvm::Value* visitFinalValue(PascalSParser::FinalValueContext *context);
 
         void visitRecordVariableList(PascalSParser::RecordVariableListContext *context);
+
+        void visitStatement(PascalSParser::StatementContext *context);
     };
 }; // namespace PascalS
