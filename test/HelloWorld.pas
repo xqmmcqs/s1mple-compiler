@@ -8,6 +8,11 @@ begin
 end;
 
 begin
+
+    b:=1; 
+    writeln(114514);
     
-    
+    REPEAT writeln(114514); UNTIL b<2;
+    WHILE TRUE DO writeln(114514);
+    writeln(114514);
 end.
