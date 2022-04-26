@@ -223,15 +223,15 @@ namespace PascalS
 
         void visitCaseListElement(PascalSParser::CaseListElementContext *context);
 
-        void visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileContext *context);
+        void visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileContext *context, llvm::Function *function);
 
-        void visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context);
+        void visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context, llvm::Function *function);
 
         void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function);
 
-        void visitWhileStatement(PascalSParser::WhileStatementContext *context);
+        void visitWhileStatement(PascalSParser::WhileStatementContext *context, llvm::Function *function);
 
-        void visitRepeatStatement(PascalSParser::RepeatStatementContext *context);
+        void visitRepeatStatement(PascalSParser::RepeatStatementContext *context, llvm::Function *function);
 
         void visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function);
 

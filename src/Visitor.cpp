@@ -1275,6 +1275,10 @@ void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepet
     if (auto repetetiveStateForContext = dynamic_cast<PascalSParser::RepetetiveStateForContext *>(context->repetetiveStatement()))
     {
         visitRepetetiveStateFor(repetetiveStateForContext, function);
+    } else if(auto repetiveStateRepeatContext = dynamic_cast<PascalSParser::RepetetiveStateRepeatContext *>(context->repetetiveStatement())){
+        visitRepetetiveStateRepeat(repetiveStateRepeatContext, function);
+    } else if(auto repetiveStateWhileContext = dynamic_cast<PascalSParser::RepetetiveStateWhileContext *>(context->repetetiveStatement())){
+        visitRepetetiveStateWhile(repetiveStateWhileContext, function);
     }
     else
         throw NotImplementedException();
@@ -1283,6 +1287,17 @@ void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepet
 void Visitor::visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function)
 {
     visitForStatement(context->forStatement(), function);
+    
+}
+
+void Visitor::visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context, llvm::Function *function){
+    visitRepeatStatement(context->repeatStatement(), function);
+    
+}
+
+void Visitor::visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileContext *context, llvm::Function *function){
+    visitWhileStatement(context->whileStatement(), function);
+    
 }
 
 void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function)
@@ -1344,6 +1359,58 @@ llvm::Value *Visitor::visitFinalValue(PascalSParser::FinalValueContext *context)
 {
     auto value = visitExpression(context->expression());
     return value;
+}
+
+
+void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *context, llvm::Function *function){
+    llvm::Value * exp_value = visitExpression(context->expression());
+    
+
+    llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
+    llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
+	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
+    
+    builder.CreateBr(while_count);
+    
+    builder.SetInsertPoint(while_count);
+    
+
+    builder.CreateCondBr(exp_value, while_body, while_end);
+
+    builder.SetInsertPoint(while_body);
+    visitStatements(context->statements(), function);
+    
+    builder.CreateBr(while_count);
+
+    builder.SetInsertPoint(while_end);
+}
+
+void Visitor::visitWhileStatement(PascalSParser::WhileStatementContext *context, llvm::Function *function){
+    llvm::Value * exp_value = visitExpression(context->expression());
+    
+
+    llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
+    llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
+	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
+    
+    builder.CreateBr(while_count);
+    
+    builder.SetInsertPoint(while_count);
+    
+
+    builder.CreateCondBr(exp_value, while_body, while_end);
+
+    builder.SetInsertPoint(while_body);
+    if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
+            visitSimpleState(simpleStatementContext);
+    else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
+            visitStructuredState(structuredStatementContext, function);
+    else
+        throw NotImplementedException();
+    
+    builder.CreateBr(while_count);
+
+    builder.SetInsertPoint(while_end);
 }
 
 //------------------------------
