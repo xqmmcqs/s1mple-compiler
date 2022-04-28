@@ -67,7 +67,10 @@ llvm::Value *Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Fun
     {
         visitProcedureAndFunctionDeclarationPart(procedureAndFunctionDeclarationPart);
     }
-    auto block = llvm::BasicBlock::Create(*llvm_context, "", function);
+    auto block = llvm::BasicBlock::Create(*llvm_context, "entry", function);
+    if(builder.GetInsertBlock() && builder.GetInsertBlock()->getName().str()=="functionRet") {
+        builder.CreateBr(block);
+    }
     builder.SetInsertPoint(block);
     for (const auto &constantDefinitionPartContext : context->constantDefinitionPart())
     {
@@ -130,7 +133,6 @@ llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context,
             throw NotImplementedException();
     }
 
-    //此处只是示例，为了编译可以��过
     return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
 }
 
@@ -171,7 +173,10 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
     std::string varName = visitIdentifier(context->identifier(0));
     // TODO: 数组元素访问
     addr = getVariable(varName);
-
+    if(auto func = llvm::dyn_cast_or_null<llvm::Function>(addr))
+    {
+        addr = getVariable(varName+"ret");
+    }    
     return addr;
 }
 
@@ -213,6 +218,8 @@ llvm::Value *Visitor::visitExpression(PascalSParser::ExpressionContext *context)
     }
 }
 
+
+
 llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateFCmpOEQ(L, R);
@@ -220,27 +227,27 @@ llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm:
 
 llvm::Value *Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R)
 {
-    return builder.CreateFCmpONE(L, R);
+    return builder.CreateICmpNE(L, R);
 }
 
 llvm::Value *Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R)
 {
-    return builder.CreateFCmpOLT(L, R);
+    return builder.CreateICmpSLT(L, R);
 }
 
 llvm::Value *Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R)
 {
-    return builder.CreateFCmpOLE(L, R);
+    return builder.CreateICmpSLE(L, R);
 }
 
 llvm::Value *Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R)
 {
-    return builder.CreateFCmpOGE(L, R);
+    return builder.CreateICmpSGE(L, R);
 }
 
 llvm::Value *Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R)
 {
-    return builder.CreateFCmpOGT(L, R);
+    return builder.CreateICmpSGT(L, R);
 }
 
 llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionContext *context)
@@ -354,9 +361,7 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
     auto flag_v = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
     if (auto factorVarCtx = dynamic_cast<PascalSParser::FactorVarContext *>(context->factor()))
     {
-        
-        auto value = visitFactorVar(factorVarCtx);
-        
+        auto value = visitFactorVar(factorVarCtx);       
         return builder.CreateMul(flag_v, value);
     }
     else if (auto factorExprCtx = dynamic_cast<PascalSParser::FactorExprContext *>(context->factor()))
@@ -394,8 +399,7 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
     if(!visitVariable(context->variable()))
     {
-        auto value = module->getNamedGlobal(visitIdentifier(context->variable()->identifier(0)));
-        return value;
+        return module->getNamedGlobal(visitIdentifier(context->variable()->identifier(0)));
     }
     return builder.CreateLoad(visitVariable(context->variable()));
 }
@@ -519,7 +523,6 @@ llvm::Value *Visitor::visitFunctionDesignator(PascalSParser::FunctionDesignatorC
         auto paraList = visitParameterList(context->parameterList());
         llvm::ArrayRef<llvm::Value *> argsRef(paraList);
         auto retValue = builder.CreateCall(function, argsRef);
-        builder.CreateRet(retValue);
         return retValue;
     }
     else
@@ -1107,20 +1110,16 @@ void Visitor::visitProcedureDeclaration(PascalSParser::ProcedureDeclarationConte
 
     auto identifier = visitIdentifier(context->identifier());
 
-    //返回值类类型
     llvm::SmallVector<llvm::Type *> ParaTypes;
 
-    //参数类型
     visitFormalParameterList(context->formalParameterList(), ParaTypes);
 
     auto functionType = llvm::FunctionType::get(builder.getVoidTy(), ParaTypes, false);
 
     auto function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, llvm::Twine(identifier), module.get());
 
-    scopes.push_back(Scope());
     scopes.back().setVariable(identifier, function);
 
-    //存储参数
     int n = 0;
     for (auto argsItr = function->arg_begin(); argsItr != function->arg_end(); argsItr++)
     {
@@ -1129,19 +1128,20 @@ void Visitor::visitProcedureDeclaration(PascalSParser::ProcedureDeclarationConte
         scopes.back().setVariable(FormalParaIdList[n++], arg);
     }
 
+    scopes.push_back(Scope());
     visitBlock(context->block(), function);
 
+    scopes.pop_back();
     builder.CreateRetVoid();
 }
 
 void Visitor::visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext *context)
 {
+
     auto identifier = visitIdentifier(context->identifier());
 
-    //返回值类类型
     auto simpleType = visitSimpleType(context->simpleType(), false);
 
-    //参数类型
     llvm::SmallVector<llvm::Type *> ParaTypes;
     visitFormalParameterList(context->formalParameterList(), ParaTypes);
 
@@ -1149,24 +1149,28 @@ void Visitor::visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext
 
     auto function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, llvm::Twine(identifier), module.get());
 
-    scopes.push_back(Scope());
+    auto block = llvm::BasicBlock::Create(*llvm_context, "functionRet", function);
+    builder.SetInsertPoint(block);
+    auto addr = builder.CreateAlloca(simpleType, nullptr);
+    
     scopes.back().setVariable(identifier, function);
+    scopes.back().setVariable(identifier+"ret", addr);
 
-    //存储参数
     int n = 0;
     for (auto argsItr = function->arg_begin(); argsItr != function->arg_end(); argsItr++)
     {
         llvm::Value *arg = argsItr;
+        auto addrArg = builder.CreateAlloca(arg->getType(), nullptr);
         arg->setName(FormalParaIdList[n]);
-        scopes.back().setVariable(FormalParaIdList[n++], arg);
+        builder.CreateStore(arg, addrArg);
+        scopes.back().setVariable(FormalParaIdList[n++], addrArg);
     }
 
-    llvm::Value *ret = visitBlock(context->block(), function);
-
-    if (ret->getType() != simpleType)
-        throw NotImplementedException();
-
+    scopes.push_back(Scope());
+    visitBlock(context->block(), function);
     scopes.pop_back();
+    
+    auto ret = builder.CreateLoad(addr);
     builder.CreateRet(ret);
 }
 
@@ -1205,8 +1209,8 @@ void Visitor::visitParameterGroup(PascalSParser::ParameterGroupContext *context,
     auto IdList = visitIdentifierList(context->identifierList());
     for (int i = 0; i < IdList.size(); i++)
     {
-        ParaTypes.push_back(simpleType);       //参数类型
-        FormalParaIdList.push_back(IdList[i]); //参数名称
+        ParaTypes.push_back(simpleType);       
+        FormalParaIdList.push_back(IdList[i]); 
     }
 }
 
@@ -1432,35 +1436,32 @@ void Visitor::visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *
 }
 void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm::Function *function)
 {
-    llvm::Value * exp_value = visitExpression(context->expression());
-    // //为了测试，创建一个i32常量
-    // llvm::Value *aValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
+    auto exp_value = visitExpression(context->expression());
+
+    // llvm::Value *aValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 10);
     // llvm::Value *bValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 20);
+    
     // llvm::Value *exp_value = builder.CreateICmpSGT(aValue, bValue);
 
-    //创建then else基本块
     llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*llvm_context, "then", function);
     llvm::BasicBlock *elseBB = llvm::BasicBlock::Create(*llvm_context, "else", function);
     llvm::BasicBlock *end = llvm::BasicBlock::Create(*llvm_context, "if_end", function);
+    
+    if(context->statement().size() == 2)
+        builder.CreateCondBr(exp_value, thenBB, elseBB);
+    else
+        builder.CreateCondBr(exp_value, thenBB, end);
 
-    //如果执行then
     builder.SetInsertPoint(thenBB);
     visitStatement(context->statement(0));
     builder.CreateBr(end);
-    //如果有else
+
     if (context->statement().size() == 2)
     {
         builder.SetInsertPoint(elseBB);
         visitStatement(context->statement(1));
         builder.CreateBr(end);
     }
-
-    //根据条件判断跳转到哪个块
-    if(context->statement().size() == 2)
-        builder.CreateCondBr(exp_value, thenBB, elseBB);
-    else
-        builder.CreateCondBr(exp_value, thenBB, end);
-
     builder.SetInsertPoint(end);
 }
 
