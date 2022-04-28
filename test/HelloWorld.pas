@@ -9,13 +9,15 @@ begin
     else testfun:=1;
 end;
 
-procedure testpro(arg1:integer);
-begin
-    writeln(2);
-end;
-
 begin
     {for c:=1 to 10 do d:=1;}
     c:=testfun(10);
     writeln(c);
+
+    b:=1; 
+    writeln(114514);
+    
+    REPEAT writeln(114514); UNTIL b<2;
+    WHILE TRUE DO writeln(114514);
+    writeln(114514);
 end.
