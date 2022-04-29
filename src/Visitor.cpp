@@ -553,7 +553,7 @@ llvm::Value *Visitor::visitActualParameter(PascalSParser::ActualParameterContext
     return visitExpression(context->expression());
 }
 
-// TODO: 婵炲眲銈庢綄閺夆晜鐟ら柌婊堟焾閵娿儱鐎婚柣銊ュ閺併倕鈻旈敓锟�1锟�7
+// TODO: 婵炲眲銈庢綄閺夆晜鐟ら柌婊堟焾閵娿儱鐎婚柣銊ュ閺併倕鈻旈敓锟�1锟�71锟�1锟�77
 void Visitor::visitParameterwidth(PascalSParser::ParameterwidthContext *context)
 {
 }
@@ -1215,7 +1215,7 @@ void Visitor::visitParameterGroup(PascalSParser::ParameterGroupContext *context,
     for (int i = 0; i < IdList.size(); i++)
     {
         ParaTypes.push_back(simpleType);       //闁告瑥鍊归弳鐔虹尵鐠囪尙鈧拷
-        FormalParaIdList.push_back(IdList[i]); //闁告瑥鍊归弳鐔煎触瀹ュ泦锟�1锟�7
+        FormalParaIdList.push_back(IdList[i]); //闁告瑥鍊归弳鐔煎触瀹ュ泦锟�1锟�71锟�1锟�77
     }
 }
 
@@ -1376,17 +1376,15 @@ void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm:
 {
     auto exp_value = visitExpression(context->expression());
 
-    // llvm::Value *aValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 10);
-    // llvm::Value *bValue = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 20);
-    
-    // llvm::Value *exp_value = builder.CreateICmpSGT(aValue, bValue);
-
     llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*llvm_context, "then", function);
-    llvm::BasicBlock *elseBB = llvm::BasicBlock::Create(*llvm_context, "else", function);
     llvm::BasicBlock *end = llvm::BasicBlock::Create(*llvm_context, "if_end", function);
-    
+    llvm::BasicBlock *elseBB;
+
     if(context->statement().size() == 2)
+    {
+        elseBB = llvm::BasicBlock::Create(*llvm_context, "else", function);
         builder.CreateCondBr(exp_value, thenBB, elseBB);
+    }
     else
         builder.CreateCondBr(exp_value, thenBB, end);
 

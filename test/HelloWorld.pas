@@ -16,6 +16,9 @@ end;
 
 begin
     {for c:=1 to 10 do d:=1;}
-    c:=testfun(10);
-    writeln(c);
+    {c:=testfun(10);
+    writeln(c);}
+    c:=20;
+    if c>30 then writeln(88);
+    writeln(66);
 end.
