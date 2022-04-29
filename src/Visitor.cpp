@@ -133,7 +133,6 @@ llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context,
             throw NotImplementedException();
     }
 
-    //濮濄倕顦╅崣顏呮Ц缁€杞扮伐閿涘奔璐熸禍鍡欑椽鐠囨垵褰叉禒銉嫹閿熷€熺箖
     return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
 }
 
@@ -172,7 +171,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
     llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
-    // TODO: 閺佹壆绮嶉崗鍐鐠佸潡妫堕妴浣瑰瘹闁藉牐顔栭梻锟�
+	
     addr = getVariable(varName);
     if(auto func = llvm::dyn_cast_or_null<llvm::Function>(addr))
     {
@@ -220,7 +219,7 @@ llvm::Value *Visitor::visitExpression(PascalSParser::ExpressionContext *context)
 }
 
 
-//待定
+
 llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateFCmpOEQ(L, R);
@@ -362,9 +361,7 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
     auto flag_v = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
     if (auto factorVarCtx = dynamic_cast<PascalSParser::FactorVarContext *>(context->factor()))
     {
-        
-        auto value = visitFactorVar(factorVarCtx);
-        
+        auto value = visitFactorVar(factorVarCtx);       
         return builder.CreateMul(flag_v, value);
     }
     else if (auto factorExprCtx = dynamic_cast<PascalSParser::FactorExprContext *>(context->factor()))
@@ -553,7 +550,6 @@ llvm::Value *Visitor::visitActualParameter(PascalSParser::ActualParameterContext
     return visitExpression(context->expression());
 }
 
-// TODO: 濞屄ゎ潌鏉╂瑤閲滈柈銊ュ瀻閻ㄥ嫮鏁ゅ▔锟ￄ1�71ￄ1�771ￄ1�71ￄ1�777
 void Visitor::visitParameterwidth(PascalSParser::ParameterwidthContext *context)
 {
 }
@@ -563,7 +559,7 @@ void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *contex
     visitProcedureStatement(context->procedureStatement());
 }
 
-// FIXME: 閺冪姵纭剁拫鍐暏writeln
+
 void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *context)
 {
     auto identifier = visitIdentifier(context->identifier());
@@ -1214,8 +1210,8 @@ void Visitor::visitParameterGroup(PascalSParser::ParameterGroupContext *context,
     auto IdList = visitIdentifierList(context->identifierList());
     for (int i = 0; i < IdList.size(); i++)
     {
-        ParaTypes.push_back(simpleType);       //閸欏倹鏆熺猾璇茬€�
-        FormalParaIdList.push_back(IdList[i]); //閸欏倹鏆熼崥宥囆ￄ1�71ￄ1�771ￄ1�71ￄ1�777
+        ParaTypes.push_back(simpleType);       //参数类型
+        FormalParaIdList.push_back(IdList[i]);  //形参名列表
     }
 }
 
@@ -1282,6 +1278,10 @@ void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepet
     if (auto repetetiveStateForContext = dynamic_cast<PascalSParser::RepetetiveStateForContext *>(context->repetetiveStatement()))
     {
         visitRepetetiveStateFor(repetetiveStateForContext, function);
+    } else if(auto repetiveStateRepeatContext = dynamic_cast<PascalSParser::RepetetiveStateRepeatContext *>(context->repetetiveStatement())){
+        visitRepetetiveStateRepeat(repetiveStateRepeatContext, function);
+    } else if(auto repetiveStateWhileContext = dynamic_cast<PascalSParser::RepetetiveStateWhileContext *>(context->repetetiveStatement())){
+        visitRepetetiveStateWhile(repetiveStateWhileContext, function);
     }
     else
         throw NotImplementedException();
@@ -1290,6 +1290,17 @@ void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepet
 void Visitor::visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function)
 {
     visitForStatement(context->forStatement(), function);
+    
+}
+
+void Visitor::visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context, llvm::Function *function){
+    visitRepeatStatement(context->repeatStatement(), function);
+    
+}
+
+void Visitor::visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileContext *context, llvm::Function *function){
+    visitWhileStatement(context->whileStatement(), function);
+    
 }
 
 void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function)
@@ -1351,6 +1362,58 @@ llvm::Value *Visitor::visitFinalValue(PascalSParser::FinalValueContext *context)
 {
     auto value = visitExpression(context->expression());
     return value;
+}
+
+
+void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *context, llvm::Function *function){
+    llvm::Value * exp_value = visitExpression(context->expression());
+    
+
+    llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
+    llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
+	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
+    
+    builder.CreateBr(while_count);
+    
+    builder.SetInsertPoint(while_count);
+    
+
+    builder.CreateCondBr(exp_value, while_body, while_end);
+
+    builder.SetInsertPoint(while_body);
+    visitStatements(context->statements(), function);
+    
+    builder.CreateBr(while_count);
+
+    builder.SetInsertPoint(while_end);
+}
+
+void Visitor::visitWhileStatement(PascalSParser::WhileStatementContext *context, llvm::Function *function){
+    llvm::Value * exp_value = visitExpression(context->expression());
+    
+
+    llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
+    llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
+	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
+    
+    builder.CreateBr(while_count);
+    
+    builder.SetInsertPoint(while_count);
+    
+
+    builder.CreateCondBr(exp_value, while_body, while_end);
+
+    builder.SetInsertPoint(while_body);
+    if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
+            visitSimpleState(simpleStatementContext);
+    else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
+            visitStructuredState(structuredStatementContext, function);
+    else
+        throw NotImplementedException();
+    
+    builder.CreateBr(while_count);
+
+    builder.SetInsertPoint(while_end);
 }
 
 //------------------------------
