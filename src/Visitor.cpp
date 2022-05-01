@@ -176,7 +176,8 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
     if(auto func = llvm::dyn_cast_or_null<llvm::Function>(addr))
     {
         addr = getVariable(varName+"ret");
-    }    
+    }
+    
     return addr;
 }
 
