@@ -11,9 +11,9 @@ begin
 end;
 begin
     for c:=1 to 10 do d:=1;
-    c:=testfun(10);
-    writeln(c);
-    c:=20;
+    s[8,-3]:=testfun(10);
+    writeln(s[2,-3]);
+    {c:=20;
     if c>5 then writeln(88);
     writeln(66);
     b:=1;
@@ -22,5 +22,5 @@ begin
     writeln(114514);
     REPEAT writeln(114514); UNTIL b<2;
     WHILE TRUE DO writeln(114514);
-    writeln(114514);
+    writeln(114514);}
 end.

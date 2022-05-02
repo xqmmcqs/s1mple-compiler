@@ -21,8 +21,8 @@ namespace PascalS
         std::unique_ptr<llvm::Module> module;
         std::vector<Scope> scopes;
         std::vector<std::string> FormalParaIdList;
-        std::unordered_map<std::string, std::vector<int>> arrayRanges;// 所有数组各维起止索引
-        std::vector<int> arrayRangeTemp;// 暂存数组各维起止索引
+        std::unordered_map<std::string, std::vector<int>> arrayRanges;
+        std::vector<int> arrayRangeTemp;
 
         Visitor(std::string filename) : llvm_context(std::make_unique<llvm::LLVMContext>()),
                                         builder(*llvm_context),
