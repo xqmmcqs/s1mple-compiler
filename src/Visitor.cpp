@@ -156,6 +156,7 @@ void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *co
 void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context)
 {
     auto value = visitExpression(context->expression());
+    
     if (auto varAddr = visitVariable(context->variable()))
     {
         builder.CreateStore(value, varAddr);
@@ -166,18 +167,52 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
     }
 }
 
-// return the address of variable
+// return the address of variable/array element
 llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
     llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
-    // TODO: 数组元素访问
     addr = getVariable(varName);
+    if (context->LBRACK(0))//访问数组类型变量
+    {
+        auto ranges = arrayRanges[varName];
+
+        std::vector<int> indexes;//获取数组变量的索引
+        for (auto indexExpression : context->expression())
+        {
+            auto index = visitExpression(indexExpression);
+            if (!index->getType()->isIntegerTy())
+            {
+                throw NotImplementedException();
+            }
+            int index_int;
+            if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(index))
+            {
+                index_int = CI->getSExtValue();
+            }
+            else
+            {
+                throw NotImplementedException();
+            }
+            indexes.push_back(index_int);
+        }
+
+        int offset = 0, offsetUnit = 1;//计算偏移量
+        for(int j = indexes.size() - 1; j >= 0; j--)
+        {
+            offset += ((indexes[j]- ranges[2*j]) * offsetUnit);
+            offsetUnit *= (ranges[2*j + 1] - ranges[2*j] + 1);
+        }
+
+        auto con_0 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),0);
+        auto con_offset = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), offset);
+        addr = builder.CreateGEP(addr, {con_0, con_offset});
+    }
+
     if(auto func = llvm::dyn_cast_or_null<llvm::Function>(addr))
     {
         addr = getVariable(varName+"ret");
     }
-    
     return addr;
 }
 
@@ -836,6 +871,10 @@ llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclaration
         {
             auto addr = builder.CreateAlloca(type, nullptr);
             scopes.back().setVariable(id, addr);
+            if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
+            {
+                arrayRanges[id] = arrayRangeTemp;
+            }
         }
         return type;
     }
@@ -890,24 +929,24 @@ llvm::Type *Visitor::visitStructuredTypeRecord(PascalSParser::StructuredTypeReco
 llvm::Type *Visitor::visitArrayType1(PascalSParser::ArrayType1Context *context, std::vector<std::string> idList)
 {
     auto ranges = visitPeriods(context->periods());
-    int space = 1;
-    // calculate the space of array
+    int eleNum = 1;
+    // calculate the eleNum of array
     for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
     {
         auto v1 = *iter;
         auto v2 = *(++iter);
-        space *= (v2 - v1 + 1);
+        eleNum *= (v2 - v1 + 1);
     }
 
     if (auto typeSimpleContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
         auto type = visitTypeSimpleType(typeSimpleContext);
-        return llvm::ArrayType::get(type, space);
+        return llvm::ArrayType::get(type, eleNum);
     }
     else if (auto typeStructureContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
     {
         auto type = visitTypeStructuredType(typeStructureContext, idList);
-        return llvm::ArrayType::get(type, space);
+        return llvm::ArrayType::get(type, eleNum);
     }
     else
     {
@@ -918,24 +957,24 @@ llvm::Type *Visitor::visitArrayType1(PascalSParser::ArrayType1Context *context, 
 llvm::Type *Visitor::visitArrayType2(PascalSParser::ArrayType2Context *context, std::vector<std::string> idList)
 {
     auto ranges = visitPeriods(context->periods());
-    int space = 1;
-    // calculate the space of array
+    int eleNum = 1;
+    // calculate the eleNum of array
     for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
     {
         auto v1 = *iter;
         auto v2 = *(++iter);
-        space *= (v2 - v1 + 1);
+        eleNum *= (v2 - v1 + 1);
     }
 
     if (auto typeSimpleContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
         auto type = visitTypeSimpleType(typeSimpleContext);
-        return llvm::ArrayType::get(type, space);
+        return llvm::ArrayType::get(type, eleNum);
     }
     else if (auto typeStructureContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
     {
         auto type = visitTypeStructuredType(typeStructureContext, idList);
-        return llvm::ArrayType::get(type, space);
+        return llvm::ArrayType::get(type, eleNum);
     }
     else
     {
@@ -946,12 +985,14 @@ llvm::Type *Visitor::visitArrayType2(PascalSParser::ArrayType2Context *context, 
 std::vector<int> Visitor::visitPeriods(PascalSParser::PeriodsContext *context)
 {
     std::vector<int> ranges;
+    this->arrayRangeTemp.clear();
     for (const auto &periodContext : context->period())
     {
         auto range = visitPeriod(periodContext);
         for (int a : range)
         {
             ranges.push_back(a);
+            this->arrayRangeTemp.push_back(a);
         }
     }
     return ranges;
