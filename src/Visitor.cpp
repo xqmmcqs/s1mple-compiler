@@ -1543,9 +1543,11 @@ void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm:
         visitStatement(context->statement(1));
         builder.CreateBr(end);
     }
-    //更改基本块的指向
+    //更改基本块指向
     builder.SetInsertPoint(end);
 }
+
+
 
 void Visitor::visitStatement(PascalSParser::StatementContext *context)
 {
