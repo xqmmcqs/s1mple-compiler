@@ -198,7 +198,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
             indexes.push_back(index_int);
         }
 
-        int offset = 0, offsetUnit = 1;//计算偏偏移量
+        int offset = 0, offsetUnit = 1;//计算偏移量
         for(int j = indexes.size() - 1; j >= 0; j--)
         {
             offset += ((indexes[j]- ranges[2*j]) * offsetUnit);
