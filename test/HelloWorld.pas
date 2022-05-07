@@ -9,7 +9,6 @@ begin
     else testfun:=1;
 end;
 
-
 begin
     for c:=1 to 10 do d:=1;
     c:=testfun(10);
