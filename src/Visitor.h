@@ -20,7 +20,7 @@ namespace PascalS
         llvm::IRBuilder<> builder;
         std::unique_ptr<llvm::Module> module;
         std::vector<Scope> scopes;
-        std::vector<std::string> FormalParaIdList;
+        std::vector<std::string> FormalParaIdList;  //形参列表
         std::unordered_map<std::string, std::vector<int>> arrayRanges;// 所有数组各维起止索引
         std::vector<int> arrayRangeTemp;// 暂存数组各维起止索引
 
