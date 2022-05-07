@@ -178,7 +178,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
     {
         auto ranges = arrayRanges[varName];
 
-        std::vector<int> indexes;//获取数组变量的索引值
+        std::vector<int> indexes;//获取数组变量的索引
         for (auto indexExpression : context->expression())
         {
             auto index = visitExpression(indexExpression);
@@ -198,7 +198,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
             indexes.push_back(index_int);
         }
 
-        int offset = 0, offsetUnit = 1;//计算偏移釄1�7
+        int offset = 0, offsetUnit = 1;//计算偏偏移量
         for(int j = indexes.size() - 1; j >= 0; j--)
         {
             offset += ((indexes[j]- ranges[2*j]) * offsetUnit);
@@ -210,7 +210,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
         addr = builder.CreateGEP(addr, {con_0, con_offset});
     }
 
-    //如果当前identifier对应的value是一个function类型，那么就将当前的identifier转换成返回��对应的identifier，即identifier+"ret"
+    //如果当前identifier对应的value是一个function类型，那么就将当前的identifier转换成返回值对应的identifier，即identifier+"ret"
     if(auto func = llvm::dyn_cast_or_null<llvm::Function>(addr))
     {
         addr = getVariable(varName+"ret");
