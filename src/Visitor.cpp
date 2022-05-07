@@ -167,17 +167,17 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
     }
 }
 
-// return the address of variable/array element
+/// return the value of variable/array element
 llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
     llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
     addr = getVariable(varName);
-    if (context->LBRACK(0))//访问数组类型变量
+    if (context->LBRACK(0))///< 访问数组类型变量
     {
         auto ranges = arrayRanges[varName];
 
-        std::vector<int> indexes;//获取数组变量的索引
+        std::vector<int> indexes;///< 获取数组变量的索引
         for (auto indexExpression : context->expression())
         {
             auto index = visitExpression(indexExpression);
@@ -528,6 +528,7 @@ llvm::Value *Visitor::visitFactorBool(PascalSParser::FactorBoolContext *context)
 
 llvm::Value *Visitor::visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConstUnsignedNumContext *context)
 {
+    /// 判断是整型还是实型
     if (auto intContext = dynamic_cast<PascalSParser::UnsignedNumberIntegerContext *>(context->unsignedNumber()))
     {
         auto v = visitUnsignedNumberInteger(intContext);
@@ -631,9 +632,9 @@ void Visitor::visitEmpty_(PascalSParser::Empty_Context *context)
 
 void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *context)
 {
-    // identifier = const
+    /// 获得标识符名
     auto id = visitIdentifier(context->identifier());
-    // switch const
+    /// 判断不同常量类型
     if (auto constIdentifierContext = dynamic_cast<PascalSParser::ConstIdentifierContext *>(context->constant()))
     {
         auto value = visitConstIdentifier(constIdentifierContext);
@@ -684,6 +685,7 @@ void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *
 llvm::Constant *Visitor::visitConstIdentifier(PascalSParser::ConstIdentifierContext *context)
 {
     auto s = visitIdentifier(context->identifier());
+    /// 判断该标识符常量是否能在变量表中找到，或者是全局变量
     if (getVariable(s))
     {
         auto addr = getVariable(s);
@@ -717,7 +719,7 @@ std::string Visitor::visitConstString(PascalSParser::ConstStringContext *context
 llvm::Constant *Visitor::visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context)
 {
     auto sign = context->sign()->getText();
-    int flag = 1;
+    int flag = 1;///< 符号的正负
     if (sign == "+")
     {
         flag = 1;
@@ -858,6 +860,7 @@ llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclaration
         auto type = visitTypeSimpleType(typeSimpleContext);
         for (auto id : idList)
         {
+            /// 对于每个声明的变量，都为其分配空间，并插入到变量表中
             auto addr = builder.CreateAlloca(type, nullptr);
             builder.CreateStore(llvm::UndefValue::get(type), addr);
             scopes.back().setVariable(id, addr);
@@ -928,7 +931,7 @@ llvm::Type *Visitor::visitStructuredTypeRecord(PascalSParser::StructuredTypeReco
 
 llvm::Type *Visitor::visitArrayType1(PascalSParser::ArrayType1Context *context, std::vector<std::string> idList)
 {
-    auto ranges = visitPeriods(context->periods());
+    auto ranges = visitPeriods(context->periods());///< 数组的下标范围（每两个数字代表着一个数组的维度范围）
     int eleNum = 1;
     // calculate the eleNum of array
     for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
@@ -956,7 +959,7 @@ llvm::Type *Visitor::visitArrayType1(PascalSParser::ArrayType1Context *context, 
 
 llvm::Type *Visitor::visitArrayType2(PascalSParser::ArrayType2Context *context, std::vector<std::string> idList)
 {
-    auto ranges = visitPeriods(context->periods());
+    auto ranges = visitPeriods(context->periods());///< 数组的下标范围（每两个数字代表着一个数组的维度范围）
     int eleNum = 1;
     // calculate the eleNum of array
     for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
@@ -1082,6 +1085,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
         throw NotImplementedException();
     }
     int constIntValue1, constIntValue2;
+    /// 将llvm::ConstantInt转换为int类型
     if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(value1))
     {
         constIntValue1 = CI->getSExtValue();
@@ -1346,35 +1350,36 @@ void Visitor::visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileConte
 
 void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function)
 {
-    auto id = visitIdentifier(context->identifier());
-    auto v = visitForList(context->forList());
+    auto id = visitIdentifier(context->identifier());///< 循环变量名
+    auto v = visitForList(context->forList());///< 循环变量取值范围
     auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
     auto initial = v[0];
     auto final = v[1];
     auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
     builder.CreateStore(initial, addr);
 
+    /// 创建循环的基本块
     auto while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
     llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
     llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
 
-    builder.CreateBr(while_count);
-    builder.SetInsertPoint(while_count);
+    builder.CreateBr(while_count);///< 跳转语句
+    builder.SetInsertPoint(while_count);///< 为基本块添加语句
     auto tmp_i = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), addr);
     auto cmp = builder.CreateICmpSLE(tmp_i, final);
 
-    builder.CreateCondBr(cmp, while_body, while_end);
+    builder.CreateCondBr(cmp, while_body, while_end);///< 比较，跳转
 
     builder.SetInsertPoint(while_body);
 
-    // if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
-    //         visitSimpleState(simpleStatementContext);
-    // else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
-    //         visitStructuredState(structuredStatementContext, function);
-    // else
-    //     throw NotImplementedException();
+    if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
+            visitSimpleState(simpleStatementContext);
+    else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
+            visitStructuredState(structuredStatementContext, function);
+    else
+        throw NotImplementedException();
 
-    auto i = builder.CreateLoad(llvm::IntegerType::getInt32Ty(*llvm_context), addr);
+    auto i = builder.CreateLoad(llvm::IntegerType::getInt32Ty(*llvm_context), addr);///< 循环中的循环变量，每次循环加一
     auto tmp = builder.CreateAdd(i, con_1);
     builder.CreateStore(tmp, addr);
 
