@@ -1501,8 +1501,7 @@ llvm::Value *Visitor::visitFinalValue(PascalSParser::FinalValueContext *context)
 
 
 void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *context, llvm::Function *function){
-    //获取进入循环的判断值
-    llvm::Value * exp_value = visitExpression(context->expression());
+    
     
     //创建循环使用到的三个代码块
     llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
@@ -1512,7 +1511,8 @@ void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *contex
     builder.CreateBr(while_count);
     
     builder.SetInsertPoint(while_count);
-    
+    //获取进入循环的判断值
+    llvm::Value * exp_value = visitExpression(context->expression());
     //跳转
     builder.CreateCondBr(exp_value, while_body, while_end);
     //while_body基本块
@@ -1525,8 +1525,7 @@ void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *contex
 }
 
 void Visitor::visitWhileStatement(PascalSParser::WhileStatementContext *context, llvm::Function *function){
-    //获取进入循环的判断值
-    llvm::Value * exp_value = visitExpression(context->expression());
+    
     
     //创建循环使用到的三个代码块
     llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
@@ -1535,6 +1534,8 @@ void Visitor::visitWhileStatement(PascalSParser::WhileStatementContext *context,
     //while_count基本块
     builder.CreateBr(while_count);
     builder.SetInsertPoint(while_count);
+    //获取进入循环的判断值
+    llvm::Value * exp_value = visitExpression(context->expression());
     //条件跳转
     builder.CreateCondBr(exp_value, while_body, while_end);
     //while_body基本块
