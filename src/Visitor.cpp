@@ -172,13 +172,13 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
 llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
     llvm::Value *addr = nullptr;
-    std::string varName = visitIdentifier(context->identifier(0));
+    std::string varName = visitIdentifier(context->identifier(0));\
+    
     addr = getVariable(varName);
-    if (context->LBRACK(0))//访问数组类型变量
+    if (context->LBRACK(0))
     {
         auto ranges = arrayRanges[varName];
-
-        std::vector<int> indexes;//获取数组变量的索引值
+        std::vector<int> indexes;
         for (auto indexExpression : context->expression())
         {
             auto index = visitExpression(indexExpression);
@@ -197,14 +197,12 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
             }
             indexes.push_back(index_int);
         }
-
-        int offset = 0, offsetUnit = 1;//计算偏移釄1 7
+        int offset = 0, offsetUnit = 1;
         for(int j = indexes.size() - 1; j >= 0; j--)
         {
             offset += ((indexes[j]- ranges[2*j]) * offsetUnit);
             offsetUnit *= (ranges[2*j + 1] - ranges[2*j] + 1);
         }
-
         auto con_0 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),0);
         auto con_offset = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), offset);
         addr = builder.CreateGEP(addr, {con_0, con_offset});
