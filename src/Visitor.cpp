@@ -1437,40 +1437,43 @@ void Visitor::visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileConte
 
 void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function)
 {
+    //初始化变量赋值
     auto id = visitIdentifier(context->identifier());
     auto v = visitForList(context->forList());
     auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
+    //开始结束变量赋值
     auto initial = v[0];
     auto final = v[1];
     auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
     builder.CreateStore(initial, addr);
-
+    //创建循环使用到的三个代码块
     auto while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
     llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
     llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
-
+    //while_count代码块
     builder.CreateBr(while_count);
     builder.SetInsertPoint(while_count);
     auto tmp_i = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), addr);
+    //跳转条件
     auto cmp = builder.CreateICmpSLE(tmp_i, final);
-
+    //循环跳转
     builder.CreateCondBr(cmp, while_body, while_end);
-
+    //while_body代码块
     builder.SetInsertPoint(while_body);
 
-    // if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
-    //         visitSimpleState(simpleStatementContext);
-    // else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
-    //         visitStructuredState(structuredStatementContext, function);
-    // else
-    //     throw NotImplementedException();
-
+    if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
+            visitSimpleState(simpleStatementContext);
+    else if(auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
+            visitStructuredState(structuredStatementContext, function);
+    else
+        throw NotImplementedException();
+    //循环变量增加
     auto i = builder.CreateLoad(llvm::IntegerType::getInt32Ty(*llvm_context), addr);
     auto tmp = builder.CreateAdd(i, con_1);
     builder.CreateStore(tmp, addr);
 
     builder.CreateBr(while_count);
-
+    //while_end代码块
     builder.SetInsertPoint(while_end);
 }
 
@@ -1498,43 +1501,43 @@ llvm::Value *Visitor::visitFinalValue(PascalSParser::FinalValueContext *context)
 
 
 void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *context, llvm::Function *function){
+    //获取进入循环的判断值
     llvm::Value * exp_value = visitExpression(context->expression());
     
-
+    //创建循环使用到的三个代码块
     llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
     llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
 	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
-    
+    //while_count基本块
     builder.CreateBr(while_count);
     
     builder.SetInsertPoint(while_count);
     
-
+    //跳转
     builder.CreateCondBr(exp_value, while_body, while_end);
-
+    //while_body基本块
     builder.SetInsertPoint(while_body);
     visitStatements(context->statements(), function);
     
     builder.CreateBr(while_count);
-
+    //while_end基本块
     builder.SetInsertPoint(while_end);
 }
 
 void Visitor::visitWhileStatement(PascalSParser::WhileStatementContext *context, llvm::Function *function){
+    //获取进入循环的判断值
     llvm::Value * exp_value = visitExpression(context->expression());
     
-
+    //创建循环使用到的三个代码块
     llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
     llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
 	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
-    
+    //while_count基本块
     builder.CreateBr(while_count);
-    
     builder.SetInsertPoint(while_count);
-    
-
+    //条件跳转
     builder.CreateCondBr(exp_value, while_body, while_end);
-
+    //while_body基本块
     builder.SetInsertPoint(while_body);
     if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
             visitSimpleState(simpleStatementContext);
@@ -1544,7 +1547,7 @@ void Visitor::visitWhileStatement(PascalSParser::WhileStatementContext *context,
         throw NotImplementedException();
     
     builder.CreateBr(while_count);
-
+    //while_end代码块
     builder.SetInsertPoint(while_end);
 }
 

@@ -184,9 +184,17 @@ namespace PascalS
         void visitConstList(PascalSParser::ConstListContext *context);
 
         void visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext *context);
-
+        /**
+        * @brief 解析简单语句
+        *
+        * @param context 语法树中表示simpleState语句分支的context
+        */
         void visitSimpleState(PascalSParser::SimpleStateContext *context);
-
+        /**
+        * @brief 解析结构语句
+        *
+        * @param context 语法树中表示strycturedState语句分支的context
+        */
         void visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function=nullptr);
 
         void visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context);
@@ -278,11 +286,20 @@ namespace PascalS
         void visitStructuredStateCompound(PascalSParser::StructuredStateCompoundContext *context, llvm::Function *function);
 
         void visitStructuredStateConditional(PascalSParser::StructuredStateConditionalContext *context, llvm::Function *function);
-
+        /**
+        * @brief 解析循环语句开始
+        *
+        * @param context 语法树中表示repetetive语句分支的context
+        */
         void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function);
 
         llvm::Value *visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function);
-
+        /**
+        * @brief 解析statemnet组成的集合
+        *
+        * @param context 语法树中表示statements语句分支的context
+        * @return statement的value值
+        */
         llvm::Value *visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function=nullptr);
 
         void visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context, llvm::Function *function);
@@ -294,19 +311,43 @@ namespace PascalS
         void visitCaseStatement(PascalSParser::CaseStatementContext *context);
 
         void visitCaseListElement(PascalSParser::CaseListElementContext *context);
-
+        /**
+        * @brief while语句入口
+        *
+        * @param context 语法树中表示whileState语句分支的context
+        */
         void visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileContext *context, llvm::Function *function);
-
+        /**
+        * @brief repeat语句入口
+        *
+        * @param context 语法树中表示repeatState语句分支的context
+        */
         void visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context, llvm::Function *function);
-
+        /**
+        * @brief for语句入口
+        *
+        * @param context 语法树中表示forState语句分支的context
+        */
         void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function);
-
+        /**
+        * @brief 解析while语句
+        *
+        * @param context 语法树中表示while语句分支的context
+        */
         void visitWhileStatement(PascalSParser::WhileStatementContext *context, llvm::Function *function);
-
+        /**
+        * @brief 解析repeat语句
+        *
+        * @param context 语法树中表示repeat语句分支的context
+        */
         void visitRepeatStatement(PascalSParser::RepeatStatementContext *context, llvm::Function *function);
-
+        /**
+        * @brief 解析for语句
+        *
+        * @param context 语法树中表示for语句分支的context
+        */
         void visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function);
-         /**
+        /**
         * @brief 解析for语句中循环变量的起始值和结束值
         *
         * @param context 语法树中表示for语句分支的context
@@ -319,7 +360,11 @@ namespace PascalS
         llvm::Value* visitFinalValue(PascalSParser::FinalValueContext *context);
 
         void visitRecordVariableList(PascalSParser::RecordVariableListContext *context);
-
+        /**
+        * @brief 解析各类语句块
+        *
+        * @param context 语法树中表示statement分支的context
+        */
         void visitStatement(PascalSParser::StatementContext *context);
     };
 }; // namespace PascalS
