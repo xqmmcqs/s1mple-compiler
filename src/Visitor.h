@@ -195,10 +195,8 @@ namespace PascalS
         void visitSimpleStateProc(PascalSParser::SimpleStateProcContext *context);
 
         void visitSimpleStateEmpty(PascalSParser::SimpleStateEmptyContext *context);
-
-    
-        void visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context);
         
+        void visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context);
         
         llvm::Value* visitVariable(PascalSParser::VariableContext *context);
 

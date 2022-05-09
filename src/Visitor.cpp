@@ -247,10 +247,10 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
  */
 llvm::Value *Visitor::visitExpression(PascalSParser::ExpressionContext *context)
 {
-    if (readlnArgFlag == true)
-    {
-        std::cout << "readln call-link: visit the expression in paramlist of readln"<< std::endl;
-    }
+    // if (readlnArgFlag == true)
+    // {
+    //     std::cout << "readln call-link: visit the expression in paramlist of readln"<< std::endl;
+    // }
     if (!context->relationaloperator())
     {
         return visitSimpleExpression(context->simpleExpression(0));
@@ -373,10 +373,10 @@ llvm::Value *Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value
  */
 llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionContext *context)
 {
-    if (readlnArgFlag == true)
-    {
-        std::cout << "readln call-link: visit the SimpleExpression in paramlist of readln"<< std::endl;
-    }
+    // if (readlnArgFlag == true)
+    // {
+    //     std::cout << "readln call-link: visit the SimpleExpression in paramlist of readln"<< std::endl;
+    // }
     if (!context->additiveoperator())
     {
         return visitTerm(context->term(0));
@@ -450,10 +450,10 @@ llvm::Value *Visitor::visitOpOr(PascalSParser::OpOrContext *context, llvm::Value
  */
 llvm::Value *Visitor::visitTerm(PascalSParser::TermContext *context)
 {
-    if (readlnArgFlag == true)
-    {
-        std::cout << "readln call-link: visit the Term in paramlist of readln"<< std::endl;
-    }
+    // if (readlnArgFlag == true)
+    // {
+    //     std::cout << "readln call-link: visit the Term in paramlist of readln"<< std::endl;
+    // }
     if (!context->multiplicativeoperator())
     {
         return visitSignedFactor(context->signedFactor(0));
@@ -560,10 +560,10 @@ llvm::Value *Visitor::visitOpAnd(PascalSParser::OpAndContext *context, llvm::Val
  */
 llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *context)
 {
-    if (readlnArgFlag == true)
-    {
-        std::cout << "readln call-link: visit the SignedFactor in paramlist of readln"<< std::endl;
-    }
+    // if (readlnArgFlag == true)
+    // {
+    //     std::cout << "readln call-link: visit the SignedFactor in paramlist of readln"<< std::endl;
+    // }
     int flag = context->MINUS() ? -1 : 1;
     
     auto flag_v = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
@@ -625,7 +625,7 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
     //为readln构造参数时需要返回地址
     if (readlnArgFlag == true)
     {
-        std::cout << "readln call-link: return the address of "<< visitIdentifier(context->variable()->identifier(0)) << std::endl;
+        // std::cout << "readln call-link: return the address of "<< visitIdentifier(context->variable()->identifier(0)) << std::endl;
         return visitVariable(context->variable());
     }
     return builder.CreateLoad(visitVariable(context->variable()));
@@ -819,18 +819,18 @@ std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterL
     {
         for (auto actualPara : context->actualParameter())
         {
-            if (readlnArgFlag == true)
-            {
-                std::cout << "readln call-link: construct the paramlist of readln"<< std::endl;
-            }
+            // if (readlnArgFlag == true)
+            // {
+            //     std::cout << "readln call-link: construct the paramlist of readln"<< std::endl;
+            // }
             auto param = visitActualParameter(actualPara);
             params.push_back(param);
         }
     }
-    if (readlnArgFlag == true)
-    {
-        std::cout << "readln call-link: Succeeed to construct the paramlist of readln"<< std::endl;
-    }
+    // if (readlnArgFlag == true)
+    // {
+    //     std::cout << "readln call-link: Succeeed to construct the paramlist of readln"<< std::endl;
+    // }
     return params;
 }
 
@@ -842,10 +842,10 @@ std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterL
  */
 llvm::Value *Visitor::visitActualParameter(PascalSParser::ActualParameterContext *context)
 {
-    if (readlnArgFlag == true)
-    {
-        std::cout << "readln call-link: visit ActualParameter in paramlist of readln"<< std::endl;
-    }
+    // if (readlnArgFlag == true)
+    // {
+    //     std::cout << "readln call-link: visit ActualParameter in paramlist of readln"<< std::endl;
+    // }
     return visitExpression(context->expression());
 }
 
