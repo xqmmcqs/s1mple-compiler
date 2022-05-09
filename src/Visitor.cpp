@@ -1395,7 +1395,7 @@ llvm::Type *Visitor::visitRecordType(PascalSParser::RecordTypeContext *context, 
 
 llvm::Type *Visitor::visitRecordField(PascalSParser::RecordFieldContext *context, std::vector<std::string> idList)
 {
-    std::vector<llvm::Type *> elements;
+    std::vector<llvm::Type *> elements;///< 存储多个variable类型
     for (const auto &varDeclareCtx : context->variableDeclaration())
     {
         auto e = visitVariableDeclaration(varDeclareCtx);
@@ -1404,7 +1404,7 @@ llvm::Type *Visitor::visitRecordField(PascalSParser::RecordFieldContext *context
     for (auto id : idList)
     {
         llvm::StructType *testStruct = llvm::StructType::create(*llvm_context, id);
-        testStruct->setBody(elements);
+        testStruct->setBody(elements);///< 创建结构体类型代表当前record的声明
         return testStruct;
     }
     return elements[0];
@@ -1728,13 +1728,15 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     auto final = v[1];
     auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
     builder.CreateStore(initial, addr);
-    //创建循环使用到的三个代码块
-    auto while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
-    llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
-    llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
-    //while_count代码块
-    builder.CreateBr(while_count);
-    builder.SetInsertPoint(while_count);
+
+
+    /// 创建循环的基本块
+    auto while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);///< 判断循环是否完成的块
+    llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);///< 循环体代码块
+    llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);///< 结束循环后的块
+
+    builder.CreateBr(while_count);///< 跳转语句
+    builder.SetInsertPoint(while_count);///< 为基本块添加语句
     auto tmp_i = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), addr);
     //跳转条件
     auto cmp = builder.CreateICmpSLE(tmp_i, final);
