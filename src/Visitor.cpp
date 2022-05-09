@@ -1796,7 +1796,7 @@ void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *contex
     //获取进入循环的判断值
     llvm::Value * exp_value = visitExpression(context->expression());
     //跳转
-    builder.CreateCondBr(exp_value, while_body, while_end);
+    builder.CreateCondBr(exp_value, while_end, while_body);
     //while_body基本块
     builder.SetInsertPoint(while_body);
     visitStatements(context->statements(), function);
