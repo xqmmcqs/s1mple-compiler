@@ -23,6 +23,7 @@ namespace PascalS
         std::vector<std::string> FormalParaIdList;
         std::unordered_map<std::string, std::vector<int>> arrayRanges;
         std::vector<int> arrayRangeTemp;
+        bool readlnArgFlag = false;
 
         Visitor(std::string filename) : llvm_context(std::make_unique<llvm::LLVMContext>()),
                                         builder(*llvm_context),
@@ -194,14 +195,9 @@ namespace PascalS
         void visitSimpleStateProc(PascalSParser::SimpleStateProcContext *context);
 
         void visitSimpleStateEmpty(PascalSParser::SimpleStateEmptyContext *context);
-
+        
         void visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context);
-        /**
-        * @brief 解析变量
-        *
-        * @param context 语法树中表示变量分支的context
-        * @return 表示变量值的llvm::Value*
-        */
+        
         llvm::Value* visitVariable(PascalSParser::VariableContext *context);
 
         llvm::Value* visitExpression(PascalSParser::ExpressionContext *context);
