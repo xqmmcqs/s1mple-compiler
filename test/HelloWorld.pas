@@ -1,6 +1,7 @@
 program HelloWorld;
-var c,b:integer;
+var a,b:integer;
 begin
-    WHILE TRUE DO writeln(114415);
+    b:=1;
+    for a:=1 to 10 do b:=b+1;
     writeln(b);
 end.
