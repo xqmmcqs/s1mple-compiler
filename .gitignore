@@ -42,4 +42,5 @@ build/
 test/
 !test/HelloWorld.pas
 
+exceptions/DebugException.h
 note.txt

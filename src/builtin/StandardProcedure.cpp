@@ -42,6 +42,8 @@ void StandardProcedure::readlnArgsConstructor(llvm::IRBuilder<> *builder, std::v
         auto type = arg->getType();
         if (type->isIntegerTy())
             formats.push_back("%d");
+        else if (type->isFloatTy())
+            formats.push_back("%f");
         else
             throw NotImplementedException();
     }

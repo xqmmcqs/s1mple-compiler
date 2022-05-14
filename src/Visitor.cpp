@@ -3,6 +3,7 @@
 #include "exceptions/NotImplementedException.h"
 #include "exceptions/VariableNotFoundException.h"
 #include "exceptions/ProcedureNotFoundException.h"
+#include "exceptions/DebugException.h"
 #include "builtin/StandardProcedure.h"
 
 using namespace antlr4;
@@ -162,6 +163,7 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
     if (auto varAddr = visitVariable(context->variable()))
     {
         builder.CreateStore(value, varAddr);
+        std::cout << __func__<<std::endl;
     }
     else
     {
@@ -265,31 +267,115 @@ llvm::Value *Visitor::visitExpression(PascalSParser::ExpressionContext *context)
 
 llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R)
 {
+    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+        return builder.CreateFCmpUEQ(L, R);
+
+    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpUEQ(L_FP, R);
+    }
+    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpUEQ(L, R_FP);
+    }
+    
     return builder.CreateICmpEQ(L, R);
 }
 
 llvm::Value *Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R)
 {
+    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+        return builder.CreateFCmpUNE(L, R);
+
+    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpUNE(L_FP, R);
+    }
+    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpUNE(L, R_FP);
+    }
+
     return builder.CreateICmpNE(L, R);
 }
 
 llvm::Value *Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R)
 {
+    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+        return builder.CreateFCmpULT(L, R);
+
+    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpULT(L_FP, R);
+    }
+    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpULT(L, R_FP);
+    }
+
     return builder.CreateICmpSLT(L, R);
 }
 
 llvm::Value *Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R)
 {
+    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+        return builder.CreateFCmpULE(L, R);
+
+    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpULE(L_FP, R);
+    }
+    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpULE(L, R_FP);
+    }
+
     return builder.CreateICmpSLE(L, R);
 }
 
 llvm::Value *Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R)
 {
+    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+        return builder.CreateFCmpUGE(L, R);
+
+    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpUGE(L_FP, R);
+    }
+    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpUGE(L, R_FP);
+    }
+
     return builder.CreateICmpSGE(L, R);
 }
 
 llvm::Value *Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R)
 {
+    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+        return builder.CreateFCmpUGT(L, R);
+
+    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpUGT(L_FP, R);
+    }
+    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFCmpUGT(L, R_FP);
+    }
+
     return builder.CreateICmpSGT(L, R);
 }
 
@@ -323,7 +409,28 @@ llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionConte
 
 llvm::Value *Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R)
 {
-    return builder.CreateAdd(L, R);
+    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+        return builder.CreateFAdd(L, R);
+
+    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFAdd(L_FP, R);
+    }
+    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFAdd(L, R_FP);
+    }
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateAdd(L, R);
+    }
+    else
+    {
+        throw DebugException("Error to add tow value!");
+    }
+    
 }
 
 llvm::Value *Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R)
@@ -424,12 +531,19 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
     else if (auto factorNotFactCtx = dynamic_cast<PascalSParser::FactorNotFactContext *>(context->factor()))
     {
         auto value = visitFactorNotFact(factorNotFactCtx);
-        return builder.CreateMul(flag_v, value);
+        if (context->MINUS())
+            return builder.CreateNot(value);
+        else
+            return value;
     }
+    // FIXME:整型与bool型的乘法会导致错误
     else if (auto factorBoolCtx = dynamic_cast<PascalSParser::FactorBoolContext *>(context->factor()))
     {
         auto value = visitFactorBool(factorBoolCtx);
-        return builder.CreateMul(flag_v, value);
+        if (context->MINUS())
+            return builder.CreateNot(value);
+        else
+            return value;
     }
     else
     {
@@ -492,6 +606,7 @@ llvm::Value *Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *co
     llvm::Value *value;
     if (auto factorVarCtx = dynamic_cast<PascalSParser::FactorVarContext *>(context->factor()))
     {
+        std::cout << __func__<<std::endl;
         value = visitFactorVar(factorVarCtx);
     }
     else if (auto factorExprCtx = dynamic_cast<PascalSParser::FactorExprContext *>(context->factor()))
@@ -531,6 +646,7 @@ llvm::Value *Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *co
 
 llvm::Value *Visitor::visitFactorBool(PascalSParser::FactorBoolContext *context)
 {
+    std::cout << __func__<<std::endl;
     auto bool_str = context->bool_()->getText();
 
     if (bool_str == "TRUE" || bool_str == "true")
