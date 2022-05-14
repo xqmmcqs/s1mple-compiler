@@ -64,7 +64,7 @@ std::string Visitor::visitIdentifier(PascalSParser::IdentifierContext *context)
 void Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Function *function)
 {
     auto block = llvm::BasicBlock::Create(*llvm_context, "entry", function);
-    if(builder.GetInsertBlock() ) {
+    if(builder.GetInsertBlock() && builder.GetInsertBlock()->getName().str()=="Para_Ret") {
         builder.CreateBr(block);
     }
     builder.SetInsertPoint(block);
@@ -189,7 +189,6 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
     llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
     addr = getVariable(varName);
-
     if (context->LBRACK(0))
     {
         auto ranges = arrayRanges[varName];///< 数组索引的合法范围（来自定义）
@@ -1515,13 +1514,7 @@ void Visitor::visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext
 
     //创建一个基本块用于为返回值和参数创建CreateAlloca，CreateLoad语句
     auto block = llvm::BasicBlock::Create(*llvm_context, "Para_Ret", function);
-    // builder.CreateBr(block);
     builder.SetInsertPoint(block);
-    
-    if(builder.GetInsertBlock())
-        std::cout<<builder.GetInsertBlock()->getName().str()<<std::endl;
-    else
-    printf("meiyou ");
     
     //为返回值申请内存
     auto addr = builder.CreateAlloca(simpleType, nullptr);
@@ -1547,10 +1540,6 @@ void Visitor::visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext
     //最后去除返回值创建返回语句即可
     auto ret = builder.CreateLoad(addr);
     builder.CreateRet(ret);
-    if(builder.GetInsertBlock())
-        std::cout<<builder.GetInsertBlock()->getName().str()<<std::endl;
-    else
-    printf("meiyou ");
 }
 
 
