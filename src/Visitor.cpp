@@ -63,8 +63,7 @@ std::string Visitor::visitIdentifier(PascalSParser::IdentifierContext *context)
 
 void Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Function *function)
 {
-    auto block = llvm::BasicBlock::Create(*llvm_context, "entry"+std::to_string(n), function);
-    n++;
+    auto block = llvm::BasicBlock::Create(*llvm_context, "entry", function);
     if(builder.GetInsertBlock() && builder.GetInsertBlock()->getName().str()=="Para_Ret") {
         builder.CreateBr(block);
     }
