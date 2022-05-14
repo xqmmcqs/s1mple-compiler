@@ -61,15 +61,10 @@ std::string Visitor::visitIdentifier(PascalSParser::IdentifierContext *context)
     return context->IDENT()->getText();
 }
 
-llvm::Value *Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Function *function)
+void Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Function *function)
 {
-    //函数声明是在main函数之前的，拥有自己独立的基本块，所以要放在main函数的基本块前面访问
-    for (const auto &procedureAndFunctionDeclarationPart : context->procedureAndFunctionDeclarationPart())
-    {
-        visitProcedureAndFunctionDeclarationPart(procedureAndFunctionDeclarationPart);
-    }
     auto block = llvm::BasicBlock::Create(*llvm_context, "entry", function);
-    if(builder.GetInsertBlock() && builder.GetInsertBlock()->getName().str()=="Para_Ret") {
+    if(builder.GetInsertBlock() ) {
         builder.CreateBr(block);
     }
     builder.SetInsertPoint(block);
@@ -85,7 +80,12 @@ llvm::Value *Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Fun
     {
         visitTypeDefinitionPart(typeDefinitionPartContext);
     }
-    return visitCompoundStatement(context->compoundStatement(), function);
+    for (const auto &procedureAndFunctionDeclarationPart : context->procedureAndFunctionDeclarationPart())
+    {
+        visitProcedureAndFunctionDeclarationPart(procedureAndFunctionDeclarationPart);
+    }
+    builder.SetInsertPoint(block);
+    visitCompoundStatement(context->compoundStatement(), function);
 }
 
 void Visitor::visitTypeDefinitionPart(PascalSParser::TypeDefinitionPartContext *context)
@@ -117,12 +117,12 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
         throw NotImplementedException();
 }
 
-llvm::Value *Visitor::visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function)
+void Visitor::visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function)
 {
-    return visitStatements(context->statements(), function);
+    visitStatements(context->statements(), function);
 }
 
-llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function)
+void Visitor::visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function)
 {
     for (const auto &statementContext : context->statement())
     {
@@ -133,8 +133,6 @@ llvm::Value *Visitor::visitStatements(PascalSParser::StatementsContext *context,
         else
             throw NotImplementedException();
     }
-
-    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -10);
 }
 
 /**
@@ -195,40 +193,38 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
     if (context->LBRACK(0))
     {
         auto ranges = arrayRanges[varName];///< 数组索引的合法范围（来自定义）
-        std::vector<int> indexes;///< 数组元素索引（来自变量调用）
-
-        //计算context中各expression的值作为数组元素索引
+                std::vector<llvm::Value*> indexes;//获取数组变量的索引值
         for (auto indexExpression : context->expression())
         {
             auto index = visitExpression(indexExpression);
-            if (!index->getType()->isIntegerTy())
-            {
-                throw NotImplementedException();
-            }
-            int index_int;
-            if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(index))
-            {
-                index_int = CI->getSExtValue();
-            }
-            else
-            {
-                throw NotImplementedException();
-            }
-            indexes.push_back(index_int);
+            indexes.push_back(index);
         }
 
-        int offset = 0;///< 目标元素的相对偏移量（相对首元素）
-        int offsetUnit = 1;///< 偏移量单位（计算偏移量使用）
+        //计算偏移量
+        llvm::Value *offset, *offsetUnit;
+        auto con_0 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),0);
+        auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),1);
+        offset = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),0);
+        offsetUnit = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),1);
+        
         for(int j = indexes.size() - 1; j >= 0; j--)
         {
-            offset += ((indexes[j]- ranges[2*j]) * offsetUnit);
-            offsetUnit *= (ranges[2*j + 1] - ranges[2*j] + 1);
+            auto ranges_2j = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),ranges[2*j]);
+            auto temp_sub = builder.CreateSub(indexes[j],ranges_2j);
+            auto temp_mul = builder.CreateMul(temp_sub,offsetUnit);
+            offset = builder.CreateAdd(offset,temp_mul);
+            
+            auto ranges_2j_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),ranges[2*j + 1]);
+            auto ranges_sub = builder.CreateSub(ranges_2j_1,ranges_2j);
+            auto temp_add = builder.CreateAdd(ranges_sub,con_1);
+            offsetUnit = builder.CreateMul(offsetUnit,temp_add);
+
+
+            // offset += ((indexes[j]- ranges[2*j]) * offsetUnit);
+            // offsetUnit *= (ranges[2*j + 1] - ranges[2*j] + 1);
         }
 
-        /// 获取目标元素的内存地址
-        auto con_0 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context),0);
-        auto con_offset = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), offset);
-        addr = builder.CreateGEP(addr, {con_0, con_offset});
+        addr = builder.CreateGEP(addr, {con_0, offset});
     }
 
     /// 如果当前identifier对应的value是一个function类型，那么就将当前的identifier转换成返回  对应的identifier，即identifier+"ret"
@@ -1516,9 +1512,17 @@ void Visitor::visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext
     auto functionType = llvm::FunctionType::get(simpleType, ParaTypes, false);
     //根据functionType构造function
     auto function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, llvm::Twine(identifier), module.get());
+
     //创建一个基本块用于为返回值和参数创建CreateAlloca，CreateLoad语句
     auto block = llvm::BasicBlock::Create(*llvm_context, "Para_Ret", function);
+    // builder.CreateBr(block);
     builder.SetInsertPoint(block);
+    
+    if(builder.GetInsertBlock())
+        std::cout<<builder.GetInsertBlock()->getName().str()<<std::endl;
+    else
+    printf("meiyou ");
+    
     //为返回值申请内存
     auto addr = builder.CreateAlloca(simpleType, nullptr);
     //分别将返回值的地址，和函数的地址存入变量表中
@@ -1543,6 +1547,10 @@ void Visitor::visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext
     //最后去除返回值创建返回语句即可
     auto ret = builder.CreateLoad(addr);
     builder.CreateRet(ret);
+    if(builder.GetInsertBlock())
+        std::cout<<builder.GetInsertBlock()->getName().str()<<std::endl;
+    else
+    printf("meiyou ");
 }
 
 

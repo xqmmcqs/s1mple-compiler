@@ -44,7 +44,7 @@ namespace PascalS
         */
         std::string visitIdentifier(PascalSParser::IdentifierContext *context);
 
-        llvm::Value *visitBlock(PascalSParser::BlockContext *context, llvm::Function *function);
+        void visitBlock(PascalSParser::BlockContext *context, llvm::Function *function);
         /**
         * @brief 解析常量定义区域
         *
@@ -289,14 +289,14 @@ namespace PascalS
         */
         void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function);
 
-        llvm::Value *visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function);
+        void visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function);
         /**
         * @brief 解析statemnet组成的集合
         *
         * @param context 语法树中表示statements语句分支的context
         * @return statement的value值
         */
-        llvm::Value *visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function=nullptr);
+        void visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function=nullptr);
 
         void visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context, llvm::Function *function);
 
