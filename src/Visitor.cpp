@@ -162,8 +162,18 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
     
     if (auto varAddr = visitVariable(context->variable()))
     {
+        std::string strValue,strType;
+        llvm::raw_string_ostream valueStream(strValue);
+        llvm::raw_string_ostream typeStream(strType);
+        value->print(valueStream);
+        value->getType()->print(typeStream);
+
+        auto varName = visitIdentifier(context->variable()->identifier(0));
+        std::cout<<__func__<<": "<<varName<<" will be assigned!"<<std::endl;
+
         builder.CreateStore(value, varAddr);
-        std::cout << __func__<<std::endl;
+    
+        std::cout<<__func__<<": "<<varName<<" get value: "<<strValue<<std::endl;
     }
     else
     {
@@ -267,15 +277,15 @@ llvm::Value *Visitor::visitExpression(PascalSParser::ExpressionContext *context)
 
 llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R)
 {
-    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
         return builder.CreateFCmpUEQ(L, R);
 
-    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
         auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUEQ(L_FP, R);
     }
-    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
     {
         auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUEQ(L, R_FP);
@@ -286,15 +296,15 @@ llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm:
 
 llvm::Value *Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R)
 {
-    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
         return builder.CreateFCmpUNE(L, R);
 
-    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
         auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUNE(L_FP, R);
     }
-    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
     {
         auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUNE(L, R_FP);
@@ -305,15 +315,15 @@ llvm::Value *Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context,
 
 llvm::Value *Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R)
 {
-    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
         return builder.CreateFCmpULT(L, R);
 
-    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
         auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpULT(L_FP, R);
     }
-    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
     {
         auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpULT(L, R_FP);
@@ -324,15 +334,15 @@ llvm::Value *Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value
 
 llvm::Value *Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R)
 {
-    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
         return builder.CreateFCmpULE(L, R);
 
-    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
         auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpULE(L_FP, R);
     }
-    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
     {
         auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpULE(L, R_FP);
@@ -343,15 +353,15 @@ llvm::Value *Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value
 
 llvm::Value *Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R)
 {
-    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
         return builder.CreateFCmpUGE(L, R);
 
-    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
         auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUGE(L_FP, R);
     }
-    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
     {
         auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUGE(L, R_FP);
@@ -362,15 +372,15 @@ llvm::Value *Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value
 
 llvm::Value *Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R)
 {
-    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
         return builder.CreateFCmpUGT(L, R);
 
-    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
         auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUGT(L_FP, R);
     }
-    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
     {
         auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUGT(L, R_FP);
@@ -409,32 +419,46 @@ llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionConte
 
 llvm::Value *Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R)
 {
-    if (R->getType()->isFloatTy() && L->getType()->isFloatTy())
+    std::cout<<__func__<<std::endl;
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
+    {
+        std::cout << __func__<<": float add excute!" << std::endl;
         return builder.CreateFAdd(L, R);
+    }
 
-    if (R->getType()->isFloatTy() && L->getType()->isIntegerTy())
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
         auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFAdd(L_FP, R);
     }
-    else if (L->getType()->isFloatTy() && R->getType()->isIntegerTy())
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
     {
         auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFAdd(L, R_FP);
     }
-    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
-    {
-        return builder.CreateAdd(L, R);
-    }
-    else
-    {
-        throw DebugException("Error to add tow value!");
-    }
-    
+
+    return builder.CreateAdd(L, R);
 }
 
 llvm::Value *Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R)
 {
+    std::cout<<__func__<<std::endl;
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
+    {
+        std::cout << __func__<<": float minus excute!" << std::endl;
+        return builder.CreateFSub(L, R);
+    }
+
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFSub(L_FP, R);
+    }
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFSub(L, R_FP);
+    }
     return builder.CreateSub(L, R);
 }
 
@@ -480,21 +504,89 @@ llvm::Value *Visitor::visitTerm(PascalSParser::TermContext *context)
 
 llvm::Value *Visitor::visitOpStar(PascalSParser::OpStarContext *context, llvm::Value *L, llvm::Value *R)
 {
+    std::cout<<__func__<<std::endl;
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
+    {
+        std::cout << __func__<<": float mul excute!" << std::endl;
+        return builder.CreateFMul(L, R);
+    }
+
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFMul(L_FP, R);
+    }
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFMul(L, R_FP);
+    }
     return builder.CreateMul(L, R);
 }
 
 llvm::Value *Visitor::visitOpSlash(PascalSParser::OpSlashContext *context, llvm::Value *L, llvm::Value *R)
 {
-    return builder.CreateFDiv(L, R);
+    std::cout<<__func__<<std::endl;
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
+    {
+        std::cout << __func__<<": float div excute!" << std::endl;
+        return builder.CreateFDiv(L, R);
+    }
+
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFDiv(L_FP, R);
+    }
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFDiv(L, R_FP);
+    }
+    return builder.CreateSDiv(L, R);
 }
 
 llvm::Value *Visitor::visitOpDiv(PascalSParser::OpDivContext *context, llvm::Value *L, llvm::Value *R)
 {
+    std::cout<<__func__<<std::endl;
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
+    {
+        std::cout << __func__<<": float div excute!" << std::endl;
+        return builder.CreateFDiv(L, R);
+    }
+
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFDiv(L_FP, R);
+    }
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFDiv(L, R_FP);
+    }
     return builder.CreateSDiv(L, R);
 }
 
 llvm::Value *Visitor::visitOpMod(PascalSParser::OpModContext *context, llvm::Value *L, llvm::Value *R)
 {
+    std::cout<<__func__<<std::endl;
+    if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
+    {
+        std::cout << __func__<<": float mod excute!" << std::endl;
+        return builder.CreateFRem(L, R);
+    }
+
+    if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
+    {
+        auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFRem(L_FP, R);
+    }
+    else if (L->getType()->isFloatingPointTy() && R->getType()->isIntegerTy())
+    {
+        auto R_FP = builder.CreateSIToFP(R,llvm::Type::getFloatTy(*llvm_context));
+        return builder.CreateFRem(L, R_FP);
+    }
     return builder.CreateSRem(L, R);
 }
 
@@ -506,27 +598,93 @@ llvm::Value *Visitor::visitOpAnd(PascalSParser::OpAndContext *context, llvm::Val
 llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *context)
 {
     int flag = context->MINUS() ? -1 : 1;
+    float flag_fp = context->MINUS() ? -1 : 1;
     auto flag_v = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), flag);
+    auto flag_v_fp = llvm::ConstantFP::get(llvm::Type::getFloatTy(*llvm_context), flag_fp);
 
     if (auto factorVarCtx = dynamic_cast<PascalSParser::FactorVarContext *>(context->factor()))
     {
         auto value = visitFactorVar(factorVarCtx);
-        return builder.CreateMul(flag_v, value);
+        if (context->MINUS())
+            if (value->getType()->isFloatingPointTy())
+            {
+                return builder.CreateFMul(flag_v_fp,value);
+            }
+            else if (value->getType()->getIntegerBitWidth() == 1U)
+            {
+                return builder.CreateNot(value);
+            }
+            else if (value->getType()->getIntegerBitWidth() == 32U)
+            {
+                return builder.CreateMul(flag_v,value);
+            }
+            else
+                throw NotImplementedException();
+        else
+            return value;
     }
     else if (auto factorExprCtx = dynamic_cast<PascalSParser::FactorExprContext *>(context->factor()))
     {
         auto value = visitFactorExpr(factorExprCtx);
-        return builder.CreateMul(flag_v, value);
+        if (context->MINUS())
+            if (value->getType()->isFloatingPointTy())
+            {
+                return builder.CreateFMul(flag_v_fp,value);
+            }
+            else if (value->getType()->getIntegerBitWidth() == 1U)
+            {
+                return builder.CreateNot(value);
+            }
+            else if (value->getType()->getIntegerBitWidth() == 32U)
+            {
+                return builder.CreateMul(flag_v,value);
+            }
+            else
+                throw NotImplementedException();
+        else
+            return value;
     }
     else if (auto factorFuncCtx = dynamic_cast<PascalSParser::FactorFuncContext *>(context->factor()))
     {
         auto value = visitFactorFunc(factorFuncCtx);
-        return builder.CreateMul(flag_v, value);
+        if (context->MINUS())
+            if (value->getType()->isFloatingPointTy())
+            {
+                return builder.CreateFMul(flag_v_fp,value);
+            }
+            else if (value->getType()->getIntegerBitWidth() == 1U)
+            {
+                return builder.CreateNot(value);
+            }
+            else if (value->getType()->getIntegerBitWidth() == 32U)
+            {
+                return builder.CreateMul(flag_v,value);
+            }
+            else
+                throw NotImplementedException();
+        else
+            return value;
     }
     else if (auto factorUnsConstCtx = dynamic_cast<PascalSParser::FactorUnsConstContext *>(context->factor()))
     {
         auto value = visitFactorUnsConst(factorUnsConstCtx);
-        return builder.CreateMul(flag_v, value);
+        if (context->MINUS())
+            if (value->getType()->isFloatingPointTy())
+            {
+                return builder.CreateFMul(flag_v_fp,value);
+            }
+            else if (value->getType()->getIntegerBitWidth() == 1U)
+            {
+                return builder.CreateNot(value);
+            }
+            else if (value->getType()->getIntegerBitWidth() == 32U)
+            {
+                return builder.CreateMul(flag_v,value);
+            }
+            else
+                throw NotImplementedException();
+        else
+            return value;
     }
     else if (auto factorNotFactCtx = dynamic_cast<PascalSParser::FactorNotFactContext *>(context->factor()))
     {
@@ -536,7 +694,6 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
         else
             return value;
     }
-    // FIXME:整型与bool型的乘法会导致错误
     else if (auto factorBoolCtx = dynamic_cast<PascalSParser::FactorBoolContext *>(context->factor()))
     {
         auto value = visitFactorBool(factorBoolCtx);
@@ -606,7 +763,6 @@ llvm::Value *Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *co
     llvm::Value *value;
     if (auto factorVarCtx = dynamic_cast<PascalSParser::FactorVarContext *>(context->factor()))
     {
-        std::cout << __func__<<std::endl;
         value = visitFactorVar(factorVarCtx);
     }
     else if (auto factorExprCtx = dynamic_cast<PascalSParser::FactorExprContext *>(context->factor()))
@@ -646,7 +802,6 @@ llvm::Value *Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *co
 
 llvm::Value *Visitor::visitFactorBool(PascalSParser::FactorBoolContext *context)
 {
-    std::cout << __func__<<std::endl;
     auto bool_str = context->bool_()->getText();
 
     if (bool_str == "TRUE" || bool_str == "true")
@@ -712,6 +867,10 @@ std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterL
         for (auto actualPara : context->actualParameter())
         {
             auto param = visitActualParameter(actualPara);
+            if (param->getType()->isFloatingPointTy())///< 在调用printf输出浮点数时，必须转换为double类型
+            {
+                param = builder.CreateFPExt(param, llvm::Type::getDoubleTy(*llvm_context));
+            }
             params.push_back(param);
         }
     }

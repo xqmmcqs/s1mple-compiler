@@ -43,7 +43,7 @@ void StandardProcedure::readlnArgsConstructor(llvm::IRBuilder<> *builder, std::v
         if (type->isIntegerTy())
             formats.push_back("%d");
         else if (type->isFloatTy())
-            formats.push_back("%f");
+            formats.push_back("%lf");
         else
             throw NotImplementedException();
     }
@@ -72,8 +72,11 @@ void StandardProcedure::writelnArgsConstructor(llvm::IRBuilder<> *builder, std::
         auto type = arg->getType();
         if (type->isIntegerTy())
             formats.push_back("%d");
+        else if (type->isDoubleTy())
+            formats.push_back("%lf");
         else
             throw NotImplementedException();
+
     }
     formats.push_back("\n");
 
