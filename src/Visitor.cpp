@@ -155,30 +155,13 @@ void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *co
     visitAssignmentStatement(context->assignmentStatement());
 }
 
-//TODO: 添加对浮点型变量的访问支持
 void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context)
 {
     auto value = visitExpression(context->expression());
-    
     if (auto varAddr = visitVariable(context->variable()))
-    {
-        std::string strValue,strType;
-        llvm::raw_string_ostream valueStream(strValue);
-        llvm::raw_string_ostream typeStream(strType);
-        value->print(valueStream);
-        value->getType()->print(typeStream);
-
-        auto varName = visitIdentifier(context->variable()->identifier(0));
-        std::cout<<__func__<<": "<<varName<<" will be assigned!"<<std::endl;
-
         builder.CreateStore(value, varAddr);
-    
-        std::cout<<__func__<<": "<<varName<<" get value: "<<strValue<<std::endl;
-    }
     else
-    {
         throw VariableNotFoundException(visitIdentifier(context->variable()->identifier(0)));
-    }
 }
 
 // TODO: 实现多维数组中变量用作索引的访问
@@ -419,12 +402,8 @@ llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionConte
 
 llvm::Value *Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R)
 {
-    std::cout<<__func__<<std::endl;
     if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
-    {
-        std::cout << __func__<<": float add excute!" << std::endl;
         return builder.CreateFAdd(L, R);
-    }
 
     if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
@@ -442,12 +421,8 @@ llvm::Value *Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::V
 
 llvm::Value *Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R)
 {
-    std::cout<<__func__<<std::endl;
     if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
-    {
-        std::cout << __func__<<": float minus excute!" << std::endl;
         return builder.CreateFSub(L, R);
-    }
 
     if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
@@ -504,12 +479,8 @@ llvm::Value *Visitor::visitTerm(PascalSParser::TermContext *context)
 
 llvm::Value *Visitor::visitOpStar(PascalSParser::OpStarContext *context, llvm::Value *L, llvm::Value *R)
 {
-    std::cout<<__func__<<std::endl;
     if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
-    {
-        std::cout << __func__<<": float mul excute!" << std::endl;
         return builder.CreateFMul(L, R);
-    }
 
     if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
@@ -526,13 +497,8 @@ llvm::Value *Visitor::visitOpStar(PascalSParser::OpStarContext *context, llvm::V
 
 llvm::Value *Visitor::visitOpSlash(PascalSParser::OpSlashContext *context, llvm::Value *L, llvm::Value *R)
 {
-    std::cout<<__func__<<std::endl;
     if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
-    {
-        std::cout << __func__<<": float div excute!" << std::endl;
         return builder.CreateFDiv(L, R);
-    }
-
     if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
         auto L_FP = builder.CreateSIToFP(L,llvm::Type::getFloatTy(*llvm_context));
@@ -548,12 +514,8 @@ llvm::Value *Visitor::visitOpSlash(PascalSParser::OpSlashContext *context, llvm:
 
 llvm::Value *Visitor::visitOpDiv(PascalSParser::OpDivContext *context, llvm::Value *L, llvm::Value *R)
 {
-    std::cout<<__func__<<std::endl;
     if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
-    {
-        std::cout << __func__<<": float div excute!" << std::endl;
         return builder.CreateFDiv(L, R);
-    }
 
     if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
@@ -570,12 +532,8 @@ llvm::Value *Visitor::visitOpDiv(PascalSParser::OpDivContext *context, llvm::Val
 
 llvm::Value *Visitor::visitOpMod(PascalSParser::OpModContext *context, llvm::Value *L, llvm::Value *R)
 {
-    std::cout<<__func__<<std::endl;
     if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
-    {
-        std::cout << __func__<<": float mod excute!" << std::endl;
         return builder.CreateFRem(L, R);
-    }
 
     if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
