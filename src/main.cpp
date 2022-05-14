@@ -57,6 +57,6 @@ int main(int argc, char *argv[])
         llvm::errs() << error << '\n';
         return 1;
     }
-    printf("jieshuleeeeeee");
+    
     return 0;
 }
