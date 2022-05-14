@@ -40,6 +40,6 @@ build/
 .idea/
 
 test/
-!test/*.pas
+!test/HelloWorld.pas
 
 note.txt
