@@ -186,6 +186,7 @@ namespace PascalS
         void visitConstList(PascalSParser::ConstListContext *context);
 
         void visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext *context);
+        
         /**
         * @brief 解析简单语句
         *
@@ -199,74 +200,296 @@ namespace PascalS
         */
         void visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function=nullptr);
 
+        /**
+         * @brief the entry of AssignmentStatement 访问AST中赋值语句的入口
+         * @param context the context of SimpleStateAssignContext type 一个SimpleStateAssignContext类型的context
+         */
         void visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context);
 
         void visitSimpleStateProc(PascalSParser::SimpleStateProcContext *context);
 
         void visitSimpleStateEmpty(PascalSParser::SimpleStateEmptyContext *context);
-        
+
+        /**
+         * @brief calculate the value of expression in right and assign it to the left 计算右侧表达式的值并将其赋给左侧变量
+         * @param context the context of AssignmentStatementContext type 一个AssignmentStatementContext类型的context
+         */
         void visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context);
-        
+
+        /**
+         * @brief 获取变量的内存地址
+         * @param context VariableContext*类型的context
+         * @return llvm::Value*： return the address of variable or array element
+         * @retval std::nullptr 未找到变量
+         */
         llvm::Value* visitVariable(PascalSParser::VariableContext *context);
 
+        /**
+         * @brief 访问并计算AST中Expression节点的值
+         * 
+         * @param context ExpressionContext*类型的context
+         * @return llvm::Value*： 返回Expression的计算结果
+         */
         llvm::Value* visitExpression(PascalSParser::ExpressionContext *context);
 
+        /**
+         * @brief 访问AST中OpEqual节点
+         * 
+         * @param context OpEqualContext* 类型的context
+         * @param L llvm::Value*：左侧子表达式的值
+         * @param R llvm::Value*：右侧子表达式的值
+         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         */
         llvm::Value* visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R);
 
+        /**
+         * @brief 访问AST中OpNotEqual节点
+         * 
+         * @param context OpNotEqualContext* 类型的context
+         * @param L llvm::Value*：左侧子表达式的值
+         * @param R llvm::Value*：右侧子表达式的值
+         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         */
         llvm::Value* visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R);
 
+        /**
+         * @brief 访问AST中OpLt节点
+         * 
+         * @param context OpLtContext* 类型的context
+         * @param L llvm::Value*：左侧子表达式的值
+         * @param R llvm::Value*：右侧子表达式的值
+         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         */
         llvm::Value* visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R);
 
+        /**
+         * @brief 访问AST中OpLe节点
+         * 
+         * @param context OpLeContext* 类型的context
+         * @param L llvm::Value*：左侧子表达式的值
+         * @param R llvm::Value*：右侧子表达式的值
+         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         */
         llvm::Value* visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R);
 
+        /**
+         * @brief 访问AST中OpGe节点
+         * 
+         * @param context OpGeContext* 类型的context
+         * @param L llvm::Value*：左侧子表达式的值
+         * @param R llvm::Value*：右侧子表达式的值
+         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         */
         llvm::Value* visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R);
 
+        /**
+         * @brief 访问AST中OpGt节点
+         * 
+         * @param context OpGtContext* 类型的context
+         * @param L llvm::Value*：左侧子表达式的值
+         * @param R llvm::Value*：右侧子表达式的值
+         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         */
         llvm::Value* visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R);
 
+        /**
+         * @brief 访问并计算AST中SimpleExpression节点的值
+         * 
+         * @param context SimpleExpressionContext*类型的context
+         * @return llvm::Value*： 返回SimpleExpression的计算结果
+         */
         llvm::Value* visitSimpleExpression(PascalSParser::SimpleExpressionContext *context);
 
+        /**
+         * @brief 访问AST中OpPlus节点
+         * 
+         * @param context OpPlusContext* 类型的context
+         * @param L llvm::Value*：左侧term的值
+         * @param R llvm::Value*：右侧term的值
+         * @return llvm::Value*：返回左右两侧term的计算结果
+         */
         llvm::Value* visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R);
 
+        /**
+         * @brief 访问AST中OpMinus节点
+         * 
+         * @param context OpMinusContext* 类型的context
+         * @param L llvm::Value*：左侧term的值
+         * @param R llvm::Value*：右侧term的值
+         * @return llvm::Value*：返回左右两侧term的计算结果
+         */
         llvm::Value* visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R);
 
+        /**
+         * @brief 访问AST中OpOr节点
+         * 
+         * @param context OpOrContext* 类型的context
+         * @param L llvm::Value*：左侧term的值
+         * @param R llvm::Value*：右侧term的值
+         * @return llvm::Value*：返回左右两侧term的计算结果
+         */
         llvm::Value* visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R);
 
+        /**
+         * @brief 访问并计算AST中Term节点的值
+         * 
+         * @param context TermContext*类型的context
+         * @return llvm::Value*： 返回Term的计算结果
+         */
         llvm::Value* visitTerm(PascalSParser::TermContext *context);
 
+        /**
+         * @brief 访问AST中OpStar（乘法）节点
+         * 
+         * @param context OpStarContext* 类型的context
+         * @param L llvm::Value*：左侧SignedFactor的值
+         * @param R llvm::Value*：右侧SignedFactor的值
+         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         */
         llvm::Value* visitOpStar(PascalSParser::OpStarContext *context, llvm::Value* L, llvm::Value* R);
 
+        /**
+         * @brief 访问AST中OpSlash（浮点数除法）节点
+         * 
+         * @param context OpSlashContext* 类型的context
+         * @param L llvm::Value*：左侧SignedFactor的值
+         * @param R llvm::Value*：右侧SignedFactor的值
+         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         */
         llvm::Value* visitOpSlash(PascalSParser::OpSlashContext *context, llvm::Value* L, llvm::Value* R);
 
+        /**
+         * @brief 访问AST中OpDiv（整数除法）节点
+         * 
+         * @param context OpDivContext* 类型的context
+         * @param L llvm::Value*：左侧SignedFactor的值
+         * @param R llvm::Value*：右侧SignedFactor的值
+         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         */
         llvm::Value* visitOpDiv(PascalSParser::OpDivContext *context, llvm::Value* L, llvm::Value* R);
 
+        /**
+         * @brief 访问AST中OpMod（整数取余）节点
+         * 
+         * @param context OpModContext* 类型的context
+         * @param L llvm::Value*：左侧SignedFactor的值
+         * @param R llvm::Value*：右侧SignedFactor的值
+         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         */
         llvm::Value* visitOpMod(PascalSParser::OpModContext *context, llvm::Value* L, llvm::Value* R);
 
+        /**
+         * @brief 访问AST中OpAnd（与）节点
+         * 
+         * @param context OpAndContext* 类型的context
+         * @param L llvm::Value*：左侧SignedFactor的值
+         * @param R llvm::Value*：右侧SignedFactor的值
+         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         */
         llvm::Value* visitOpAnd(PascalSParser::OpAndContext *context, llvm::Value* L, llvm::Value* R);
 
+        /**
+         * @brief 访问并计算AST中SignedFactor节点的值
+         * 
+         * @param context SignedFactorContext*：context
+         * @return llvm::Value*： 返回SignedFactor的计算结果
+         */
         llvm::Value* visitSignedFactor(PascalSParser::SignedFactorContext *context);
 
+        /**
+         * @brief 访问expression中的变量
+         * 
+         * @note 这是Visitor中访问Variable的唯一接口。
+         * @param context FactorVarContext*类型的context
+         * @return llvm::Value*：Variable的值（default）或地址（Visitor.readlnArgFlag == ture）
+         */
         llvm::Value* visitFactorVar(PascalSParser::FactorVarContext *context);
 
+        /**
+         * @brief 访问AST中FactorExpr节点，计算FactorExpr的值。
+         * 
+         * @param context FactorExprContext *类型。
+         * @return llvm::Value*：FactorExpr的值。
+         */
         llvm::Value* visitFactorExpr(PascalSParser::FactorExprContext *context);
 
+        /**
+         * @brief 访问AST中FactorFunc节点，调用Function
+         * 
+         * @param context FactorFuncContext *类型
+         * @return llvm::Value*：调用Function的返回值
+         */
         llvm::Value* visitFactorFunc(PascalSParser::FactorFuncContext *context);
 
+        /**
+         * @brief 访问AST中FactorUnsConst节点
+         * 
+         * @param context FactorUnsConstContext *类型
+         * @return llvm::Value*：FactorUnsConst的值
+         */
         llvm::Value* visitFactorUnsConst(PascalSParser::FactorUnsConstContext *context);
 
+        /**
+         * @brief 访问并计算AST中FactorNotFact节点的值
+         * @note 与visitSignedFactor相比，context剥离了+/-符号
+         * @param context FactorNotFactContext*类型
+         * @return llvm::Value*： 返回FactorNotFact的计算结果
+         */
         llvm::Value* visitFactorNotFact(PascalSParser::FactorNotFactContext *context);
 
+        /**
+         * @brief 访问AST中FactorBool节点
+         * 
+         * @param context FactorBoolContext *类型
+         * @return llvm::Value*：FactorBool的值
+         */
         llvm::Value* visitFactorBool(PascalSParser::FactorBoolContext *context);
 
+        /**
+         * @brief 访问AST中UnsignedConstUnsignedNum节点
+         * 
+         * @param context UnsignedConstUnsignedNumContext *类型
+         * @return llvm::Value*：返回UnsignedConstUnsignedNum类型常量值
+         */
         llvm::Value* visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConstUnsignedNumContext *context);
 
+        /**
+         * @brief 访问AST中UnsignedConstStr节点
+         * 
+         * @param context UnsignedConstStrContext *类型
+         * @return std::string 返回字符串常量的值
+         */
         std::string visitUnsignedConstStr(PascalSParser::UnsignedConstStrContext *context);
 
+        /**
+         * @brief 访问AST中FunctionDesignator节点
+         * @note 这是AST中调用函数的唯一接口
+         * @param context FunctionDesignatorContext *类型
+         * @return llvm::Value* 返回函数Function调用得到的返回值
+         */
         llvm::Value* visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context);
 
+        /**
+         * @brief 构造函数调用或过程调用的参数列表
+         * @note 输入参数context为null时表示发生了一个无参数过程调用
+         * @param context ParameterListContext *类型
+         * @return std::vector<llvm::Value *> 所需形参值的std::vector
+         */
         std::vector<llvm::Value *> visitParameterList(PascalSParser::ParameterListContext *context);
 
+        /**
+         * @brief 识别并调用过程。包括用户定义过程和标准输入、输出过程
+         * 
+         * @param context ProcedureStatementContext *类型
+         */
         void visitProcedureStatement(PascalSParser::ProcedureStatementContext *context);
 
+        /**
+         * @brief 计算函数调用或过程调用的参数列表中的一个参数值
+         * 
+         * @param context ActualParameterContext *类型
+         * @return llvm::Value* 形参的参数值
+         */
         llvm::Value* visitActualParameter(PascalSParser::ActualParameterContext *context);
 
         void visitParameterwidth(PascalSParser::ParameterwidthContext *context);
@@ -274,6 +497,7 @@ namespace PascalS
         void visitEmptyStatement_(PascalSParser::EmptyStatement_Context *context);
 
         void visitEmpty_(PascalSParser::Empty_Context *context);
+
         /**
         * @brief 解析复合语句，如条件，循环等
         *
