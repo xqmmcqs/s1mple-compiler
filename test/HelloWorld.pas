@@ -1,31 +1,35 @@
 program HelloWorld;
-const a=30;
-var result_int,b,c:integer;
-result_bool,d,e:boolean;
-result_real,f,g:real;
-s:array [-5..10,-5..90] of integer;
-s_1:array [-5..90] of integer;
-
-{function testfun(n:integer):integer;
+var
+    n,i:integer;
+    a:array[0..4]of integer;
+procedure kp(l,r:integer);
+var
+    i,j,mid:integer;
 begin
-    if n>2 then testfun:=testfun(n-1)+testfun(n-2)
-    else testfun:=1;
-end;}
-
+        if l<r then begin
+        i:=l;j:=r;mid:=a[(l+r) / 2];
+        repeat
+            while a[i]<mid do i:=i+1;
+                while a[j]>mid do j:=j-1;
+                        if i<=j then
+                        begin
+                                a[0]:=a[i];a[i]:=a[j];a[j]:=a[0];
+                                i:=i+1;j:=j-1;
+                        end;
+        until i>j;
+    kp(l,j);
+    kp(i,r)
+        end;
+end;
 begin
-    b:=9;
-    c:=3;
-    result_int:=b+c;
-    writeln(result_int);
-    d:=true;
-    e:=false;
-    f:=6.5;
-    g:=-3.0;
-    result_real:=f*g;
-    writeln(result_real);
-    {writeln(result_real);}
-    {result_real:=-3.0;}
-    {writeln(result_real);}
-    {s_1[testfun(c)]:=c;
-    writeln(s_1[testfun(c)]);}
+    n:=5;
+    for i:=1 to n do
+    a[0]:=5;
+    a[1]:=4;
+    a[2]:=3;
+    a[3]:=2;
+    a[4]:=1;
+    kp(1,n);
+    for i:=1 to n do
+    writeln(a[i]);
 end.
