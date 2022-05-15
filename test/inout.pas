@@ -1,7 +1,7 @@
 Program inout;
 
 Var 
-  n: integer;
+  n: real;
 Begin
   readln(n);
   writeln(n)
