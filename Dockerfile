@@ -8,6 +8,7 @@ RUN apt-get update && \
     cmake \
     make \
     build-essential \
+    fp-compiler \
     zlib1g-dev && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
