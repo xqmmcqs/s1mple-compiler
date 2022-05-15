@@ -819,7 +819,7 @@ std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterL
         for (auto actualPara : context->actualParameter())
         {
             auto param = visitActualParameter(actualPara);
-            if (param->getType()->isFloatingPointTy()) ///< 在调用printf输出浮点数时，必须转换为double类型
+            if (param->getType()->isFloatingPointTy()) // 在调用printf输出浮点数时，必须转换为double类型
             {
                 param = builder.CreateFPExt(param, llvm::Type::getDoubleTy(*llvm_context));
             }
@@ -855,13 +855,18 @@ void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *
     else if (StandardProcedure::hasProcedure(identifier))
     {
         auto stdProcedure = StandardProcedure::prototypeMap[identifier](module.get());
-        if ("readln" == identifier)
-            readlnArgFlag = true;
         auto paraList = visitParameterList(context->parameterList());
         StandardProcedure::argsConstructorMap[identifier](&builder, paraList);
+        if ("readln" == identifier)
+        {
+            readlnArgFlag = true;
+            auto paraList2 = visitParameterList(context->parameterList());
+            readlnArgFlag = false;
+            paraList2.insert(paraList2.begin(), paraList.front());
+            paraList = paraList2;
+        }
         llvm::ArrayRef<llvm::Value *> argsRef(paraList);
         builder.CreateCall(stdProcedure, argsRef);
-        readlnArgFlag = false;
     }
     else
         throw ProcedureNotFoundException(identifier);

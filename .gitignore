@@ -39,5 +39,5 @@ build/
 .vscode/
 .idea/
 
-test/
-!test/HelloWorld.pas
+test/*
+!/test/*.pas
