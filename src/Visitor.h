@@ -159,21 +159,58 @@ namespace PascalS
         * @param context 语法树中表示变量定义分支的context
         */
         llvm::Type *visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context);
-
+        /**
+        * @brief visitProcedureAndFunctionDeclarationPart
+        * @note Determine whether it is a procedure declaration or a function declaration 判断是过程声明还是函数声明
+        * @param context the context of ProcedureAndFunctionDeclarationPart, indicating what to do next ProcedureAndFunctionDeclarationPartContext类型的参数，指示下一步动作
+        */
         void visitProcedureAndFunctionDeclarationPart(PascalSParser::ProcedureAndFunctionDeclarationPartContext *context);
-
+        /**
+        * @brief visitProOrFuncDecPro
+        * @note enter the part of ProcedureDeclaration 进入过程声明部分
+        * @param context the context of ProOrFuncDecProContext
+        */
         void visitProOrFuncDecPro(PascalSParser::ProOrFuncDecProContext *context);
-
+        /**
+         * @brief visitProOrFuncDecFunc
+         * @note enter the part of FunctionDeclaration 进入函数声明部分
+         * @param context the context of ProOrFuncDecFuncContext
+         */
         void visitProOrFuncDecFunc(PascalSParser::ProOrFuncDecFuncContext *context);
-
+        /**
+         * @brief visitProcedureDeclaration
+         * @note declare a procedure and add it to scopes 声明一个过程，并将其添加到变量表中
+         * @param context the context of ProcedureDeclarationContext
+         */
         void visitProcedureDeclaration(PascalSParser::ProcedureDeclarationContext *context);
-
+        /**
+         * @brief visitFormalParameterList
+         * @note Access the list of normal and var arguments 访问普通参数和var参数列表
+         * @param context the context of visitFormalParameterList visitFormalParameterList类型的context
+         * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
+         */
         void visitFormalParameterList(PascalSParser::FormalParameterListContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes);
-
+        /**
+         * @brief visitFormalParaSecGroup
+         * @note visit the non-var parameterGroup 访问非var类型变量
+         * @param context the context of FormalParaSecGroupContext FormalParaSecGroupContext类型的context
+         * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
+         */
         void visitFormalParaSecGroup(PascalSParser::FormalParaSecGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes);
-
+        /**
+         * @brief visitFormalParaSecVarGroup
+         * @note visit the var parameterGroup 访问var类型变量
+         * @param context the context of FormalParaSecVarGroupContext FormalParaSecVarGroupContext类型的context
+         * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
+         */
         void visitFormalParaSecVarGroup(PascalSParser::FormalParaSecVarGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes);
-
+        /**
+         * @brief visitParameterGroup
+         * @note get types and names of parameters 得到参数的类型和参数名
+         * @param context the context of ParameterGroupContext ParameterGroupContext类型的context
+         * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
+         * @param isVar type:bool true:is var false:is not var 
+         */
         void visitParameterGroup(PascalSParser::ParameterGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes, bool isVar);
         /**
         * @brief 解析标识符串
@@ -184,7 +221,11 @@ namespace PascalS
         std::vector<std::string> visitIdentifierList(PascalSParser::IdentifierListContext *context);
 
         void visitConstList(PascalSParser::ConstListContext *context);
-
+        /**
+         * @brief visitFunctionDeclaration
+         * @note declare a function and add it to scopes 声明一个函数，并将其添加到变量表中
+         * @param context the context of FunctionDeclarationContext
+         */
         void visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext *context);
         
         /**
