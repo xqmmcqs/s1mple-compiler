@@ -167,8 +167,12 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
     llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
-    
+
+    // scopes中无法找到变量后再去global中寻找
     addr = getVariable(varName);
+    if (!addr)
+        addr = module->getGlobalVariable(varName);
+
 
     if (context->LBRACK(0) && addr != nullptr)
     {
@@ -176,7 +180,9 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
         std::vector<llvm::Value *> indexes; //获取数组变量的索引值
         for (auto indexExpression : context->expression())
         {
+            arrayIndexFlag = true;
             auto index = visitExpression(indexExpression);
+            arrayIndexFlag = false;
             indexes.push_back(index);
         }
 
@@ -203,6 +209,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
             // offsetUnit *= (ranges[2*j + 1] - ranges[2*j] + 1);
         }
 
+        //readlnArgFlag = true;
         addr = builder.CreateGEP(addr, {con_0, offset});
     }
 
@@ -571,7 +578,7 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
                 return builder.CreateMul(flag_v, value);
             }
             else
-                throw NotImplementedException();
+                throw DebugException(NOW_FUNC_NAME+"无法识别的返回值类型");
         else
             return value;
     }
@@ -662,29 +669,13 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
 
 llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
-    auto varAddr = visitVariable(context->variable());
     auto varName = visitIdentifier(context->variable()->identifier(0));
-    
+    auto varAddr = visitVariable(context->variable());
     if (!varAddr)
-    {
-        varAddr = module->getGlobalVariable(varName);
-        if (!varAddr)
-        {
-            throw VariableNotFoundException(varName);
-        }
-        //为readln构造参数时需要返回地址
-        else if (readlnArgFlag == true)
-        {
-            return varAddr;
-        }
-        else
-        {
-            return builder.CreateLoad(varAddr->getType()->getPointerElementType(), varAddr);
-        }
-    }
-
+        throw VariableNotFoundException(varName);
+    
     //为readln构造参数时需要返回地址
-    if (readlnArgFlag == true)
+    if (readlnArgFlag == true && arrayIndexFlag == false)
     {
         return varAddr;
     }
@@ -1149,7 +1140,6 @@ llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclaration
                 module->getOrInsertGlobal(id, type);
                 auto addr = module->getNamedGlobal(id);
                 addr->setInitializer(llvm::UndefValue::get(type));
-                scopes.back().setVariable(id, addr);
                 if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
                     arrayRanges[id] = arrayRangeTemp;
             }

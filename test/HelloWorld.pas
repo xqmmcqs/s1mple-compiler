@@ -3,8 +3,8 @@ Program HelloWorld;
 Var 
   n,i: integer;
   a: array[0..4] Of integer;
-Procedure kp(l,r:integer);
 
+Procedure kp(l,r:integer);
 Var 
   i,j,x: integer;
 Begin
@@ -27,8 +27,14 @@ Begin
       kp(i+1,r);
     End;
 End;
+
 Begin
-  n := 1;
+  n := 5;
+  {a[0]:=5;
+  a[1]:=4;
+  a[2]:=3;
+  a[3]:=2;
+  a[4]:=1;}
   For i:=0 To n-1 Do
     readln(a[i]);
   kp(0,n-1);

@@ -24,6 +24,7 @@ namespace PascalS
         std::unordered_map<std::string, std::vector<int>> arrayRanges;
         std::vector<int> arrayRangeTemp;
         bool readlnArgFlag = false;
+        bool arrayIndexFlag = false;
 
         Visitor(std::string filename) : llvm_context(std::make_unique<llvm::LLVMContext>()),
                                         builder(*llvm_context),
