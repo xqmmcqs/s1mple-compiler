@@ -76,7 +76,7 @@ void Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Function *f
     }
     for (const auto &variableDeclarePartContext : context->variableDeclarationPart())
     {
-        visitVariableDeclarationPart(variableDeclarePartContext);
+        visitVariableDeclarationPart(variableDeclarePartContext,isGlobal);
     }
     for (const auto &typeDefinitionPartContext : context->typeDefinitionPart())
     {
@@ -1113,7 +1113,7 @@ void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPar
 {
     for (const auto &vDeclarationContext : context->variableDeclaration())
     {
-        visitVariableDeclaration(vDeclarationContext);
+        visitVariableDeclaration(vDeclarationContext,isGlobal );
     }
 }
 
