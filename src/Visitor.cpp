@@ -163,13 +163,13 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
         throw VariableNotFoundException(visitIdentifier(context->variable()->identifier(0)));
 }
 
-//TODO: value->getOperand(0)获取操作数？
 llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
     llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
     addr = getVariable(varName);
-    if (context->LBRACK(0))
+
+    if (context->LBRACK(0) && addr != nullptr)
     {
         auto ranges = arrayRanges[varName]; ///< 数组索引的合法范围（来自定义）
         std::vector<llvm::Value *> indexes; //获取数组变量的索引值
@@ -664,18 +664,34 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
     auto varAddr = visitVariable(context->variable());
     auto varName = visitIdentifier(context->variable()->identifier(0));
+    
     if (!varAddr)
     {
+        varAddr = module->getGlobalVariable(varName);
+        if (!varAddr)
+        {
+            throw VariableNotFoundException(varName);
+        }
         //为readln构造参数时需要返回地址
-        if (readlnArgFlag == true)
-            return module->getGlobalVariable(visitIdentifier(context->variable()->identifier(0)));
-        return module->getNamedGlobal(visitIdentifier(context->variable()->identifier(0)));
+        else if (readlnArgFlag == true)
+        {
+            return varAddr;
+        }
+        else
+        {
+            return builder.CreateLoad(varAddr->getType()->getPointerElementType(), varAddr);
+        }
     }
 
     //为readln构造参数时需要返回地址
     if (readlnArgFlag == true)
+    {
         return varAddr;
-    return builder.CreateLoad(varAddr->getType()->getPointerElementType(), varAddr);
+    }
+    else
+    {
+        return builder.CreateLoad(varAddr->getType()->getPointerElementType(), varAddr);
+    }
 }
 
 llvm::Value *Visitor::visitFactorExpr(PascalSParser::FactorExprContext *context)
