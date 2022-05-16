@@ -232,7 +232,7 @@ namespace PascalS
          *
          * @param context 语法树中表示simpleState语句分支的context
          */
-        void visitSimpleState(PascalSParser::SimpleStateContext *context);
+        void visitSimpleState(PascalSParser::SimpleStateContext *context,llvm::Function *function = nullptr);
         /**
          * @brief 解析结构语句
          *
@@ -632,6 +632,6 @@ namespace PascalS
          *
          * @param context 语法树中表示statement分支的context
          */
-        void visitStatement(PascalSParser::StatementContext *context);
+        void visitStatement(PascalSParser::StatementContext *context,llvm::Function *function);
     };
 }; // namespace PascalS

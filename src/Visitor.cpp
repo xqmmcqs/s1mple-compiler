@@ -137,7 +137,7 @@ void Visitor::visitStatements(PascalSParser::StatementsContext *context, llvm::F
     }
 }
 
-void Visitor::visitSimpleState(PascalSParser::SimpleStateContext *context)
+void Visitor::visitSimpleState(PascalSParser::SimpleStateContext *context,llvm::Function *function)
 {
     if (auto assignmentStatementContext = dynamic_cast<PascalSParser::SimpleStateAssignContext *>(context->simpleStatement()))
         visitSimpleStateAssign(assignmentStatementContext);
@@ -1831,7 +1831,7 @@ void Visitor::visitWhileStatement(PascalSParser::WhileStatementContext *context,
     // while_body基本块
     builder.SetInsertPoint(while_body);
     if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context->statement()))
-        visitSimpleState(simpleStatementContext);
+        visitSimpleState(simpleStatementContext, function);
     else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
         visitStructuredState(structuredStatementContext, function);
     else
@@ -1890,7 +1890,7 @@ void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm:
 
     //遍历then的内容
     builder.SetInsertPoint(thenBB);
-    visitStatement(context->statement(0));
+    visitStatement(context->statement(0),function);
     //遍历完跳转至结尾块
     builder.CreateBr(end);
 
@@ -1898,20 +1898,20 @@ void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm:
     if (context->statement().size() == 2)
     {
         builder.SetInsertPoint(elseBB);
-        visitStatement(context->statement(1));
+        visitStatement(context->statement(1),function);
         builder.CreateBr(end);
     }
     //更改基本块的指向
     builder.SetInsertPoint(end);
 }
 
-void Visitor::visitStatement(PascalSParser::StatementContext *context)
+void Visitor::visitStatement(PascalSParser::StatementContext *context,llvm::Function *function)
 {
     //根据判断决定所要遍历的Statement的类型
     if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context))
-        visitSimpleState(simpleStatementContext);
+        visitSimpleState(simpleStatementContext,function);
     else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context))
-        visitStructuredState(structuredStatementContext);
+        visitStructuredState(structuredStatementContext,function);
     else
         throw NotImplementedException();
 }
