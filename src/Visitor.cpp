@@ -163,13 +163,13 @@ void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext
         throw VariableNotFoundException(visitIdentifier(context->variable()->identifier(0)));
 }
 
-// TODO: 实现多维数组中变量用作索引的访问
 llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
     llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
     addr = getVariable(varName);
-    if (context->LBRACK(0))
+
+    if (context->LBRACK(0) && addr != nullptr)
     {
         auto ranges = arrayRanges[varName]; ///< 数组索引的合法范围（来自定义）
         std::vector<llvm::Value *> indexes; //获取数组变量的索引值
@@ -664,14 +664,23 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
     auto varAddr = visitVariable(context->variable());
     auto varName = visitIdentifier(context->variable()->identifier(0));
+    
     if (!varAddr)
     {
-        //为readln构造参数时需要返回地址
-        if (readlnArgFlag == true)
+        varAddr = module->getGlobalVariable(varName);
+        if (!varAddr)
         {
-            return module->getGlobalVariable(visitIdentifier(context->variable()->identifier(0)));
+            throw VariableNotFoundException(varName);
         }
-        return module->getNamedGlobal(visitIdentifier(context->variable()->identifier(0)));
+        //为readln构造参数时需要返回地址
+        else if (readlnArgFlag == true)
+        {
+            return varAddr;
+        }
+        else
+        {
+            return builder.CreateLoad(varAddr->getType()->getPointerElementType(), varAddr);
+        }
     }
 
     //为readln构造参数时需要返回地址
@@ -679,8 +688,10 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
     {
         return varAddr;
     }
-
-    return builder.CreateLoad(varAddr->getType()->getPointerElementType(), varAddr);
+    else
+    {
+        return builder.CreateLoad(varAddr->getType()->getPointerElementType(), varAddr);
+    }
 }
 
 llvm::Value *Visitor::visitFactorExpr(PascalSParser::FactorExprContext *context)
@@ -797,7 +808,7 @@ std::string Visitor::visitUnsignedConstStr(PascalSParser::UnsignedConstStrContex
 
 llvm::Value *Visitor::visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context)
 {
-    auto funcName = context->identifier()->IDENT()->getText();
+    auto funcName = visitIdentifier(context->identifier());
     if (auto function = llvm::dyn_cast_or_null<llvm::Function>(getVariable(funcName)))
     {
         auto paraList = visitParameterList(context->parameterList());
@@ -1128,9 +1139,7 @@ llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclaration
             auto addr = builder.CreateAlloca(type, nullptr);
             scopes.back().setVariable(id, addr);
             if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
-            {
                 arrayRanges[id] = arrayRangeTemp;
-            }
         }
         return type;
     }
