@@ -47,7 +47,7 @@ void Visitor::visitProgram(PascalSParser::ProgramContext *context)
     scopes.push_back(Scope());
     scopes.back().setVariable(programName, function);
 
-    visitBlock(context->block(), function);
+    visitBlock(context->block(), function, true);
 
     builder.CreateRetVoid();
 }
@@ -62,7 +62,7 @@ std::string Visitor::visitIdentifier(PascalSParser::IdentifierContext *context)
     return context->IDENT()->getText();
 }
 
-void Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Function *function)
+void Visitor::visitBlock(PascalSParser::BlockContext *context, llvm::Function *function, bool isGlobal)
 {
     auto block = llvm::BasicBlock::Create(*llvm_context, "entry", function);
     if (builder.GetInsertBlock() && builder.GetInsertBlock()->getName().str() == "Para_Ret")
@@ -167,6 +167,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 {
     llvm::Value *addr = nullptr;
     std::string varName = visitIdentifier(context->identifier(0));
+    
     addr = getVariable(varName);
 
     if (context->LBRACK(0) && addr != nullptr)
@@ -210,7 +211,6 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
     {
         addr = getVariable(varName + "ret");
     }
-
     return addr;
 }
 
@@ -689,7 +689,7 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
         return varAddr;
     }
     else
-    {
+    {     
         return builder.CreateLoad(varAddr->getType()->getPointerElementType(), varAddr);
     }
 }
@@ -1109,7 +1109,7 @@ void Visitor::visitConstantDefinitionPart(PascalSParser::ConstantDefinitionPartC
     }
 }
 
-void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context)
+void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context, bool isGlobal)
 {
     for (const auto &vDeclarationContext : context->variableDeclaration())
     {
@@ -1117,17 +1117,26 @@ void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPar
     }
 }
 
-llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context)
+llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context, bool isGlobal)
 {
     auto idList = visitIdentifierList(context->identifierList());
     if (auto typeSimpleContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
         auto type = visitTypeSimpleType(typeSimpleContext);
         for (auto id : idList)
-        {
-            auto addr = builder.CreateAlloca(type, nullptr);
-            builder.CreateStore(llvm::UndefValue::get(type), addr);
-            scopes.back().setVariable(id, addr);
+        {   
+            if(isGlobal){
+                module->getOrInsertGlobal(id, type);
+                auto addr = module->getNamedGlobal(id);
+                addr->setInitializer(llvm::UndefValue::get(type));
+                scopes.back().setVariable(id, addr);
+            }
+            else{
+                auto addr = builder.CreateAlloca(type, nullptr);
+                builder.CreateStore(llvm::UndefValue::get(type), addr);
+                scopes.back().setVariable(id, addr);
+            }
+            
         }
         return type;
     }
@@ -1136,10 +1145,21 @@ llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclaration
         auto type = visitTypeStructuredType(typeStructureContext, idList);
         for (auto id : idList)
         {
-            auto addr = builder.CreateAlloca(type, nullptr);
-            scopes.back().setVariable(id, addr);
-            if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
-                arrayRanges[id] = arrayRangeTemp;
+            if(isGlobal){
+                module->getOrInsertGlobal(id, type);
+                auto addr = module->getNamedGlobal(id);
+                addr->setInitializer(llvm::UndefValue::get(type));
+                scopes.back().setVariable(id, addr);
+                if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
+                    arrayRanges[id] = arrayRangeTemp;
+            }
+            else{
+                auto addr = builder.CreateAlloca(type, nullptr);
+                scopes.back().setVariable(id, addr);
+                if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
+                    arrayRanges[id] = arrayRangeTemp;
+            }
+            
         }
         return type;
     }
@@ -1779,17 +1799,17 @@ void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *contex
     llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
     // while_count基本块
     builder.CreateBr(while_body);
-
-    builder.SetInsertPoint(while_count);
-    //获取进入循环的判断值
-    llvm::Value *exp_value = visitExpression(context->expression());
-    //跳转
-    builder.CreateCondBr(exp_value, while_end, while_body);
     // while_body基本块
     builder.SetInsertPoint(while_body);
     visitStatements(context->statements(), function);
 
     builder.CreateBr(while_count);
+    builder.SetInsertPoint(while_count);
+    //获取进入循环的判断值
+    llvm::Value *exp_value = visitExpression(context->expression());
+    //跳转
+    builder.CreateCondBr(exp_value, while_end, while_body);
+    
     // while_end基本块
     builder.SetInsertPoint(while_end);
 }
