@@ -1,26 +1,45 @@
-program HelloWorld;
-const a=30;
-const b=20;
-var c,b:integer;
-s:array [1..10,-5..90] of integer;
+Program HelloWorld;
 
-function testfun(n:integer):integer;
-begin
-    if n>2 then testfun:=testfun(n-1)+testfun(n-2)
-    else testfun:=1;
-end;
-begin
-    for c:=1 to 10 do d:=1;
-    c:=testfun(10);
-    writeln(c);
-    c:=20;
-    if c>5 then writeln(88);
-    writeln(66);
-    b:=1;
-    s[2,-3]:=b;
-    c:=s[2,-3];
-    writeln(114514);
-    REPEAT writeln(114514); UNTIL b<2;
-    WHILE TRUE DO writeln(114514);
-    writeln(114514);
-end.
+Var 
+  n,i: integer;
+  a: array[0..4] Of integer;
+Procedure kp(l,r:integer);
+
+Var 
+  i,j,mid: integer;
+Begin
+  If l<r Then
+    Begin
+      i := l;
+      j := r;
+      mid := a[(l+r) / 2];
+      Repeat
+        While a[i]<mid Do
+          i := i+1;
+        While a[j]>mid Do
+          j := j-1;
+        If i<=j Then
+          Begin
+            a[0] := a[i];
+            a[i] := a[j];
+            a[j] := a[0];
+            i := i+1;
+            j := j-1;
+          End;
+      Until i>j;
+      kp(l,j);
+      kp(i,r)
+    End;
+End;
+Begin
+  n := 5;
+  For i:=1 To n Do
+    a[0] := 5;
+  a[1] := 4;
+  a[2] := 3;
+  a[3] := 2;
+  a[4] := 1;
+  kp(1,n);
+  For i:=1 To n Do
+    writeln(a[i]);
+End.

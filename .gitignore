@@ -39,7 +39,7 @@ build/
 .vscode/
 .idea/
 
-test/
-!test/*.pas
+test/*
+!/test/*.pas
 
 note.txt
