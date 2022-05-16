@@ -45,7 +45,7 @@ namespace PascalS
          */
         std::string visitIdentifier(PascalSParser::IdentifierContext *context);
 
-        void visitBlock(PascalSParser::BlockContext *context, llvm::Function *function);
+        void visitBlock(PascalSParser::BlockContext *context, llvm::Function *function, bool isGlobal=false);
         /**
          * @brief 解析常量定义区域
          *
@@ -151,13 +151,13 @@ namespace PascalS
 
         llvm::Type *visitRecordField(PascalSParser::RecordFieldContext *context, std::vector<std::string> idList);
 
-        void visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context);
+        void visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context, bool isGlobal=false);
         /**
          * @brief 解析变量定义
          *
          * @param context 语法树中表示变量定义分支的context
          */
-        llvm::Type *visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context);
+        llvm::Type *visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context, bool isGlobal=false);
         /**
          * @brief visitProcedureAndFunctionDeclarationPart
          * @note Determine whether it is a procedure declaration or a function declaration 判断是过程声明还是函数声明
