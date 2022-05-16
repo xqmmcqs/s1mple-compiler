@@ -4,39 +4,33 @@ Var
   n,i: integer;
   a: array[0..4] Of integer;
 Procedure kp(l,r:integer);
+
 Var 
-  i,j,mid: integer;
+  i,j,x: integer;
 Begin
   If l<r Then
     Begin
       i := l;
       j := r;
-      mid := a[(l+r) / 2];
-      Repeat
-        While a[i]<mid Do
-          i := i+1;
-        While a[j]>mid Do
-          j := j-1;
-        If i<=j Then
-          Begin
-            a[0] := a[i];
-            a[i] := a[j];
-            a[j] := a[0];
-            i := i+1;
+      x := a[i];
+      While i<j Do
+        Begin
+          While (i<j) And (a[j]>=x) Do
             j := j-1;
-          End;
-      Until i>j;
-      kp(l,j);
-      kp(i,r)
+          a[i] := a[j];
+          While (i<j) And (a[i]<=x) Do
+            i := i+1;
+          a[j] := a[i];
+        End;
+      a[i] := x;
+      kp(l,i-1);
+      kp(i+1,r);
     End;
 End;
 Begin
-  n := 5;
-  a[0] := 5;
-  a[1] := 4;
-  a[2] := 3;
-  a[3] := 2;
-  a[4] := 1;
+  n := 1;
+  For i:=0 To n-1 Do
+    readln(a[i]);
   kp(0,n-1);
   For i:=0 To n-1 Do
     writeln(a[i]);
