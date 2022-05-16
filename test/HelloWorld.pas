@@ -1,43 +1,12 @@
-Program HelloWorld;
-
-Var 
-  n,i: integer;
-  a: array[0..4] Of integer;
-Procedure kp(l,r:integer);
-Var 
-  i,j,mid: integer;
-Begin
-  If l<r Then
-    Begin
-      i := l;
-      j := r;
-      mid := a[(l+r) / 2];
-      Repeat
-        While a[i]<mid Do
-          i := i+1;
-        While a[j]>mid Do
-          j := j-1;
-        If i<=j Then
-          Begin
-            a[0] := a[i];
-            a[i] := a[j];
-            a[j] := a[0];
-            i := i+1;
-            j := j-1;
-          End;
-      Until i>j;
-      kp(l,j);
-      kp(i,r)
-    End;
-End;
-Begin
-  n := 5;
-  a[0] := 5;
-  a[1] := 4;
-  a[2] := 3;
-  a[3] := 2;
-  a[4] := 1;
-  kp(0,n-1);
-  For i:=0 To n-1 Do
-    writeln(a[i]);
-End.
+program HelloWorld;
+var a:integer;
+var b:real;
+var c:boolean;
+begin
+    a:=11;
+    b:=1.5;
+    c:=true;
+    if c then writeln(111);
+    if a>b then writeln(222);
+    writeln(333)
+end.
