@@ -4,7 +4,6 @@ Var
   n,i: integer;
   a: array[0..4] Of integer;
 Procedure kp(l,r:integer);
-
 Var 
   i,j,mid: integer;
 Begin
@@ -33,13 +32,12 @@ Begin
 End;
 Begin
   n := 5;
-  For i:=1 To n Do
-    a[0] := 5;
+  a[0] := 5;
   a[1] := 4;
   a[2] := 3;
   a[3] := 2;
   a[4] := 1;
-  kp(1,n);
-  For i:=1 To n Do
+  kp(0,n-1);
+  For i:=0 To n-1 Do
     writeln(a[i]);
 End.
