@@ -436,6 +436,8 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
     if(!visitVariable(context->variable()))
     {
         return module->getNamedGlobal(visitIdentifier(context->variable()->identifier(0)));
+        auto v = builder.CreateLoad(addr);
+        return v;
     }
     return builder.CreateLoad(visitVariable(context->variable()));
 }
@@ -1356,6 +1358,8 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     auto initial = v[0];
     auto final = v[1];
     auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
+    scopes.push_back(Scope());
+    scopes.back().setVariable(id, addr);
     builder.CreateStore(initial, addr);
 
     /// 创建循环的基本块
@@ -1386,6 +1390,7 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     builder.CreateBr(while_count);
 
     builder.SetInsertPoint(while_end);
+    scopes.pop_back();
 }
 
 std::vector<llvm::Value *> Visitor::visitForList(PascalSParser::ForListContext *context)
@@ -1419,7 +1424,7 @@ void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *contex
     llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
 	llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
     
-    builder.CreateBr(while_count);
+    builder.CreateBr(while_body);
     
     builder.SetInsertPoint(while_count);
     
