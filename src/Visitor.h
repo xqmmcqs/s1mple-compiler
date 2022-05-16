@@ -16,7 +16,6 @@ namespace PascalS
     class Visitor
     {
     public:
-        int n = 0;
         std::unique_ptr<llvm::LLVMContext> llvm_context;
         llvm::IRBuilder<> builder;
         std::unique_ptr<llvm::Module> module;
