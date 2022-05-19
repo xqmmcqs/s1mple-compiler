@@ -1104,13 +1104,9 @@ void Visitor::visitConstantDefinitionPart(PascalSParser::ConstantDefinitionPartC
         visitConstantDefinition(constDefinitionContext);
     }
 }
-<<<<<<< Updated upstream
 
 void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context, bool isGlobal)
-=======
 //变量定义部分
-void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context)
->>>>>>> Stashed changes
 {
     for (const auto &vDeclarationContext : context->variableDeclaration())
     {
@@ -1149,28 +1145,22 @@ llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclaration
         auto type = visitTypeStructuredType(typeStructureContext, idList);
         for (auto id : idList)
         {
-<<<<<<< Updated upstream
             if(isGlobal){
                 module->getOrInsertGlobal(id, type);
                 auto addr = module->getNamedGlobal(id);
                 addr->setInitializer(llvm::UndefValue::get(type));
+                //对于数组，声明时要在arrayRanges表中写入其id和其下标范围，方便之后的使用
                 if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
                     arrayRanges[id] = arrayRangeTemp;
             }
             else{
                 auto addr = builder.CreateAlloca(type, nullptr);
                 scopes.back().setVariable(id, addr);
+                //对于数组，声明时要在arrayRanges表中写入其id和其下标范围，方便之后的使用
                 if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
                     arrayRanges[id] = arrayRangeTemp;
             }
             
-=======
-            auto addr = builder.CreateAlloca(type, nullptr);
-            scopes.back().setVariable(id, addr);
-            //对于数组，声明时要在arrayRanges表中写入其id和其下标范围，方便之后的使用
-            if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
-                arrayRanges[id] = arrayRangeTemp;
->>>>>>> Stashed changes
         }
         return type;
     }
