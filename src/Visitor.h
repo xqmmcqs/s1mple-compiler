@@ -266,7 +266,7 @@ namespace PascalS
 
         /**
          * @brief 访问并计算AST中Expression节点的值
-         *
+         * @note Expression中获取变量表的唯一接口
          * @param context ExpressionContext*类型的context
          * @return llvm::Value*： 返回Expression的计算结果
          */
@@ -439,7 +439,7 @@ namespace PascalS
         /**
          * @brief 访问expression中的变量
          *
-         * @note 这是Visitor中访问Variable的唯一接口。
+         * @note 这是Expression中获取variable值的唯一接口，调用了visitVariable();
          * @param context FactorVarContext*类型的context
          * @return llvm::Value*：Variable的值（default）或地址（Visitor.readlnArgFlag == ture）
          */
@@ -525,7 +525,7 @@ namespace PascalS
         void visitProcedureStatement(PascalSParser::ProcedureStatementContext *context);
 
         /**
-         * @brief 计算函数调用或过程调用的参数列表中的一个参数值
+         * @brief 计算函数调用或过程调用的参数列表中特定参数值
          *
          * @param context ActualParameterContext *类型
          * @return llvm::Value* 形参的参数值

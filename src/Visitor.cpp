@@ -578,7 +578,7 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
                 return builder.CreateMul(flag_v, value);
             }
             else
-                throw DebugException(NOW_FUNC_NAME+"无法识别的返回值类型");
+                throw NotImplementedException();
         else
             return value;
     }
@@ -671,16 +671,17 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
     auto varName = visitIdentifier(context->variable()->identifier(0));
     auto varAddr = visitVariable(context->variable());
+    // 找不到变量返回空指针
     if (!varAddr)
         throw VariableNotFoundException(varName);
-    
-    //为readln构造参数时需要返回地址
+
+    //为readln构造参数时需要传递地址而非值
     if (readlnArgFlag == true && arrayIndexFlag == false)
     {
         return varAddr;
     }
     else
-    {     
+    {
         return builder.CreateLoad(varAddr->getType()->getPointerElementType(), varAddr);
     }
 }
