@@ -1732,6 +1732,11 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     auto id = visitIdentifier(context->identifier());
     auto v = visitForList(context->forList());
     auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
+    auto isDown = false;
+    if(context->forList()->DOWNTO()){
+        con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -1);
+        isDown = true;
+    }
     //开始结束变量赋值
     auto initial = v[0];
     auto final = v[1];
@@ -1749,7 +1754,13 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     builder.SetInsertPoint(while_count); ///< 为基本块添加语句
     auto tmp_i = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), addr);
     //跳转条件
-    auto cmp = builder.CreateICmpSLE(tmp_i, final);
+    llvm::Value* cmp;
+    if(isDown){
+        cmp = builder.CreateICmpSGE(tmp_i, final);
+    }
+    else{
+        cmp = builder.CreateICmpSLE(tmp_i, final);
+    }
     //循环跳转
     builder.CreateCondBr(cmp, while_body, while_end);
     // while_body代码块
