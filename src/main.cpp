@@ -1,3 +1,10 @@
+/**
+ * @file      main.cpp
+ * @author    Ziheng Mao
+ * @date      2022/4/20
+ * @copyright GNU General Public License, version 3 (GPL-3.0)
+ */
+
 #include <unistd.h>
 
 #include <llvm/Support/TargetSelect.h>
