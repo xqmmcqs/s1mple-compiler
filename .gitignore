@@ -43,3 +43,4 @@ test/*
 !/test/*.pas
 
 note.txt
+translate.txt
