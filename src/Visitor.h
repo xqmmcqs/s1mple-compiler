@@ -485,8 +485,8 @@ namespace PascalS
         /**
          * @brief 访问expression中的变量
          *
-         * @note 这是Visitor中访问Variable的唯一接口。
-         * @param context FactorVarContext*类型的上下文
+         * @note 这是Expression中获取variable值的唯一接口，调用了visitVariable();
+         * @param context FactorVarContext*类型的context
          * @return llvm::Value*：Variable的值（default）或地址（Visitor.readlnArgFlag == ture）
          */
         llvm::Value *visitFactorVar(PascalSParser::FactorVarContext *context);
@@ -571,7 +571,7 @@ namespace PascalS
         void visitProcedureStatement(PascalSParser::ProcedureStatementContext *context);
 
         /**
-         * @brief 计算函数调用或过程调用的参数列表中的一个参数值
+         * @brief 计算函数调用或过程调用的参数列表中特定参数值
          *
          * @param context ActualParameterContext *类型
          * @return llvm::Value* 形参的参数值
