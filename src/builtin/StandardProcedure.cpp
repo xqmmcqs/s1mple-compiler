@@ -1,3 +1,13 @@
+/**
+ * @file      StandardProcedure.cpp
+ * @brief     标准过程库
+ * @author    Ziheng Mao, Aolun Xie
+ * @date      2022/4/20
+ * @copyright GNU General Public License, version 3 (GPL-3.0)
+ *
+ * 本文件中实现了部分标准过程库的过程原型构造和参数构造。
+ */
+
 #include "StandardProcedure.h"
 
 #include <sstream>
@@ -26,7 +36,7 @@ bool StandardProcedure::hasProcedure(std::string name)
     return prototypeMap.find(name) != prototypeMap.end();
 }
 
-llvm::Function *StandardProcedure::readlnPrototype(llvm::Module * module)
+llvm::Function *StandardProcedure::readlnPrototype(llvm::Module *module)
 {
     auto scanf_type = llvm::FunctionType::get(llvm::Type::getVoidTy(module->getContext()), {llvm::Type::getInt8PtrTy(module->getContext())}, true);
     auto func = module->getOrInsertFunction("scanf", scanf_type, llvm::AttributeList().addAttribute(module->getContext(), 1U, llvm::Attribute::NoAlias));
@@ -46,7 +56,8 @@ void StandardProcedure::readlnArgsConstructor(llvm::IRBuilder<> *builder, std::v
         else if (type->isDoubleTy())
             formats.push_back("%f");
         else
-            throw DebugException(NOW_FUNC_NAME+"Error value Type!");
+            throw NotImplementedException();
+            // throw DebugException(NOW_FUNC_NAME + "Error value Type!");
     }
 
     std::ostringstream format;
@@ -56,7 +67,7 @@ void StandardProcedure::readlnArgsConstructor(llvm::IRBuilder<> *builder, std::v
     args.insert(args.begin(), builder->CreateGlobalStringPtr(formatString));
 }
 
-llvm::Function *StandardProcedure::writelnPrototype(llvm::Module * module)
+llvm::Function *StandardProcedure::writelnPrototype(llvm::Module *module)
 {
     auto printf_type = llvm::FunctionType::get(llvm::Type::getVoidTy(module->getContext()), {llvm::Type::getInt8PtrTy(module->getContext())}, true);
     auto func = module->getOrInsertFunction("printf", printf_type, llvm::AttributeList().addAttribute(module->getContext(), 1U, llvm::Attribute::NoAlias));
@@ -67,7 +78,7 @@ llvm::Function *StandardProcedure::writelnPrototype(llvm::Module * module)
 void StandardProcedure::writelnArgsConstructor(llvm::IRBuilder<> *builder, std::vector<llvm::Value *> &args)
 {
     std::vector<std::string> formats;
-    
+
     for (const auto &arg : args)
     {
         auto type = arg->getType();
@@ -77,7 +88,6 @@ void StandardProcedure::writelnArgsConstructor(llvm::IRBuilder<> *builder, std::
             formats.push_back("%lf");
         else
             throw NotImplementedException();
-
     }
     formats.push_back("\n");
 
