@@ -1,6 +1,8 @@
+#pragma once
+
 #include <stdexcept>
 #include <string>
-#define NOW_FUNC_NAME std::string(__func__)+": "
+#define NOW_FUNC_NAME std::string(__func__) + ": "
 
 namespace PascalS
 {

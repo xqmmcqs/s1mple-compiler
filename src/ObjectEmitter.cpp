@@ -1,3 +1,13 @@
+/**
+ * @file      ObjectEmitter.cpp
+ * @brief     生成中间代码
+ * @author    Ziheng Mao
+ * @date      2022/4/20
+ * @copyright GNU General Public License, version 3 (GPL-3.0)
+ *
+ * 本文件的内容是生成中间代码的实现。
+ */
+
 #include "ObjectEmitter.h"
 
 #include <llvm/Support/Error.h>

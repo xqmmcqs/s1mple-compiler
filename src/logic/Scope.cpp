@@ -1,3 +1,13 @@
+/**
+ * @file      Scope.cpp
+ * @brief     变量作用域
+ * @author    Ziheng Mao
+ * @date      2022/4/20
+ * @copyright GNU General Public License, version 3 (GPL-3.0)
+ *
+ * 本文件的内容是变量作用域的实现。
+ */
+
 #include "Scope.h"
 
 using namespace PascalS;
