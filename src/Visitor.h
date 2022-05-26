@@ -559,9 +559,10 @@ namespace PascalS
          * @brief 构造函数调用或过程调用的参数列表
          * @note 输入参数context为null时表示发生了一个无参数过程调用
          * @param context ParameterListContext *类型
+         * @param changeFP bool类型：默认为false，为true时需要将Float类型拓展为Double类型。
          * @return std::vector<llvm::Value *> 所需形参值的std::vector
          */
-        std::vector<llvm::Value *> visitParameterList(PascalSParser::ParameterListContext *context);
+        std::vector<llvm::Value *> visitParameterList(PascalSParser::ParameterListContext *context, bool changeFP = false);
 
         /**
          * @brief 识别并调用过程。包括用户定义过程和标准输入、输出过程
