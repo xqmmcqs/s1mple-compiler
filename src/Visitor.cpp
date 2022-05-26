@@ -823,7 +823,7 @@ llvm::Value *Visitor::visitFunctionDesignator(PascalSParser::FunctionDesignatorC
     }
 }
 
-std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterListContext *context)
+std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterListContext *context, bool changeFP)
 {
     std::vector<llvm::Value *> params;
     if (context)
@@ -831,10 +831,8 @@ std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterL
         for (auto actualPara : context->actualParameter())
         {
             auto param = visitActualParameter(actualPara);
-            if (param->getType()->isFloatingPointTy()) // 在调用printf输出浮点数时，必须转换为double类型
-            {
+            if (param->getType()->isFloatingPointTy() && changeFP) // 在调用printf输出浮点数时，必须转换为double类型
                 param = builder.CreateFPExt(param, llvm::Type::getDoubleTy(*llvm_context));
-            }
             params.push_back(param);
         }
     }
@@ -867,12 +865,12 @@ void Visitor::visitProcedureStatement(PascalSParser::ProcedureStatementContext *
     else if (StandardProcedure::hasProcedure(identifier))
     {
         auto stdProcedure = StandardProcedure::prototypeMap[identifier](module.get());
-        auto paraList = visitParameterList(context->parameterList());
+        auto paraList = visitParameterList(context->parameterList(), true);
         StandardProcedure::argsConstructorMap[identifier](&builder, paraList);
         if ("readln" == identifier)
         {
             readlnArgFlag = true;
-            auto paraList2 = visitParameterList(context->parameterList());
+            auto paraList2 = visitParameterList(context->parameterList(), true);
             readlnArgFlag = false;
             paraList2.insert(paraList2.begin(), paraList.front());
             paraList = paraList2;

@@ -5,5 +5,5 @@ Var
 Var 
   n: real;
 Begin
-  writeln(a)
+  writeln(a[3])
 End.
