@@ -31,10 +31,10 @@ namespace PascalS
         std::unique_ptr<llvm::Module> module;
         std::vector<Scope> scopes; ///< 变量作用域
         std::vector<std::string> FormalParaIdList;
-        std::unordered_map<std::string, std::vector<int>> arrayRanges;
-        std::vector<int> arrayRangeTemp;
-        bool readlnArgFlag = false;
-        bool arrayIndexFlag = false;
+        std::unordered_map<std::string, std::vector<int>> arrayRanges;///< 存放所有数组的下标范围，访问数组时是计算元素偏移量的依据。
+        std::vector<int> arrayRangeTemp;///< 暂存一个数组的下标范围。
+        bool readlnArgFlag = false;///< readln参数标记，为真时visitFactorVar返回地址而非值。
+        bool arrayIndexFlag = false;///< 数组下标标记，为真时visitFactorVar返回值而非地址，无论readlnArgFlag如何。
 
         Visitor(std::string filename) : llvm_context(std::make_unique<llvm::LLVMContext>()),
                                         builder(*llvm_context),

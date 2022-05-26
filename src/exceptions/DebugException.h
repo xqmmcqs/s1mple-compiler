@@ -6,9 +6,9 @@
 
 namespace PascalS
 {
-    class DebugException : public std::runtime_error
-    {
-    public:
-        DebugException(std::string msg) : std::runtime_error("Caught DebugException---" + msg) {}
-    };
+class DebugException : public std::runtime_error
+{
+public:
+    DebugException(std::string msg) : std::runtime_error("DebugException " + msg) {}
+};
 } // namespace PascalS

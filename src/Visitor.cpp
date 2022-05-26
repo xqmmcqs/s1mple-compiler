@@ -13,7 +13,6 @@
 #include "exceptions/NotImplementedException.h"
 #include "exceptions/VariableNotFoundException.h"
 #include "exceptions/ProcedureNotFoundException.h"
-#include "exceptions/DebugException.h"
 #include "builtin/StandardProcedure.h"
 
 using namespace antlr4;
@@ -185,8 +184,8 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 
     if (context->LBRACK(0) && addr != nullptr)
     {
-        auto ranges = arrayRanges[varName]; // 数组索引的合法范围（来自定义）
-        std::vector<llvm::Value *> indexes; // 取数组变量的索引值
+        auto ranges = arrayRanges[varName]; ///< 数组索引的合法范围（来自定义）
+        std::vector<llvm::Value *> indexes; ///< 获取数组变量的索引值
         for (auto indexExpression : context->expression())
         {
             arrayIndexFlag = true;
@@ -199,8 +198,8 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
         llvm::Value *offset, *offsetUnit;
         auto con_0 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 0);
         auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
-        offset = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 0);
-        offsetUnit = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
+        offset = con_0;
+        offsetUnit = con_1;
 
         for (int j = indexes.size() - 1; j >= 0; j--)
         {

@@ -15,7 +15,6 @@
 #include <llvm/IR/Module.h>
 
 #include "../exceptions/NotImplementedException.h"
-#include "../exceptions/DebugException.h"
 
 using namespace PascalS;
 
@@ -57,7 +56,6 @@ void StandardProcedure::readlnArgsConstructor(llvm::IRBuilder<> *builder, std::v
             formats.push_back("%f");
         else
             throw NotImplementedException();
-            // throw DebugException(NOW_FUNC_NAME + "Error value Type!");
     }
 
     std::ostringstream format;
