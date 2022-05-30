@@ -1,10 +1,13 @@
-program HelloWorld;
-type m = integer;
-const 
+Program test_varDec;
+
+Type m = integer;
+
+Const 
   c0 = '123';
   c1 = 1.12345;
   c2 = 3;
   c3 = -c2;
+
 Var 
   n: integer;
   a: array[-1..4, -1..4] Of integer;
@@ -12,12 +15,12 @@ Var
   s: char;
   b: boolean;
 
-var Book1, Book2: record
-   title: array [1..50] of char;
-   author: array [1..50] of char;
-   subject: array [1..100] of char;
-   book_id: integer;
-end;
-begin
-   
-end.
+Var Book1, Book2: Record
+  title: array [1..50] Of char;
+  author: array [1..50] Of char;
+  subject: array [1..100] Of char;
+  book_id: integer;
+End;
+Begin
+
+End.

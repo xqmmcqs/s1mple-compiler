@@ -41,6 +41,8 @@ build/
 
 test/*
 !/test/*.pas
+!/test/*.bc
+!/test/*.ll
 
 note.txt
 translate.txt

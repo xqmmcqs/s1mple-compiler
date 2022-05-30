@@ -1,10 +1,11 @@
-Program HelloWorld;
+Program qsort;
 
 Var 
   n,i: integer;
   a: array[0..4] Of integer;
 
 Procedure kp(l,r:integer);
+
 Var 
   i,j,x: integer;
 Begin
