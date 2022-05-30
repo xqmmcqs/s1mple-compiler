@@ -14,6 +14,7 @@
 
 #include <llvm/IR/Module.h>
 
+#include "../exceptions/DebugException.h"
 #include "../exceptions/NotImplementedException.h"
 
 using namespace PascalS;
@@ -55,7 +56,7 @@ void StandardProcedure::readlnArgsConstructor(llvm::IRBuilder<> *builder, std::v
         else if (type->isDoubleTy())
             formats.push_back("%f");
         else
-            throw NotImplementedException();
+            throw DebugException(NOW_FUNC_NAME + "Unsupported readln Arguments Type!");
     }
 
     std::ostringstream format;
@@ -85,7 +86,7 @@ void StandardProcedure::writelnArgsConstructor(llvm::IRBuilder<> *builder, std::
         else if (type->isDoubleTy())
             formats.push_back("%lf");
         else
-            throw NotImplementedException();
+            throw DebugException(NOW_FUNC_NAME + "Unsupported writeln Arguments Type!");
     }
     formats.push_back("\n");
 

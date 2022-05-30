@@ -45,6 +45,6 @@ test/*
 !/test/*.ll
 
 note.txt
-translate.txt
+translate.*
 
 doc/*
