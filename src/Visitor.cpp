@@ -9,6 +9,7 @@
  */
 
 #include "Visitor.h"
+#include "DebugException.h"
 
 #include "exceptions/NotImplementedException.h"
 #include "exceptions/VariableNotFoundException.h"
@@ -142,7 +143,7 @@ void Visitor::visitStatements(PascalSParser::StatementsContext *context, llvm::F
         else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(statementContext))
             visitStructuredState(structuredStatementContext, function);
         else
-            throw NotImplementedException();
+            throw DebugException("Undefined parts outside SimpleState and StructuredState");
     }
 }
 
@@ -155,7 +156,7 @@ void Visitor::visitSimpleState(PascalSParser::SimpleStateContext *context, llvm:
     else if (auto emptyStatementContext = dynamic_cast<PascalSParser::SimpleStateEmptyContext *>(context->simpleStatement()))
         visitSimpleStateEmpty(emptyStatementContext);
     else
-        throw NotImplementedException();
+        throw DebugException("Undefined parts of SimpleState");
 }
 
 void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context)
@@ -1426,7 +1427,7 @@ void Visitor::visitProcedureAndFunctionDeclarationPart(PascalSParser::ProcedureA
     else if (auto functionDeclarationContext = dynamic_cast<PascalSParser::ProOrFuncDecFuncContext *>(ProOrFuncDec))
         visitProOrFuncDecFunc(functionDeclarationContext);
     else
-        throw NotImplementedException();
+        throw DebugException("Undefined parts outside functions and procedures");
 }
 
 void Visitor::visitProOrFuncDecPro(PascalSParser::ProOrFuncDecProContext *context)
@@ -1546,7 +1547,7 @@ void Visitor::visitFormalParameterList(PascalSParser::FormalParameterListContext
             visitFormalParaSecVarGroup(VAR_parameterGroupContext, ParaTypes);
         }
         else
-            throw NotImplementedException();
+            throw DebugException("Undefined parts of ParameterList");
     }
 }
 
@@ -1616,7 +1617,7 @@ llvm::Type *Visitor::visitSimpleType(PascalSParser::SimpleTypeContext *context, 
             return builder.getFloatTy();
     }
     else
-        throw NotImplementedException();
+        throw DebugException("Undefined parts of SimpleType");
 }
 
 void Visitor::visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function)
@@ -1629,7 +1630,7 @@ void Visitor::visitStructuredState(PascalSParser::StructuredStateContext *contex
         visitStructuredStateRepetetive(structuredStateRepetetiveContext, function);
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Undefined parts of StructuredState");
     }
 }
 
@@ -1809,7 +1810,7 @@ void Visitor::visitStructuredStateConditional(PascalSParser::StructuredStateCond
         visitConditionalStateIf(ifStatementContext, function);
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Undefined parts of StructuredStateConditional");
     }
 }
 void Visitor::visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context, llvm::Function *function)
@@ -1863,5 +1864,5 @@ void Visitor::visitStatement(PascalSParser::StatementContext *context, llvm::Fun
     else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context))
         visitStructuredState(structuredStatementContext, function);
     else
-        throw NotImplementedException();
+        throw DebugException("Undefined parts of Statement");
 }
