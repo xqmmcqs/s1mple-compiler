@@ -21,7 +21,7 @@ using namespace PascalS;
 
 llvm::Value *Visitor::getVariable(const std::string &name)
 {
-    for (auto it = scopes.rbegin(); it != scopes.rend(); it++)
+    for (auto it = scopes.rbegin(); it != scopes.rend(); it++) // 从最内层到最外层作用域依次查找
     {
         auto variable = it->getVariable(name);
         if (variable)
@@ -143,7 +143,7 @@ void Visitor::visitStatements(PascalSParser::StatementsContext *context, llvm::F
         else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(statementContext))
             visitStructuredState(structuredStatementContext, function);
         else
-            throw NotImplementedException();
+            throw DebugException("Undefined parts outside SimpleState and StructuredState");
     }
 }
 
@@ -156,7 +156,7 @@ void Visitor::visitSimpleState(PascalSParser::SimpleStateContext *context, llvm:
     else if (auto emptyStatementContext = dynamic_cast<PascalSParser::SimpleStateEmptyContext *>(context->simpleStatement()))
         visitSimpleStateEmpty(emptyStatementContext);
     else
-        throw DebugException(NOW_FUNC_NAME);
+        throw DebugException(NOW_FUNC_NAME + "Undefined parts of SimpleState");
 }
 
 void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context)
@@ -185,8 +185,8 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
 
     if (context->LBRACK(0) && addr != nullptr)
     {
-        auto ranges = arrayRanges[varName]; ///< 数组索引的合法范围（来自定义）
-        std::vector<llvm::Value *> indexes; ///< 获取数组变量的索引值
+        auto ranges = arrayRanges[varName]; // 数组索引的合法范围（来自定义）
+        std::vector<llvm::Value *> indexes; // 获取数组变量的索引值
         for (auto indexExpression : context->expression())
         {
             arrayIndexFlag = true;
@@ -195,7 +195,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
             indexes.push_back(index);
         }
 
-        // 算偏移量
+        // 计算偏移量
         llvm::Value *offset, *offsetUnit;
         auto con_0 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 0);
         auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
@@ -222,7 +222,7 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
         addr = builder.CreateGEP(addr, {con_0, offset});
     }
 
-    //  如果当前identifier对应的value是一个function类型，那么就将当前的identifier转换成返回  对应的identifier，即identifier+"ret"
+    // 如果当前identifier对应的value是一个function类型，那么就将当前的identifier转换成返回对应的identifier，即identifier+"ret"
     if (auto func = llvm::dyn_cast_or_null<llvm::Function>(addr))
     {
         addr = getVariable(varName + "ret");
@@ -737,7 +737,7 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
     if (!varAddr)
         throw VariableNotFoundException(varName);
 
-    //为readln构造参数时需要传递地址而非值
+    // 为readln构造参数时需要传递地址而非值
     if (readlnArgFlag == true && arrayIndexFlag == false)
     {
         return varAddr;
@@ -897,10 +897,6 @@ llvm::Value *Visitor::visitActualParameter(PascalSParser::ActualParameterContext
     return visitExpression(context->expression());
 }
 
-void Visitor::visitParameterwidth(PascalSParser::ParameterwidthContext *context)
-{
-}
-
 void Visitor::visitSimpleStateProc(PascalSParser::SimpleStateProcContext *context)
 {
     visitProcedureStatement(context->procedureStatement());
@@ -955,11 +951,11 @@ void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *
     // 常量不同类型，每一种类型的操作都类似
     if (auto constIdentifierContext = dynamic_cast<PascalSParser::ConstIdentifierContext *>(context->constant()))
     {
-        auto value = visitConstIdentifier(constIdentifierContext); // 得常量的值
-        module->getOrInsertGlobal(id, value->getType());           // 建常量
+        auto value = visitConstIdentifier(constIdentifierContext); // 获得常量的值
+        module->getOrInsertGlobal(id, value->getType());           // 创建常量
         auto global = module->getNamedGlobal(id);
-        global->setInitializer(value); // 始化常量
-        global->setConstant(true);     // 定为常量，不可更改
+        global->setInitializer(value); // 初始化常量
+        global->setConstant(true);     // 设定为常量，不可更改
     }
     else if (auto constStringContext = dynamic_cast<PascalSParser::ConstStringContext *>(context->constant()))
     {
@@ -1000,14 +996,13 @@ void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *
     }
 }
 
-// 识符常量，即一个常量用另一个常量的值来初始化
 llvm::Constant *Visitor::visitConstIdentifier(PascalSParser::ConstIdentifierContext *context)
 {
     auto s = visitIdentifier(context->identifier());
-    // 断是全局变量还是局部变量
+    // 判断是全局变量还是局部变量
     if (getVariable(s))
     {
-        // 变量表得到其地址，然后从地址中加载值，转化为llvm::Constant表示，作为返回值
+        // 查变量表得到其地址，然后从地址中加载值，转化为llvm::Constant表示，作为返回值
         auto addr = getVariable(s);
         auto value = builder.CreateLoad(addr);
         if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(value))
@@ -1039,7 +1034,7 @@ std::string Visitor::visitConstString(PascalSParser::ConstStringContext *context
 llvm::Constant *Visitor::visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context)
 {
     auto sign = context->sign()->getText();
-    // flag表示符号为+或-，并把flag与其无符号值相乘，得到最终的有符号值
+    // 用flag表示符号为+或-，并把flag与其无符号值相乘，得到最终的有符号值
     int flag = 1;
     if (sign == "+")
     {
@@ -1070,7 +1065,7 @@ llvm::Constant *Visitor::visitConstSignedNumber(PascalSParser::ConstSignedNumber
         throw NotImplementedException();
     }
 }
-// 符号数常量
+
 llvm::Constant *Visitor::visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context)
 {
     if (auto intContext = dynamic_cast<PascalSParser::UnsignedNumberIntegerContext *>(context->unsignedNumber()))
@@ -1090,7 +1085,7 @@ llvm::Constant *Visitor::visitConstUnsignedNumber(PascalSParser::ConstUnsignedNu
         throw NotImplementedException();
     }
 }
-// 符号的常量
+
 llvm::Constant *Visitor::visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context)
 {
     auto sign = context->sign()->getText();
@@ -1129,17 +1124,17 @@ llvm::Constant *Visitor::visitConstSignIdentifier(PascalSParser::ConstSignIdenti
         throw VariableNotFoundException(s);
     }
 }
-// 符串常量
+
 std::string Visitor::visitString(PascalSParser::StringContext *context)
 {
     return context->STRING_LITERAL()->getText();
 }
-// 符号整数
+
 int Visitor::visitUnsignedNumberInteger(PascalSParser::UnsignedNumberIntegerContext *context)
 {
     return visitUnsignedInteger(context->unsignedInteger());
 }
-// 符号实数
+
 float Visitor::visitUnsignedNumberReal(PascalSParser::UnsignedNumberRealContext *context)
 {
     return visitUnsignedReal(context->unsignedReal());
@@ -1159,7 +1154,7 @@ float Visitor::visitUnsignedReal(PascalSParser::UnsignedRealContext *context)
 
 void Visitor::visitConstantDefinitionPart(PascalSParser::ConstantDefinitionPartContext *context)
 {
-    // 于每个常量定义分别分析
+    // 对于每个常量定义分别分析
     for (const auto &constDefinitionContext : context->constantDefinition())
     {
         visitConstantDefinition(constDefinitionContext);
@@ -1167,7 +1162,6 @@ void Visitor::visitConstantDefinitionPart(PascalSParser::ConstantDefinitionPartC
 }
 
 void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context, bool isGlobal)
-// 量定义部分
 {
     for (const auto &vDeclarationContext : context->variableDeclaration())
     {
@@ -1177,14 +1171,14 @@ void Visitor::visitVariableDeclarationPart(PascalSParser::VariableDeclarationPar
 
 llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context, bool isGlobal)
 {
-    auto idList = visitIdentifierList(context->identifierList()); // 得变量的标识符
-    // 断变量是简单类型，还是复杂类型
+    auto idList = visitIdentifierList(context->identifierList()); // 取得变量的标识符
+    // 判断变量是简单类型，还是复杂类型
     if (auto typeSimpleContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
-        // 到变量类型
+        // 得到变量类型
         auto type = visitTypeSimpleType(typeSimpleContext);
-        // 于这一类型的变量，为其分配空间，并在符号表中插入其对应的标识符和地址
-        for (auto id : idList)
+        // 对于这一类型的变量，为其分配空间，并在符号表中插入其对应的标识符和地址
+        for (const auto &id : idList)
         {
             if (isGlobal)
             {
@@ -1205,14 +1199,14 @@ llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclaration
     else if (auto typeStructureContext = dynamic_cast<PascalSParser::TypeStructuredTypeContext *>(context->type_()))
     {
         auto type = visitTypeStructuredType(typeStructureContext, idList);
-        for (auto id : idList)
+        for (const auto &id : idList)
         {
             if (isGlobal)
             {
                 module->getOrInsertGlobal(id, type);
                 auto addr = module->getNamedGlobal(id);
                 addr->setInitializer(llvm::UndefValue::get(type));
-                // 于数组，声明时要在arrayRanges表中写入其id和其下标范围，方便之后的使用
+                // 对于数组，声明时要在arrayRanges表中写入其id和其下标范围，方便之后的使用
                 if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
                     arrayRanges[id] = arrayRangeTemp;
             }
@@ -1220,7 +1214,7 @@ llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclaration
             {
                 auto addr = builder.CreateAlloca(type, nullptr);
                 scopes.back().setVariable(id, addr);
-                // 于数组，声明时要在arrayRanges表中写入其id和其下标范围，方便之后的使用
+                // 对于数组，声明时要在arrayRanges表中写入其id和其下标范围，方便之后的使用
                 if (auto arrayType = llvm::dyn_cast_or_null<llvm::ArrayType>(type))
                     arrayRanges[id] = arrayRangeTemp;
             }
@@ -1237,7 +1231,7 @@ llvm::Type *Visitor::visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *c
 {
     return visitSimpleType(context->simpleType());
 }
-// 合类型包括数组和record
+
 llvm::Type *Visitor::visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context, std::vector<std::string> idList)
 {
     if (auto arrayContext = dynamic_cast<PascalSParser::StructuredTypeArrayContext *>(context->structuredType()))
@@ -1277,16 +1271,15 @@ llvm::Type *Visitor::visitStructuredTypeRecord(PascalSParser::StructuredTypeReco
 
 llvm::Type *Visitor::visitArrayType1(PascalSParser::ArrayType1Context *context, std::vector<std::string> idList)
 {
-    auto ranges = visitPeriods(context->periods()); // 到数组每一维的下标范围
+    auto ranges = visitPeriods(context->periods()); // 得到数组每一维的下标范围
     int eleNum = 1;
-    // calculate the eleNum of array
-    for (auto iter = ranges.begin(); iter != ranges.end(); iter++) // 算数组需要分配的空间
+    for (auto iter = ranges.begin(); iter != ranges.end(); iter++) // 计算数组需要分配的空间
     {
         auto v1 = *iter;
         auto v2 = *(++iter);
         eleNum *= (v2 - v1 + 1);
     }
-    // 到数组的类型，并作为返回值
+    // 得到数组的类型，并作为返回值
     if (auto typeSimpleContext = dynamic_cast<PascalSParser::TypeSimpleTypeContext *>(context->type_()))
     {
         auto type = visitTypeSimpleType(typeSimpleContext);
@@ -1302,12 +1295,11 @@ llvm::Type *Visitor::visitArrayType1(PascalSParser::ArrayType1Context *context, 
         throw NotImplementedException();
     }
 }
-// 二种数组，同上
+
 llvm::Type *Visitor::visitArrayType2(PascalSParser::ArrayType2Context *context, std::vector<std::string> idList)
 {
     auto ranges = visitPeriods(context->periods());
     int eleNum = 1;
-    // calculate the eleNum of array
     for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
     {
         auto v1 = *iter;
@@ -1337,7 +1329,7 @@ std::vector<int> Visitor::visitPeriods(PascalSParser::PeriodsContext *context)
     this->arrayRangeTemp.clear();
     for (const auto &periodContext : context->period())
     {
-        auto range = visitPeriod(periodContext); // 到数组每一维的范围
+        auto range = visitPeriod(periodContext); // 得到数组每一维的范围
         for (int a : range)
         {
             ranges.push_back(a);
@@ -1346,7 +1338,7 @@ std::vector<int> Visitor::visitPeriods(PascalSParser::PeriodsContext *context)
     }
     return ranges;
 }
-// 返回2个数字，表示数组某一维的起止位置
+
 std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
 {
     auto vec = context->constant();
@@ -1356,8 +1348,8 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     }
     auto constContext = vec[0];
     llvm::Value *value1, *value2;
-    // LLVM::const转换为int，作为返回值
-    // 据常量的不同类型，进入不同的分支进行分析
+    // 将LLVM::const转换为int，作为返回值
+    // 根据常量的不同类型，进入不同的分支进行分析
     if (auto constIdentifierContext = dynamic_cast<PascalSParser::ConstIdentifierContext *>(constContext))
     {
         auto value = visitConstIdentifier(constIdentifierContext);
@@ -1395,7 +1387,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
         throw NotImplementedException();
     }
 
-    constContext = vec[1]; // 别得到两个下标的value表示
+    constContext = vec[1]; // 分别得到两个下标的value表示
     if (auto constIdentifierContext = dynamic_cast<PascalSParser::ConstIdentifierContext *>(constContext))
     {
         auto value = visitConstIdentifier(constIdentifierContext);
@@ -1419,7 +1411,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     else if (auto ConstsIdentifierCtx = dynamic_cast<PascalSParser::ConstSignIdentifierContext *>(constContext))
     {
         auto value = visitConstSignIdentifier(ConstsIdentifierCtx);
-        // 断常量的类型是否是int,不是的话不能作为数组下标，说明有语法错误
+        // 判断常量的类型是否是int,不是的话不能作为数组下标，说明有语法错误
         if (!value->getType()->isIntegerTy())
         {
             throw NotImplementedException();
@@ -1433,7 +1425,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     {
         throw NotImplementedException();
     }
-    int constIntValue1, constIntValue2; // value转换为constInt，再转换为int
+    int constIntValue1, constIntValue2; // 将value转换为constInt，再转换为int
     if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(value1))
     {
         constIntValue1 = CI->getSExtValue();
@@ -1469,7 +1461,7 @@ llvm::Type *Visitor::visitRecordField(PascalSParser::RecordFieldContext *context
         auto e = visitVariableDeclaration(varDeclareCtx);
         elements.push_back(e);
     }
-    for (auto id : idList)
+    for (const auto &id : idList)
     {
         llvm::StructType *testStruct = llvm::StructType::create(*llvm_context, id);
         testStruct->setBody(elements); // 创建结构体类型代表当前record的声明
@@ -1478,52 +1470,32 @@ llvm::Type *Visitor::visitRecordField(PascalSParser::RecordFieldContext *context
     return elements[0];
 }
 
-/**
- * @brief visitProcedureAndFunctionDeclarationPart
- * @note Determine whether it is a procedure declaration or a function declaration 判断是过程声明还是函数声明
- * @param context the context of ProcedureAndFunctionDeclarationPart, indicating what to do next ProcedureAndFunctionDeclarationPartContext类型的参数，指示下一步动作
- */
 void Visitor::visitProcedureAndFunctionDeclarationPart(PascalSParser::ProcedureAndFunctionDeclarationPartContext *context)
 {
-    // 断走是哪一个声明
+    // 判断走是哪一个声明
     const auto &ProOrFuncDec = context->procedureOrFunctionDeclaration();
     if (auto procedureDeclarationContext = dynamic_cast<PascalSParser::ProOrFuncDecProContext *>(ProOrFuncDec))
         visitProOrFuncDecPro(procedureDeclarationContext);
     else if (auto functionDeclarationContext = dynamic_cast<PascalSParser::ProOrFuncDecFuncContext *>(ProOrFuncDec))
         visitProOrFuncDecFunc(functionDeclarationContext);
     else
-        throw NotImplementedException();
+        throw DebugException("Undefined parts outside functions and procedures");
 }
 
-/**
- * @brief visitProOrFuncDecPro
- * @note enter the part of ProcedureDeclaration 进入过程声明部分
- * @param context the context of ProOrFuncDecProContext
- */
 void Visitor::visitProOrFuncDecPro(PascalSParser::ProOrFuncDecProContext *context)
 {
     visitProcedureDeclaration(context->procedureDeclaration());
 }
 
-/**
- * @brief visitProOrFuncDecFunc
- * @note enter the part of FunctionDeclaration 进入函数声明部分
- * @param context the context of ProOrFuncDecFuncContext
- */
 void Visitor::visitProOrFuncDecFunc(PascalSParser::ProOrFuncDecFuncContext *context)
 {
     visitFunctionDeclaration(context->functionDeclaration());
 }
 
-/**
- * @brief visitProcedureDeclaration
- * @note declare a procedure and add it to scopes 声明一个过程，并将其添加到变量表中
- * @param context the context of ProcedureDeclarationContext
- */
 void Visitor::visitProcedureDeclaration(PascalSParser::ProcedureDeclarationContext *context)
 {
-    // 个过程和FunctionDeclaration一样，可以参考visitFunctionDeclaration
-    // 是Procedure是没有返回值的，所以将其函数类型定义为空，返回值也为空
+    // 整个过程和FunctionDeclaration一样，可以参考visitFunctionDeclaration
+    // 但是Procedure是没有返回值的，所以将其函数类型定义为空，返回值也为空
     auto identifier = visitIdentifier(context->identifier());
 
     llvm::SmallVector<llvm::Type *> ParaTypes;
@@ -1536,7 +1508,7 @@ void Visitor::visitProcedureDeclaration(PascalSParser::ProcedureDeclarationConte
 
     auto function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, llvm::Twine(identifier), module.get());
 
-    // 建一个基本块用于为参数创建CreateAlloca，CreateLoad语句
+    // 创建一个基本块用于为参数创建CreateAlloca，CreateLoad语句
     auto block = llvm::BasicBlock::Create(*llvm_context, "Para_Ret", function);
     builder.SetInsertPoint(block);
 
@@ -1546,7 +1518,7 @@ void Visitor::visitProcedureDeclaration(PascalSParser::ProcedureDeclarationConte
     for (auto argsItr = function->arg_begin(); argsItr != function->arg_end(); argsItr++)
     {
         llvm::Value *arg = argsItr;
-        // 为变量表中存的都是value的地址，所以也必须给参数申请地址才能将其存入变量表中。
+        // 因为变量表中存的都是value的地址，所以也必须给参数申请地址才能将其存入变量表中
         auto addrArg = builder.CreateAlloca(arg->getType(), nullptr);
         arg->setName(FormalParaIdList[n]);
         builder.CreateStore(arg, addrArg);
@@ -1557,78 +1529,67 @@ void Visitor::visitProcedureDeclaration(PascalSParser::ProcedureDeclarationConte
     visitBlock(context->block(), function);
     scopes.pop_back();
 
-    // 为Procedure没有返回值，所以创建空返回语句。
+    // 因为Procedure没有返回值，所以创建空返回语句。
     builder.CreateRetVoid();
 }
 
-/**
- * @brief visitFunctionDeclaration
- * @note declare a function and add it to scopes 声明一个函数，并将其添加到变量表中
- * @param context the context of FunctionDeclarationContext
- */
 void Visitor::visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext *context)
 {
-    // 取identifier，即函数名
+    // 获取identifier，即函数名
     auto identifier = visitIdentifier(context->identifier());
-    // 取函数返回值类型
+    // 获取函数返回值类型
     auto simpleType = visitSimpleType(context->simpleType(), false);
 
-    // 取函数参数的类型，默认为空，即没有参数传出。
+    // 获取函数参数的类型，默认为空，即没有参数传出。
     llvm::SmallVector<llvm::Type *> ParaTypes;
-    if (context->formalParameterList()) // 函数有参数的时候才获取。
+    if (context->formalParameterList()) // 当函数有参数的时候才获取。
     {
-        // 取形参的信息：参数类型和参数的identifier
+        // 获取形参的信息：参数类型和参数的identifier
         visitFormalParameterList(context->formalParameterList(), ParaTypes);
     }
-    // 据函数的返回值和参数类型构造functionType
+    // 根据函数的返回值和参数类型构造functionType
     auto functionType = llvm::FunctionType::get(simpleType, ParaTypes, false);
-    // 据functionType构造function
+    // 根据functionType构造function
     auto function = llvm::Function::Create(functionType, llvm::Function::ExternalLinkage, llvm::Twine(identifier), module.get());
 
-    // 建一个基本块用于为返回值和参数创建CreateAlloca，CreateLoad语句
+    // 创建一个基本块用于为返回值和参数创建CreateAlloca，CreateLoad语句
     auto block = llvm::BasicBlock::Create(*llvm_context, "Para_Ret", function);
     builder.SetInsertPoint(block);
 
-    // 返回值申请内存
+    // 为返回值申请内存
     auto addr = builder.CreateAlloca(simpleType, nullptr);
-    // 别将返回值的地址，和函数的地址存入变量表中
+    // 分别将返回值的地址，和函数的地址存入变量表中
     scopes.back().setVariable(identifier, function);
     scopes.back().setVariable(identifier + "ret", addr);
-    // 形参申请地址并将其存入变量表
+    // 为形参申请地址并将其存入变量表
     int n = 0;
     for (auto argsItr = function->arg_begin(); argsItr != function->arg_end(); argsItr++)
     {
         llvm::Value *arg = argsItr;
-        // 为变量表中存的都是value的地址，所以也必须给参数申请地址才能将其存入变量表中。
+        // 因为变量表中存的都是value的地址，所以也必须给参数申请地址才能将其存入变量表中。
         auto addrArg = builder.CreateAlloca(arg->getType(), nullptr);
         arg->setName(FormalParaIdList[n]);
         builder.CreateStore(arg, addrArg);
         scopes.back().setVariable(FormalParaIdList[n++], addrArg);
     }
-    // 建函数的变量作用域并通过visitBlock构建函数体
+    // 创建函数的变量作用域并通过visitBlock构建函数体
     scopes.push_back(Scope());
     visitBlock(context->block(), function);
     scopes.pop_back();
 
-    // 后去除返回值创建返回语句即可
+    // 最后去除返回值创建返回语句即可
     auto ret = builder.CreateLoad(addr);
     builder.CreateRet(ret);
 }
 
-/**
- * @brief visitFormalParameterList
- * @note Access the list of normal and var arguments 访问普通参数和var参数列表
- * @param context the context of visitFormalParameterList visitFormalParameterList类型的context
- * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
- */
 void Visitor::visitFormalParameterList(PascalSParser::FormalParameterListContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes)
 {
-    // 个全局变量用来存储形参的identifier，所以每次使用前都需要先清空。
+    // 一个全局变量用来存储形参的identifier，所以每次使用前都需要先清空。
     FormalParaIdList.clear();
 
     for (const auto &formalParameterSectionContext : context->formalParameterSection())
     {
-        // 值传参调用visitFormalParaSecGroup，引用传参调用visitFormalParaSecVarGroup
+        // 传值传参调用visitFormalParaSecGroup，引用传参调用visitFormalParaSecVarGroup
         if (auto parameterGroupContext = dynamic_cast<PascalSParser::FormalParaSecGroupContext *>(formalParameterSectionContext))
         {
             visitFormalParaSecGroup(parameterGroupContext, ParaTypes);
@@ -1638,59 +1599,34 @@ void Visitor::visitFormalParameterList(PascalSParser::FormalParameterListContext
             visitFormalParaSecVarGroup(VAR_parameterGroupContext, ParaTypes);
         }
         else
-            throw NotImplementedException();
+            throw DebugException("Undefined parts of ParameterList");
     }
 }
 
-/**
- * @brief visitFormalParaSecGroup
- * @note visit the non-var parameterGroup 访问非var类型变量
- * @param context the context of FormalParaSecGroupContext FormalParaSecGroupContext类型的context
- * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
- */
 void Visitor::visitFormalParaSecGroup(PascalSParser::FormalParaSecGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes)
 {
     visitParameterGroup(context->parameterGroup(), ParaTypes, false);
 }
 
-/**
- * @brief visitFormalParaSecVarGroup
- * @note visit the var parameterGroup 访问var类型变量
- * @param context the context of FormalParaSecVarGroupContext FormalParaSecVarGroupContext类型的context
- * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
- */
 void Visitor::visitFormalParaSecVarGroup(PascalSParser::FormalParaSecVarGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes)
 {
     visitParameterGroup(context->parameterGroup(), ParaTypes, true);
 }
 
-/**
- * @brief visitParameterGroup
- * @note get types and names of parameters 得到参数的类型和参数名
- * @param context the context of ParameterGroupContext ParameterGroupContext类型的context
- * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
- * @param isVar type:bool true:is var false:is not var
- */
 void Visitor::visitParameterGroup(PascalSParser::ParameterGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes, bool isVar)
 {
-    // 处将引用传参视为指针类型的参数，通过isVar表明是否为引用传参，如果是引用传参就构建对应的指针类型
-    // 取参数类型
+    // 此处将引用传参视为指针类型的参数，通过isVar表明是否为引用传参，如果是引用传参就构建对应的指针类型
+    // 获取参数类型
     auto simpleType = visitSimpleType(context->simpleType(), isVar);
-    // 取参数identifier
+    // 获取参数identifier
     auto IdList = visitIdentifierList(context->identifierList());
     for (int i = 0; i < IdList.size(); i++)
     {
-        ParaTypes.push_back(simpleType);       // 参类型
-        FormalParaIdList.push_back(IdList[i]); // 参identifier列表
+        ParaTypes.push_back(simpleType);       // 形参类型
+        FormalParaIdList.push_back(IdList[i]); // 形参identifier列表
     }
 }
 
-/**
- * @brief visitIdentifierList
- * @note get a list of identifiers 得到一个标识符的列表
- * @param context the context of IdentifierListContext IdentifierListContext类型的context
- * @return std::vector<std::string> list of identifiers 存储标识符名字的vector
- */
 std::vector<std::string> Visitor::visitIdentifierList(PascalSParser::IdentifierListContext *context)
 {
     std::vector<std::string> idents;
@@ -1703,7 +1639,7 @@ std::vector<std::string> Visitor::visitIdentifierList(PascalSParser::IdentifierL
 
 llvm::Type *Visitor::visitSimpleType(PascalSParser::SimpleTypeContext *context, bool isVar)
 {
-    // 种基本类型，并通过判断isVar来决定返回普通的Type还是返回PtrType
+    // 四种基本类型，并通过判断isVar来决定返回普通的Type还是返回PtrType
     if (auto charContext = context->CHAR())
     {
         if (isVar)
@@ -1733,15 +1669,9 @@ llvm::Type *Visitor::visitSimpleType(PascalSParser::SimpleTypeContext *context, 
             return builder.getFloatTy();
     }
     else
-        throw NotImplementedException();
+        throw DebugException("Undefined parts of SimpleType");
 }
 
-/**
- * @brief visitStructuredState
- * @note visit compound, conditional, or repetetive 访问复合语句、条件语句或者循环语句
- * @param context the context of StructuredStateContext StructuredStateContext类型的context
- * @param function main function
- */
 void Visitor::visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function)
 {
     if (auto compoundStatementContext = dynamic_cast<PascalSParser::StructuredStateCompoundContext *>(context->structuredStatement()))
@@ -1752,10 +1682,10 @@ void Visitor::visitStructuredState(PascalSParser::StructuredStateContext *contex
         visitStructuredStateRepetetive(structuredStateRepetetiveContext, function);
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Undefined parts of StructuredState");
     }
 }
-// 问复合语句中的循环语句
+
 void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function)
 {
     if (auto repetetiveStateForContext = dynamic_cast<PascalSParser::RepetetiveStateForContext *>(context->repetetiveStatement()))
@@ -1791,7 +1721,7 @@ void Visitor::visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileConte
 
 void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function)
 {
-    // 始化变量赋值
+    // 初始化变量赋值
     auto id = visitIdentifier(context->identifier());
     auto v = visitForList(context->forList());
     auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
@@ -1801,7 +1731,7 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
         con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), -1);
         isDown = true;
     }
-    // 始结束变量赋值
+    // 开始结束变量赋值
     auto initial = v[0];
     auto final = v[1];
     auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
@@ -1817,7 +1747,7 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     builder.CreateBr(while_count);       // 跳转语句
     builder.SetInsertPoint(while_count); // 为基本块添加语句
     auto tmp_i = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), addr);
-    // 转条件
+    // 跳转条件
     llvm::Value *cmp;
     if (isDown)
     {
@@ -1827,7 +1757,7 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     {
         cmp = builder.CreateICmpSLE(tmp_i, final);
     }
-    // 环跳转
+    // 循环跳转
     builder.CreateCondBr(cmp, while_body, while_end);
     // while_body代码块
     builder.SetInsertPoint(while_body);
@@ -1838,7 +1768,7 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
         visitStructuredState(structuredStatementContext, function);
     else
         throw NotImplementedException();
-    // 环变量增加
+    // 循环变量增加
     auto i = builder.CreateLoad(llvm::IntegerType::getInt32Ty(*llvm_context), addr);
     auto tmp = builder.CreateAdd(i, con_1);
     builder.CreateStore(tmp, addr);
@@ -1848,7 +1778,7 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     builder.SetInsertPoint(while_end);
     scopes.pop_back();
 }
-// 问for语句中，循环变量的起止值
+
 std::vector<llvm::Value *> Visitor::visitForList(PascalSParser::ForListContext *context)
 {
     std::vector<llvm::Value *> v;
@@ -1873,8 +1803,7 @@ llvm::Value *Visitor::visitFinalValue(PascalSParser::FinalValueContext *context)
 
 void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *context, llvm::Function *function)
 {
-
-    // 建循环使用到的三个代码块
+    // 创建循环使用到的三个代码块
     llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
     llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
     llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
@@ -1886,9 +1815,9 @@ void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *contex
 
     builder.CreateBr(while_count);
     builder.SetInsertPoint(while_count);
-    // 取进入循环的判断值
+    // 获取进入循环的判断值
     llvm::Value *exp_value = visitExpression(context->expression());
-    // 转
+    // 跳转
     builder.CreateCondBr(exp_value, while_end, while_body);
 
     // while_end基本块
@@ -1897,17 +1826,16 @@ void Visitor::visitRepeatStatement(PascalSParser::RepeatStatementContext *contex
 
 void Visitor::visitWhileStatement(PascalSParser::WhileStatementContext *context, llvm::Function *function)
 {
-
-    // 建循环使用到的三个代码块
+    // 创建循环使用到的三个代码块
     llvm::BasicBlock *while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
     llvm::BasicBlock *while_body = llvm::BasicBlock::Create(*llvm_context, "while_body", function, 0);
     llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end", function, 0);
     // while_count基本块
     builder.CreateBr(while_count);
     builder.SetInsertPoint(while_count);
-    // 取进入循环的判断值
+    // 获取进入循环的判断值
     llvm::Value *exp_value = visitExpression(context->expression());
-    // 件跳转
+    // 条件跳转
     builder.CreateCondBr(exp_value, while_body, while_end);
     // while_body基本块
     builder.SetInsertPoint(while_body);
@@ -1934,7 +1862,7 @@ void Visitor::visitStructuredStateConditional(PascalSParser::StructuredStateCond
         visitConditionalStateIf(ifStatementContext, function);
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Undefined parts of StructuredStateConditional");
     }
 }
 void Visitor::visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context, llvm::Function *function)
@@ -1942,18 +1870,12 @@ void Visitor::visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *
     visitIfStatement(context->ifStatement(), function);
 }
 
-/**
- * @brief visitIfStatement
- * @note execute ifStatemens 执行if语句
- * @param context the context of IfStatementContext IfStatementContext类型的context
- * @param function main function
- */
 void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm::Function *function)
 {
-    // 取判断条件的value，从而创建跳转语句
+    // 获取判断条件的value，从而创建跳转语句
     auto exp_value = visitExpression(context->expression());
 
-    // 建所需基本块，入口块已于入口处创建，此处只需要创建then与end的基本块。
+    // 创建所需基本块，入口块已于入口处创建，此处只需要创建then与end的基本块。
     // else的基本块此处只做声明，根据后续判断条件再决定是否创建
     llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*llvm_context, "then", function);
     llvm::BasicBlock *end = llvm::BasicBlock::Create(*llvm_context, "if_end", function);
@@ -1961,38 +1883,38 @@ void Visitor::visitIfStatement(PascalSParser::IfStatementContext *context, llvm:
 
     if (context->statement().size() == 2)
     {
-        // 定有else后再创建其所属基本块
+        // 确定有else后再创建其所属基本块
         elseBB = llvm::BasicBlock::Create(*llvm_context, "else", function);
-        // 建跳转语句
+        // 创建跳转语句
         builder.CreateCondBr(exp_value, thenBB, elseBB);
     }
     else
-        builder.CreateCondBr(exp_value, thenBB, end); // 建跳转语句
+        builder.CreateCondBr(exp_value, thenBB, end); // 创建跳转语句
 
-    // 历then的内容
+    // 遍历then的内容
     builder.SetInsertPoint(thenBB);
     visitStatement(context->statement(0), function);
-    // 历完跳转至结尾块
+    // 遍历完跳转至结尾块
     builder.CreateBr(end);
 
-    // 定有else后遍历else的内容
+    // 确定有else后遍历else的内容
     if (context->statement().size() == 2)
     {
         builder.SetInsertPoint(elseBB);
         visitStatement(context->statement(1), function);
         builder.CreateBr(end);
     }
-    // 改基本块的指向
+    // 更改基本块的指向
     builder.SetInsertPoint(end);
 }
 
 void Visitor::visitStatement(PascalSParser::StatementContext *context, llvm::Function *function)
 {
-    // 据判断决定所要遍历的Statement的类型
+    // 根据判断决定所要遍历的Statement的类型
     if (auto simpleStatementContext = dynamic_cast<PascalSParser::SimpleStateContext *>(context))
         visitSimpleState(simpleStatementContext, function);
     else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context))
         visitStructuredState(structuredStatementContext, function);
     else
-        throw NotImplementedException();
+        throw DebugException("Undefined parts of Statement");
 }

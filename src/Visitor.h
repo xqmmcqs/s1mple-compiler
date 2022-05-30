@@ -6,7 +6,7 @@
  * @copyright GNU General Public License, version 3 (GPL-3.0)
  *
  * 本文件定义了Visitor模式的接口。
-*/
+ */
 
 #pragma once
 
@@ -31,10 +31,10 @@ namespace PascalS
         std::unique_ptr<llvm::Module> module;
         std::vector<Scope> scopes; ///< 变量作用域
         std::vector<std::string> FormalParaIdList;
-        std::unordered_map<std::string, std::vector<int>> arrayRanges;///< 存放所有数组的下标范围，访问数组时是计算元素偏移量的依据。
-        std::vector<int> arrayRangeTemp;///< 暂存一个数组的下标范围。
-        bool readlnArgFlag = false;///< readln参数标记，为真时visitFactorVar返回地址而非值。
-        bool arrayIndexFlag = false;///< 数组下标标记，为真时visitFactorVar返回值而非地址，无论readlnArgFlag如何。
+        std::unordered_map<std::string, std::vector<int>> arrayRanges; ///< 存放所有array的下标范围，访问array时是计算元素偏移量的依据。
+        std::vector<int> arrayRangeTemp;                               ///< 暂存一个array的下标范围。
+        bool readlnArgFlag = false;                                    ///< readln参数标记，为真时visitFactorVar返回地址而非值。
+        bool arrayIndexFlag = false;                                   ///< array下标标记，为真时visitFactorVar返回值而非地址，无论readlnArgFlag如何。
 
         Visitor(std::string filename) : llvm_context(std::make_unique<llvm::LLVMContext>()),
                                         builder(*llvm_context),
@@ -42,50 +42,50 @@ namespace PascalS
 
         /**
          * @brief 从作用域中查找变量
-         * 
+         *
          * @param name 变量名
-         * @return llvm::Value* 变量值
+         * @return 变量值
          */
         llvm::Value *getVariable(const std::string &name);
 
         /**
          * @brief 从文件中生成语法树
-         * 
+         *
          * @param path 文件路径
          */
         void fromFile(const std::string &path);
 
         /**
          * @brief 访问程序
-         * 
+         *
          * @param context 语法树中表示program分支的上下文
          */
         void visitProgram(PascalSParser::ProgramContext *context);
 
         /**
          * @brief 访问程序头
-         * 
+         *
          * @param context 语法树中表示programHeading分支的上下文
-         * @return std::string 
+         * @return 程序名
          */
         std::string visitProgramHeading(PascalSParser::ProgramHeadingContext *context);
-        
+
         /**
-         * @brief 访问标识符id
+         * @brief 访问标识符
          *
-         * @param context 语法树中表示id分支的上下文
-         * @return std::string id的值
+         * @param context 语法树中表示标识符分支的上下文
+         * @return 标识符的字面值
          */
         std::string visitIdentifier(PascalSParser::IdentifierContext *context);
 
         /**
          * @brief 访问程序/函数块
-         * 
-         * @param context 语法树中表示block分支的上下文
-         * @param function block所属的函数
+         *
+         * @param context 语法树中表示程序/函数块分支的上下文
+         * @param function 程序/函数块所属的函数
          * @param isGlobal 是否是主函数
          */
-        void visitBlock(PascalSParser::BlockContext *context, llvm::Function *function, bool isGlobal=false);
+        void visitBlock(PascalSParser::BlockContext *context, llvm::Function *function, bool isGlobal = false);
 
         /**
          * @brief 访问常量定义区域
@@ -102,583 +102,776 @@ namespace PascalS
         void visitConstantDefinition(PascalSParser::ConstantDefinitionContext *context);
 
         /**
-         * @brief 访问不同类型的常量定义，无符号数，有符号数，标识符，字符串
+         * @brief 访问无符号数常量
          *
-         * @param context 语法树中表示不同类型常量定义分支的上下文
-         * @return LLVM类型的常量的值
+         * @param context 语法树中表示无符号数常量分支的上下文
+         * @return 无符号数常量
          */
         llvm::Constant *visitConstUnsignedNumber(PascalSParser::ConstUnsignedNumberContext *context);
 
+        /**
+         * @brief 访问有符号数常量
+         *
+         * @param context 语法树中表示有符号数常量分支的上下文
+         * @return 有符号数常量
+         */
         llvm::Constant *visitConstSignedNumber(PascalSParser::ConstSignedNumberContext *context);
 
+        /**
+         * @brief 访问标识符常量（一个常量用另一个常量的值来初始化）
+         *
+         * @param context 语法树中表示标识符常量分支的上下文
+         * @return 标识符常量
+         */
         llvm::Constant *visitConstIdentifier(PascalSParser::ConstIdentifierContext *context);
 
+        /**
+         * @brief 访问有符号标识符常量（一个常量用另一个常量的值来初始化）
+         *
+         * @param context 语法树中表示有符号标识符常量分支的上下文
+         * @return 有符号标识符常量
+         */
         llvm::Constant *visitConstSignIdentifier(PascalSParser::ConstSignIdentifierContext *context);
 
+        /**
+         * @brief 访问字符串常量
+         *
+         * @param context 语法树中表示字符串常量分支的上下文
+         * @return 字符串常量
+         */
         std::string visitConstString(PascalSParser::ConstStringContext *context);
 
         /**
-         * @brief 访问不同类型的数字，无符号整数，有符号整数，无符号实数，有符号实数
+         * @brief 访问无符号整数
          *
-         * @param context 语法树中表示不同数字定义分支的上下文
-         * @return 数字的浮点表示或整型表示
+         * @param context 语法树中表示无符号整数分支的上下文
+         * @return 无符号整数值
          */
         int visitUnsignedNumberInteger(PascalSParser::UnsignedNumberIntegerContext *context);
 
+        /**
+         * @brief 访问无符号实数
+         *
+         * @param context 语法树中表示无符号实数分支的上下文
+         * @return 无符号实数值
+         */
         float visitUnsignedNumberReal(PascalSParser::UnsignedNumberRealContext *context);
 
+        /**
+         * @brief 访问无符号整数
+         *
+         * @param context 语法树中表示无符号整数分支的上下文
+         * @return 无符号整数值
+         */
         int visitUnsignedInteger(PascalSParser::UnsignedIntegerContext *context);
 
+        /**
+         * @brief 访问无符号实数
+         *
+         * @param context 语法树中表示无符号实数分支的上下文
+         * @return 无符号实数值
+         */
         float visitUnsignedReal(PascalSParser::UnsignedRealContext *context);
 
-        void visitSignPlus(PascalSParser::SignPlusContext *context);
-
-        void visitSignMinus(PascalSParser::SignMinusContext *context);
-
-        void visitBoolTrue(PascalSParser::BoolTrueContext *context);
-
-        void visitBoolFalse(PascalSParser::BoolFalseContext *context);
-
+        /**
+         * @brief 访问字符串
+         *
+         * @param context 语法树中表示字符串分支的上下文
+         * @return 字符串值
+         */
         std::string visitString(PascalSParser::StringContext *context);
 
         /**
-         * @brief 访问type定义
+         * @brief 访问类型定义部分
          *
-         * @param context 语法树中表示type定义分支的上下文
+         * @param context 语法树中表示类型定义部分分支的上下文
          */
         void visitTypeDefinitionPart(PascalSParser::TypeDefinitionPartContext *context);
 
+        /**
+         * @brief 访问类型定义
+         *
+         * @param context 语法树中表示类型定义分支的上下文
+         */
         void visitTypeDefinition(PascalSParser::TypeDefinitionContext *context);
 
         /**
-         * @brief 访问不同类型的type定义
+         * @brief 访问简单类型定义
          *
-         * @param context 语法树中表示不同类型type定义分支的上下文，简单类型（整型等），复合类型（数组， record等）
-         * @return 表示具体类型的llvm::Type
+         * @param context 语法树中表示简单类型定义分支的上下文
+         * @return 简单类型
          */
         llvm::Type *visitTypeSimpleType(PascalSParser::TypeSimpleTypeContext *context);
+
         /**
-         * @brief 访问复合类型
+         * @brief 访问复合类型定义
          *
-         * @param context 语法树中表示简单类型分支的上下文
-         * @param isVar 表示该类型的变量是否是引用
-         * @return 表示具体类型的llvm::Type
+         * @param context 语法树中表示复合类型定义分支的上下文
+         * @param idList 标识符列表，用于Record类型
+         * @return 复合类型
          */
         llvm::Type *visitTypeStructuredType(PascalSParser::TypeStructuredTypeContext *context, std::vector<std::string> idList);
+
         /**
          * @brief 访问简单类型
          *
          * @param context 语法树中表示简单类型分支的上下文
          * @param isVar 表示该类型的变量是否是引用
-         * @return 表示具体类型的llvm::Type
+         * @return 简单类型
          */
         llvm::Type *visitSimpleType(PascalSParser::SimpleTypeContext *context, bool isVar = false);
 
+        /**
+         * @brief 访问复合类型定义
+         *
+         * @param context 语法树中表示复合类型定义分支的上下文
+         * @param idList 标识符列表
+         * @return 复合类型
+         */
         llvm::Type *visitStructuredTypeArray(PascalSParser::StructuredTypeArrayContext *context, std::vector<std::string> idList);
 
         /**
          * @brief 访问record类型
          *
          * @param context 语法树中表示record类型分支的上下文
-         * @param  idList record中可能含有变量定义，要传入变量标识符
-         * @return 表示具体类型的llvm::Type
+         * @param idList 标识符列表
+         * @return record类型
          */
         llvm::Type *visitStructuredTypeRecord(PascalSParser::StructuredTypeRecordContext *context, std::vector<std::string> idList);
 
+        /**
+         * @brief 访问array类型
+         *
+         * @param context 语法树中表示array类型分支的上下文
+         * @param idList 标识符列表
+         * @return array类型
+         */
         llvm::Type *visitArrayType1(PascalSParser::ArrayType1Context *context, std::vector<std::string> idList);
 
+        /**
+         * @brief 访问array类型
+         *
+         * @param context 语法树中表示array类型分支的上下文
+         * @param idList 标识符列表
+         * @return array类型
+         */
         llvm::Type *visitArrayType2(PascalSParser::ArrayType2Context *context, std::vector<std::string> idList);
 
+        /**
+         * @brief 访问下标区间
+         *
+         * @param context 语法树中表示下标区间分支的上下文
+         * @return 下标区间列表，每两个值表示一个下标区间
+         */
         std::vector<int> visitPeriods(PascalSParser::PeriodsContext *context);
 
+        /**
+         * @brief 访问下标区间
+         *
+         * @param context 语法树中表示下标区间分支的上下文
+         * @return 下标区间列表，两个数，表示一个下标区间
+         */
         std::vector<int> visitPeriod(PascalSParser::PeriodContext *context);
 
+        /**
+         * @brief 访问record类型
+         *
+         * @param context 语法树中表示record类型分支的上下文
+         * @param idList 标识符列表
+         * @return record类型
+         */
         llvm::Type *visitRecordType(PascalSParser::RecordTypeContext *context, std::vector<std::string> idList);
 
+        /**
+         * @brief 访问record类型
+         *
+         * @param context 语法树中表示record类型分支的上下文
+         * @param idList 标识符列表
+         * @return record类型
+         */
         llvm::Type *visitRecordField(PascalSParser::RecordFieldContext *context, std::vector<std::string> idList);
 
-        void visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context, bool isGlobal=false);
+        /**
+         * @brief 访问变量定义部分
+         *
+         * @param context 语法树中表示变量定义部分分支的上下文
+         * @param isGlobal 是否是全局变量
+         */
+        void visitVariableDeclarationPart(PascalSParser::VariableDeclarationPartContext *context, bool isGlobal = false);
+
         /**
          * @brief 访问变量定义
          *
          * @param context 语法树中表示变量定义分支的上下文
+         * @param isGlobal 是否是全局变量
          */
-        llvm::Type *visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context, bool isGlobal=false);
+        llvm::Type *visitVariableDeclaration(PascalSParser::VariableDeclarationContext *context, bool isGlobal = false);
+
         /**
-         * @brief visitProcedureAndFunctionDeclarationPart
-         * @note Determine whether it is a procedure declaration or a function declaration 判断是过程声明还是函数声明
-         * @param context the context of ProcedureAndFunctionDeclarationPart, indicating what to do next ProcedureAndFunctionDeclarationPartContext类型的参数，指示下一步动作
+         * @brief 访问过程和函数定义部分
+         *
+         * @note 判断是过程声明还是函数声明
+         * @param context 语法树中表示过程和函数定义部分分支的上下文
          */
         void visitProcedureAndFunctionDeclarationPart(PascalSParser::ProcedureAndFunctionDeclarationPartContext *context);
+
         /**
-         * @brief visitProOrFuncDecPro
-         * @note enter the part of ProcedureDeclaration 进入过程声明部分
-         * @param context the context of ProOrFuncDecProContext
+         * @brief 访问过程定义部分
+         *
+         * @param context 语法树中表示过程定义部分分支的上下文
+         *
+         * 进入过程声明部分
          */
         void visitProOrFuncDecPro(PascalSParser::ProOrFuncDecProContext *context);
+
         /**
-         * @brief visitProOrFuncDecFunc
-         * @note enter the part of FunctionDeclaration 进入函数声明部分
-         * @param context the context of ProOrFuncDecFuncContext
+         * @brief 访问函数定义部分
+         *
+         * @param context 语法树中表示函数定义部分分支的上下文
+         *
+         * 进入函数声明部分
          */
         void visitProOrFuncDecFunc(PascalSParser::ProOrFuncDecFuncContext *context);
+
         /**
-         * @brief visitProcedureDeclaration
-         * @note declare a procedure and add it to scopes 声明一个过程，并将其添加到变量表中
-         * @param context the context of ProcedureDeclarationContext
+         * @brief 访问过程定义
+         *
+         * @param context 语法树中表示过程定义分支的上下文
+         *
+         * 声明一个过程，并将其添加到变量表中
          */
         void visitProcedureDeclaration(PascalSParser::ProcedureDeclarationContext *context);
+
         /**
-         * @brief visitFormalParameterList
-         * @note Access the list of normal and var arguments 访问普通参数和var参数列表
-         * @param context the context of visitFormalParameterList visitFormalParameterList类型的上下文
-         * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
+         * @brief 访问参数列表
+         *
+         * @param context 语法树中表示参数列表分支的上下文
+         * @param ParaTypes 引用调用，用来存储变量类型
+         *
+         * 访问普通参数和var参数列表
          */
         void visitFormalParameterList(PascalSParser::FormalParameterListContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes);
+
         /**
-         * @brief visitFormalParaSecGroup
-         * @note visit the non-var parameterGroup 访问非var类型变量
-         * @param context the context of FormalParaSecGroupContext FormalParaSecGroupContext类型的上下文
-         * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
+         * @brief 访问非var参数
+         *
+         * @param context 语法树中表示非var参数分支的上下文
+         * @param ParaTypes 引用调用，用来存储变量类型
          */
         void visitFormalParaSecGroup(PascalSParser::FormalParaSecGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes);
+
         /**
-         * @brief visitFormalParaSecVarGroup
-         * @note visit the var parameterGroup 访问var类型变量
-         * @param context the context of FormalParaSecVarGroupContext FormalParaSecVarGroupContext类型的上下文
-         * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
+         * @brief 访问var参数
+         *
+         * @param context 语法树中表示var参数分支的上下文
+         * @param ParaTypes 引用调用，用来存储变量类型
          */
         void visitFormalParaSecVarGroup(PascalSParser::FormalParaSecVarGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes);
+
         /**
-         * @brief visitParameterGroup
-         * @note get types and names of parameters 得到参数的类型和参数名
-         * @param context the context of ParameterGroupContext ParameterGroupContext类型的上下文
-         * @param ParaTypes call by reference, Used to store variable types 引用调用，用来存储变量类型
-         * @param isVar type:bool true:is var false:is not var
+         * @brief 访问一个参数组（标识符和类型）
+         *
+         * @param context 语法树中表示参数组分支的上下文
+         * @param ParaTypes 引用调用，用来存储变量类型
+         * @param isVar 是否是var参数
+         *
+         * 得到参数的类型和参数名
          */
         void visitParameterGroup(PascalSParser::ParameterGroupContext *context, llvm::SmallVector<llvm::Type *> &ParaTypes, bool isVar);
+
         /**
-         * @brief 访问标识符串
+         * @brief 访问标识符列表
          *
-         * @param context 语法树中表示标识符串分支的上下文
-         * @return 表示每个标识符名的字符串vector
+         * @param context 语法树中表示标识符列表分支的上下文
+         * @return 标识符字符串的列表
          */
         std::vector<std::string> visitIdentifierList(PascalSParser::IdentifierListContext *context);
 
-        void visitConstList(PascalSParser::ConstListContext *context);
         /**
-         * @brief visitFunctionDeclaration
-         * @note declare a function and add it to scopes 声明一个函数，并将其添加到变量表中
-         * @param context the context of FunctionDeclarationContext
+         * @brief 访问函数定义
+         *
+         * @param context 语法树中表示函数定义分支的上下文
+         *
+         * 声明一个函数，并将其添加到变量表中
          */
         void visitFunctionDeclaration(PascalSParser::FunctionDeclarationContext *context);
 
         /**
-         * @brief 访问简单语句
+         * @brief 访问简单语句（赋值、过程调用、空）
          *
-         * @param context 语法树中表示simpleState语句分支的上下文
+         * @param context 语法树中表示简单语句分支的上下文
+         * @param function 语句所属的函数
          */
-        void visitSimpleState(PascalSParser::SimpleStateContext *context,llvm::Function *function = nullptr);
+        void visitSimpleState(PascalSParser::SimpleStateContext *context, llvm::Function *function = nullptr);
+
         /**
-         * @brief 访问结构语句
+         * @brief 访问结构语句（语句块、分支、循环）
          *
-         * @param context 语法树中表示strycturedState语句分支的上下文
+         * @param context 语法树中表示结构语句分支的上下文
+         * @param function 语句所属的函数
          */
         void visitStructuredState(PascalSParser::StructuredStateContext *context, llvm::Function *function = nullptr);
 
         /**
-         * @brief the entry of AssignmentStatement 访问AST中赋值语句的入口
-         * @param context the context of SimpleStateAssignContext type 一个SimpleStateAssignContext类型的上下文
+         * @brief 访问赋值语句
+         *
+         * @param context 语法树中表示赋值语句分支的上下文
          */
         void visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context);
 
+        /**
+         * @brief 访问过程调用语句
+         *
+         * @param context 语法树中表示过程调用语句分支的上下文
+         */
         void visitSimpleStateProc(PascalSParser::SimpleStateProcContext *context);
 
+        /**
+         * @brief 访问空语句
+         *
+         * @param context 语法树中表示空语句分支的上下文
+         */
         void visitSimpleStateEmpty(PascalSParser::SimpleStateEmptyContext *context);
 
         /**
-         * @brief calculate the value of expression in right and assign it to the left 计算右侧表达式的值并将其赋给左侧变量
-         * @param context the context of AssignmentStatementContext type 一个AssignmentStatementContext类型的上下文
+         * @brief 访问赋值语句
+         *
+         * @param context 语法树中表示赋值语句分支的上下文
+         *
+         * 计算右侧表达式的值并将其赋给左侧变量
          */
         void visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context);
 
         /**
-         * @brief 获取变量的内存地址
-         * @param context VariableContext*类型的上下文
-         * @return llvm::Value*： return the address of variable or array element
+         * @brief 访问变量
+         *
+         * @param context 语法树中表示变量分支的上下文
+         * @return 变量的内存地址
          * @retval std::nullptr 未找到变量
          */
         llvm::Value *visitVariable(PascalSParser::VariableContext *context);
 
         /**
-         * @brief 访问并计算AST中Expression节点的值
+         * @brief 访问表达式
          *
-         * @param context ExpressionContext*类型的上下文
-         * @return llvm::Value*： 返回Expression的计算结果
+         * @param context 语法树中表示表达式分支的上下文
+         * @return 表达式的计算结果
          */
         llvm::Value *visitExpression(PascalSParser::ExpressionContext *context);
 
         /**
-         * @brief 访问AST中OpEqual节点
+         * @brief 访问相等关系表达式
          *
-         * @param context OpEqualContext* 类型的上下文
-         * @param L llvm::Value*：左侧子表达式的值
-         * @param R llvm::Value*：右侧子表达式的值
-         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         * @param context 语法树中表示相等关系表达式分支的上下文
+         * @param L 左侧子表达式的值
+         * @param R 右侧子表达式的值
+         * @return 左右两侧子表达式的比较结果
          */
         llvm::Value *visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpNotEqual节点
+         * @brief 访问不等关系表达式
          *
-         * @param context OpNotEqualContext* 类型的上下文
-         * @param L llvm::Value*：左侧子表达式的值
-         * @param R llvm::Value*：右侧子表达式的值
-         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         * @param context 语法树中表示不等关系表达式分支的上下文
+         * @param L 左侧子表达式的值
+         * @param R 右侧子表达式的值
+         * @return 左右两侧子表达式的比较结果
          */
         llvm::Value *visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpLt节点
+         * @brief 访问小于关系表达式
          *
-         * @param context OpLtContext* 类型的上下文
-         * @param L llvm::Value*：左侧子表达式的值
-         * @param R llvm::Value*：右侧子表达式的值
-         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         * @param context 语法树中表示小于关系表达式分支的上下文
+         * @param L 左侧子表达式的值
+         * @param R 右侧子表达式的值
+         * @return 左右两侧子表达式的比较结果
          */
         llvm::Value *visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpLe节点
+         * @brief 访问小于等于关系表达式
          *
-         * @param context OpLeContext* 类型的上下文
-         * @param L llvm::Value*：左侧子表达式的值
-         * @param R llvm::Value*：右侧子表达式的值
-         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         * @param context 语法树中表示小于等于关系表达式分支的上下文
+         * @param L 左侧子表达式的值
+         * @param R 右侧子表达式的值
+         * @return 左右两侧子表达式的比较结果
          */
         llvm::Value *visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpGe节点
+         * @brief 访问大于等于关系表达式
          *
-         * @param context OpGeContext* 类型的上下文
-         * @param L llvm::Value*：左侧子表达式的值
-         * @param R llvm::Value*：右侧子表达式的值
-         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         * @param context 语法树中表示大于等于关系表达式分支的上下文
+         * @param L 左侧子表达式的值
+         * @param R 右侧子表达式的值
+         * @return 左右两侧子表达式的比较结果
          */
         llvm::Value *visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpGt节点
+         * @brief 访问大于关系表达式
          *
-         * @param context OpGtContext* 类型的上下文
-         * @param L llvm::Value*：左侧子表达式的值
-         * @param R llvm::Value*：右侧子表达式的值
-         * @return llvm::Value*：返回左右两侧子表达式的比较结果
+         * @param context 语法树中表示大于关系表达式分支的上下文
+         * @param L 左侧子表达式的值
+         * @param R 右侧子表达式的值
+         * @return 左右两侧子表达式的比较结果
          */
         llvm::Value *visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问并计算AST中SimpleExpression节点的值
+         * @brief 访问简单表达式
          *
-         * @param context SimpleExpressionContext*类型的上下文
-         * @return llvm::Value*： 返回SimpleExpression的计算结果
+         * @param context 语法树中表示简单表达式分支的上下文
+         * @return 简单表达式的计算结果
          */
         llvm::Value *visitSimpleExpression(PascalSParser::SimpleExpressionContext *context);
 
         /**
-         * @brief 访问AST中OpPlus节点
+         * @brief 访问加运算表达式
          *
-         * @param context OpPlusContext* 类型的上下文
-         * @param L llvm::Value*：左侧term的值
-         * @param R llvm::Value*：右侧term的值
-         * @return llvm::Value*：返回左右两侧term的计算结果
+         * @param context 语法树中表示加运算表达式分支的上下文
+         * @param L 左侧term的值
+         * @param R 右侧term的值
+         * @return 表达式的计算结果
          */
         llvm::Value *visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpMinus节点
+         * @brief 访问减运算表达式
          *
-         * @param context OpMinusContext* 类型的上下文
-         * @param L llvm::Value*：左侧term的值
-         * @param R llvm::Value*：右侧term的值
-         * @return llvm::Value*：返回左右两侧term的计算结果
+         * @param context 语法树中表示减运算表达式分支的上下文
+         * @param L 左侧term的值
+         * @param R 右侧term的值
+         * @return 表达式的计算结果
          */
         llvm::Value *visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpOr节点
+         * @brief 访问或运算表达式
          *
-         * @param context OpOrContext* 类型的上下文
-         * @param L llvm::Value*：左侧term的值
-         * @param R llvm::Value*：右侧term的值
-         * @return llvm::Value*：返回左右两侧term的计算结果
+         * @param context 语法树中表示或运算表达式分支的上下文
+         * @param L 左侧term的值
+         * @param R 右侧term的值
+         * @return 表达式的计算结果
          */
         llvm::Value *visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问并计算AST中Term节点的值
+         * @brief 访问term
          *
-         * @param context TermContext*类型的上下文
-         * @return llvm::Value*： 返回Term的计算结果
+         * @param context 语法树中表示term分支的上下文
+         * @return term的计算结果
          */
         llvm::Value *visitTerm(PascalSParser::TermContext *context);
 
         /**
-         * @brief 访问AST中OpStar（乘法）节点
+         * @brief 访问乘运算term
          *
-         * @param context OpStarContext* 类型的上下文
-         * @param L llvm::Value*：左侧SignedFactor的值
-         * @param R llvm::Value*：右侧SignedFactor的值
-         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         * @param context 语法树中表示乘运算term分支的上下文
+         * @param L 左侧factor的值
+         * @param R 右侧factor的值
+         * @return term的计算结果
          */
         llvm::Value *visitOpStar(PascalSParser::OpStarContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpSlash（浮点数除法）节点
+         * @brief 访问浮点数除运算term
          *
-         * @param context OpSlashContext* 类型的上下文
-         * @param L llvm::Value*：左侧SignedFactor的值
-         * @param R llvm::Value*：右侧SignedFactor的值
-         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         * @param context 语法树中表示浮点数除运算term分支的上下文
+         * @param L 左侧factor的值
+         * @param R 右侧factor的值
+         * @return term的计算结果
          */
         llvm::Value *visitOpSlash(PascalSParser::OpSlashContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpDiv（整数除法）节点
+         * @brief 访问整数除运算term
          *
-         * @param context OpDivContext* 类型的上下文
-         * @param L llvm::Value*：左侧SignedFactor的值
-         * @param R llvm::Value*：右侧SignedFactor的值
-         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         * @param context 语法树中表示整数除运算term分支的上下文
+         * @param L 左侧factor的值
+         * @param R 右侧factor的值
+         * @return term的计算结果
          */
         llvm::Value *visitOpDiv(PascalSParser::OpDivContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpMod（整数取余）节点
+         * @brief 访问整数取余运算term
          *
-         * @param context OpModContext* 类型的上下文
-         * @param L llvm::Value*：左侧SignedFactor的值
-         * @param R llvm::Value*：右侧SignedFactor的值
-         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         * @param context 语法树中表示整数取余运算term分支的上下文
+         * @param L 左侧factor的值
+         * @param R 右侧factor的值
+         * @return term的计算结果
          */
         llvm::Value *visitOpMod(PascalSParser::OpModContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问AST中OpAnd（与）节点
+         * @brief 访问与运算term
          *
-         * @param context OpAndContext* 类型的上下文
-         * @param L llvm::Value*：左侧SignedFactor的值
-         * @param R llvm::Value*：右侧SignedFactor的值
-         * @return llvm::Value*：返回左右两侧SignedFactor的计算结果
+         * @param context 语法树中表示与运算term分支的上下文
+         * @param L 左侧factor的值
+         * @param R 右侧factor的值
+         * @return term的计算结果
          */
         llvm::Value *visitOpAnd(PascalSParser::OpAndContext *context, llvm::Value *L, llvm::Value *R);
 
         /**
-         * @brief 访问并计算AST中SignedFactor节点的值
+         * @brief 访问有符号factor
          *
-         * @param context SignedFactorContext*：context
-         * @return llvm::Value*： 返回SignedFactor的计算结果
+         * @param context 语法树中表示有符号factor分支的上下文
+         * @return 有符号factor的计算结果
          */
         llvm::Value *visitSignedFactor(PascalSParser::SignedFactorContext *context);
 
         /**
-         * @brief 访问expression中的变量
+         * @brief 访问变量factor
          *
-         * @note 这是Expression中获取variable值的唯一接口，调用了visitVariable();
-         * @param context FactorVarContext*类型的context
-         * @return llvm::Value*：Variable的值（default）或地址（Visitor.readlnArgFlag == ture）
+         * @note 这是Expression中获取variable值的唯一接口，调用了visitVariable()
+         * @param context 语法树中表示变量factor分支的上下文
+         * @return 变量的值或地址
          */
         llvm::Value *visitFactorVar(PascalSParser::FactorVarContext *context);
 
         /**
-         * @brief 访问AST中FactorExpr节点，计算FactorExpr的值。
+         * @brief 访问表达式factor
          *
-         * @param context FactorExprContext *类型。
-         * @return llvm::Value*：FactorExpr的值。
+         * @param context 语法树中表示表达式factor分支的上下文
+         * @return 表达式的值
          */
         llvm::Value *visitFactorExpr(PascalSParser::FactorExprContext *context);
 
         /**
-         * @brief 访问AST中FactorFunc节点，调用Function
+         * @brief 访问函数调用factor
          *
-         * @param context FactorFuncContext *类型
-         * @return llvm::Value*：调用Function的返回值
+         * @param context 语法树中表示函数调用factor分支的上下文
+         * @return 函数调用的返回值
          */
         llvm::Value *visitFactorFunc(PascalSParser::FactorFuncContext *context);
 
         /**
-         * @brief 访问AST中FactorUnsConst节点
+         * @brief 访问无符号常量factor
          *
-         * @param context FactorUnsConstContext *类型
-         * @return llvm::Value*：FactorUnsConst的值
+         * @param context 语法树中表示无符号常量factor分支的上下文
+         * @return 常量的值
          */
         llvm::Value *visitFactorUnsConst(PascalSParser::FactorUnsConstContext *context);
 
         /**
-         * @brief 访问并计算AST中FactorNotFact节点的值
+         * @brief 访问取反factor
+         *
          * @note 与visitSignedFactor相比，context剥离了+/-符号
-         * @param context FactorNotFactContext*类型
-         * @return llvm::Value*： 返回FactorNotFact的计算结果
+         * @param context 语法树中表示取反factor分支的上下文
+         * @return 计算结果
          */
         llvm::Value *visitFactorNotFact(PascalSParser::FactorNotFactContext *context);
 
         /**
-         * @brief 访问AST中FactorBool节点
+         * @brief 访问布尔factor
          *
-         * @param context FactorBoolContext *类型
-         * @return llvm::Value*：FactorBool的值
+         * @param context 语法树中表示布尔factor分支的上下文
+         * @return 布尔值
          */
         llvm::Value *visitFactorBool(PascalSParser::FactorBoolContext *context);
 
         /**
-         * @brief 访问AST中UnsignedConstUnsignedNum节点
+         * @brief 访问无符号整数常量factor
          *
-         * @param context UnsignedConstUnsignedNumContext *类型
-         * @return llvm::Value*：返回UnsignedConstUnsignedNum类型常量值
+         * @param context 语法树中表示无符号整数常量factor分支的上下文
+         * @return 常量的值
          */
         llvm::Value *visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConstUnsignedNumContext *context);
 
         /**
-         * @brief 访问AST中UnsignedConstStr节点
+         * @brief 访问字符串常量factor
          *
-         * @param context UnsignedConstStrContext *类型
-         * @return std::string 返回字符串常量的值
+         * @param context 语法树中表示字符串常量factor分支的上下文
+         * @return 常量的值
          */
         std::string visitUnsignedConstStr(PascalSParser::UnsignedConstStrContext *context);
 
         /**
-         * @brief 访问AST中FunctionDesignator节点
+         * @brief 访问函数调用factor
+         *
          * @note 这是AST中调用函数的唯一接口
-         * @param context FunctionDesignatorContext *类型
-         * @return llvm::Value* 返回函数Function调用得到的返回值
+         * @param context 语法树中表示函数调用factor分支的上下文
+         * @return 函数调用的返回值
          */
         llvm::Value *visitFunctionDesignator(PascalSParser::FunctionDesignatorContext *context);
 
         /**
-         * @brief 构造函数调用或过程调用的参数列表
+         * @brief 访问函数调用或过程调用的参数列表
+         *
          * @note 输入参数context为null时表示发生了一个无参数过程调用
-         * @param context ParameterListContext *类型
-         * @param changeFP bool类型：默认为false，为true时需要将Float类型拓展为Double类型。
-         * @return std::vector<llvm::Value *> 所需形参值的std::vector
+         * @param context 语法树中表示参数列表分支的上下文
+         * @param changeFP 默认为false，为true时需要将Float类型拓展为Double类型。
+         * @return 函数调用的形参列表
          */
         std::vector<llvm::Value *> visitParameterList(PascalSParser::ParameterListContext *context, bool changeFP = false);
 
         /**
-         * @brief 识别并调用过程。包括用户定义过程和标准输入、输出过程
+         * @brief 访问过程调用
          *
-         * @param context ProcedureStatementContext *类型
+         * @param context 语法树中表示过程调用分支的上下文
+         *
+         * 识别并调用过程。包括用户定义过程和标准输入、输出过程
          */
         void visitProcedureStatement(PascalSParser::ProcedureStatementContext *context);
 
         /**
-         * @brief 计算函数调用或过程调用的参数列表中特定参数值
+         * @brief 访问函数调用或过程调用的参数列表中特定参数值
          *
-         * @param context ActualParameterContext *类型
-         * @return llvm::Value* 形参的参数值
+         * @param context 语法树中表示参数分支的上下文
+         * @return 形参的参数值
          */
         llvm::Value *visitActualParameter(PascalSParser::ActualParameterContext *context);
 
-        void visitParameterwidth(PascalSParser::ParameterwidthContext *context);
-
+        /**
+         * @brief 访问空语句
+         *
+         * @param context 语法树中表示空语句分支的上下文
+         */
         void visitEmptyStatement_(PascalSParser::EmptyStatement_Context *context);
 
+        /**
+         * @brief 访问空语句
+         *
+         * @param context 语法树中表示空语句分支的上下文
+         */
         void visitEmpty_(PascalSParser::Empty_Context *context);
 
         /**
-         * @brief 访问复合语句，如条件，循环等
+         * @brief 访问语句块
          *
-         * @param context 语法树中表示复合语句分支的上下文
-         * @param function 该复合语句所处的函数块
+         * @param context 语法树中表示语句块分支的上下文
+         * @param function 该语句块所属的函数
          */
         void visitStructuredStateCompound(PascalSParser::StructuredStateCompoundContext *context, llvm::Function *function);
 
         /**
-         * @brief visitStructuredStateConditional
-         * @note entry of ifstatements 访问if语句的入口
-         * @param context the context of StructuredStateConditionalContext StructuredStateConditionalContext类型的上下文
-         * @param function main function
+         * @brief 访问条件语句
+         *
+         * @param context 语法树中表示条件语句分支的上下文
+         * @param function 该条件语句所属的函数
          */
         void visitStructuredStateConditional(PascalSParser::StructuredStateConditionalContext *context, llvm::Function *function);
+
         /**
-         * @brief 访问循环语句开始
+         * @brief 访问循环语句
          *
-         * @param context 语法树中表示repetetive语句分支的上下文
+         * @param context 语法树中表示循环语句分支的上下文
+         * @param function 该循环语句所属的函数
          */
         void visitStructuredStateRepetetive(PascalSParser::StructuredStateRepetetiveContext *context, llvm::Function *function);
 
-        void visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function);
         /**
-         * @brief 访问statemnet组成的集合
+         * @brief 访问语句块
          *
-         * @param context 语法树中表示statements语句分支的上下文
-         * @return statement的value值
+         * @param context 语法树中表示语句块分支的上下文
+         * @param function 该语句块所属的函数
+         */
+        void visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function);
+
+        /**
+         * @brief 访问语句集合
+         *
+         * @param context 语法树中表示语句集合分支的上下文
          */
         void visitStatements(PascalSParser::StatementsContext *context, llvm::Function *function = nullptr);
 
+        /**
+         * @brief 访问if语句
+         *
+         * @param context 语法树中表示if语句分支的上下文
+         * @param function 该if语句所属的函数
+         */
         void visitConditionalStateIf(PascalSParser::ConditionalStateIfContext *context, llvm::Function *function);
 
-        void visitConditionalStateCase(PascalSParser::ConditionalStateCaseContext *context);
-
+        /**
+         * @brief 访问if语句
+         *
+         * @param context 语法树中表示if语句分支的上下文
+         * @param function 该if语句所属的函数
+         */
         void visitIfStatement(PascalSParser::IfStatementContext *context, llvm::Function *function);
 
-        void visitCaseStatement(PascalSParser::CaseStatementContext *context);
-
-        void visitCaseListElement(PascalSParser::CaseListElementContext *context);
-        /**
-         * @brief while语句入口
-         *
-         * @param context 语法树中表示whileState语句分支的上下文
-         */
-        void visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileContext *context, llvm::Function *function);
-        /**
-         * @brief repeat语句入口
-         *
-         * @param context 语法树中表示repeatState语句分支的上下文
-         */
-        void visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context, llvm::Function *function);
-        /**
-         * @brief for语句入口
-         *
-         * @param context 语法树中表示forState语句分支的上下文
-         */
-        void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function);
         /**
          * @brief 访问while语句
          *
          * @param context 语法树中表示while语句分支的上下文
+         * @param function 该while语句所属的函数
          */
-        void visitWhileStatement(PascalSParser::WhileStatementContext *context, llvm::Function *function);
+        void visitRepetetiveStateWhile(PascalSParser::RepetetiveStateWhileContext *context, llvm::Function *function);
+
         /**
          * @brief 访问repeat语句
          *
          * @param context 语法树中表示repeat语句分支的上下文
+         * @param function 该repeat语句所属的函数
          */
-        void visitRepeatStatement(PascalSParser::RepeatStatementContext *context, llvm::Function *function);
+        void visitRepetetiveStateRepeat(PascalSParser::RepetetiveStateRepeatContext *context, llvm::Function *function);
+
         /**
          * @brief 访问for语句
          *
          * @param context 语法树中表示for语句分支的上下文
+         * @param function 该for语句所属的函数
          */
-        void visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function);
+        void visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function);
+
         /**
-         * @brief 访问for语句中循环变量的起始值和结束值
+         * @brief 访问while语句
+         *
+         * @param context 语法树中表示while语句分支的上下文
+         * @param function 该while语句所属的函数
+         */
+        void visitWhileStatement(PascalSParser::WhileStatementContext *context, llvm::Function *function);
+
+        /**
+         * @brief 访问repeat语句
+         *
+         * @param context 语法树中表示repeat语句分支的上下文
+         * @param function 该repeat语句所属的函数
+         */
+        void visitRepeatStatement(PascalSParser::RepeatStatementContext *context, llvm::Function *function);
+
+        /**
+         * @brief 访问for语句
          *
          * @param context 语法树中表示for语句分支的上下文
-         * @return 循环变量的起始值和结束值的LLVM表示
+         * @param function 该for语句所属的函数
+         */
+        void visitForStatement(PascalSParser::ForStatementContext *context, llvm::Function *function);
+
+        /**
+         * @brief 访问for语句中循环变量的循环区间
+         *
+         * @param context 语法树中表示for语句变量循环区间分支的上下文
+         * @return 循环变量的循环区间
          */
         std::vector<llvm::Value *> visitForList(PascalSParser::ForListContext *context);
 
+        /**
+         * @brief 访问for语句中循环变量的起始值
+         *
+         * @param context 语法树中表示for语句变量起始值分支的上下文
+         * @return 起始值
+         */
         llvm::Value *visitInitialValue(PascalSParser::InitialValueContext *context);
 
+        /**
+         * @brief 访问for语句中循环变量的终止值
+         *
+         * @param context 语法树中表示for语句变量终止值分支的上下文
+         * @return 终止值
+         */
         llvm::Value *visitFinalValue(PascalSParser::FinalValueContext *context);
 
-        void visitRecordVariableList(PascalSParser::RecordVariableListContext *context);
         /**
-         * @brief 访问各类语句块
+         * @brief 访问语句
          *
-         * @param context 语法树中表示statement分支的上下文
+         * @param context 语法树中表示语句分支的上下文
+         * @param function 语句所属的函数
          */
-        void visitStatement(PascalSParser::StatementContext *context,llvm::Function *function);
+        void visitStatement(PascalSParser::StatementContext *context, llvm::Function *function);
     };
 }; // namespace PascalS

@@ -1,28 +1,28 @@
-program test_funcCall;
+Program test_funcCall;
 
-function testFunc1(intVarTem:integer):integer;
-begin
+Function testFunc1(intVarTem:integer): integer;
+Begin
   writeln(intVarTem+1);
-end;
+End;
 
-function testFunc2:integer;
-begin
+Function testFunc2: integer;
+Begin
   writeln(3.14159);
-end;
+End;
 
-procedure testPro1(intVarTem:integer);
-begin
-    writeln(intVarTem-1);
-end;
+Procedure testPro1(intVarTem:integer);
+Begin
+  writeln(intVarTem-1);
+End;
 
-procedure testPro2;
-begin
-    writeln(114514);
-end;
+Procedure testPro2;
+Begin
+  writeln(114514);
+End;
 
-begin
+Begin
   testFunc1(2022);
   testFunc2;
   testPro1(2022);
   testPro2;
-end.
+End.

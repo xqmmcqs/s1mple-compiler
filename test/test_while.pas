@@ -1,11 +1,12 @@
-program whileLoop;
-var
-   a: integer;
-begin
-   a := 10;
-   while  a < 20  do
-   begin
+Program test_while;
+
+Var 
+  a: integer;
+Begin
+  a := 10;
+  While  a < 20  Do
+    Begin
       writeln(a);
       a := a + 5;
-   end;
-end.
+    End;
+End.

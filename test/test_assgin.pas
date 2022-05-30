@@ -1,14 +1,15 @@
-program test_assign;
+Program test_assign;
 
-const conInt = 27;
-const conReal = 3.14;
+Const conInt = 27;
 
-Var
+Const conReal = 3.14;
+
+Var 
   varInt1, varInt2 : integer;
   varReal1, varReal2 : real;
   a: array[-4..4, -4..4] Of real;
 
-begin
+Begin
   varInt1 := conInt * conInt;
   varInt2 := 2 * conInt;
   varReal1 := conReal * varInt1;
@@ -19,4 +20,4 @@ begin
   writeln(varReal1);
   writeln(varReal2);
   writeln(a[-3, -2]);
-end.
+End.
