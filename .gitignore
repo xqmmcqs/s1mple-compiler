@@ -43,6 +43,6 @@ test/*
 !/test/*.pas
 
 note.txt
-translate.md
+translate.*
 
 doc/*

@@ -10,6 +10,7 @@
 
 #include "Visitor.h"
 
+#include "exceptions/DebugException.h"
 #include "exceptions/NotImplementedException.h"
 #include "exceptions/VariableNotFoundException.h"
 #include "exceptions/ProcedureNotFoundException.h"
@@ -155,7 +156,7 @@ void Visitor::visitSimpleState(PascalSParser::SimpleStateContext *context, llvm:
     else if (auto emptyStatementContext = dynamic_cast<PascalSParser::SimpleStateEmptyContext *>(context->simpleStatement()))
         visitSimpleStateEmpty(emptyStatementContext);
     else
-        throw NotImplementedException();
+        throw DebugException(NOW_FUNC_NAME);
 }
 
 void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *context)
@@ -262,9 +263,7 @@ llvm::Value *Visitor::visitExpression(PascalSParser::ExpressionContext *context)
         return visitOpGt(gtContext, L, R);
     }
     else
-    {
-        throw NotImplementedException();
-    }
+        throw DebugException(NOW_FUNC_NAME + "Undefined Operator!");
 }
 
 llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm::Value *L, llvm::Value *R)
@@ -282,8 +281,12 @@ llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm:
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUEQ(L, R_FP);
     }
-
-    return builder.CreateICmpEQ(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateICmpEQ(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
 }
 
 llvm::Value *Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R)
@@ -301,8 +304,12 @@ llvm::Value *Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context,
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUNE(L, R_FP);
     }
-
-    return builder.CreateICmpNE(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateICmpNE(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
 }
 
 llvm::Value *Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R)
@@ -320,8 +327,12 @@ llvm::Value *Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpULT(L, R_FP);
     }
-
-    return builder.CreateICmpSLT(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateICmpSLT(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
 }
 
 llvm::Value *Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R)
@@ -339,8 +350,12 @@ llvm::Value *Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpULE(L, R_FP);
     }
-
-    return builder.CreateICmpSLE(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateICmpSLE(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
 }
 
 llvm::Value *Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R)
@@ -358,8 +373,12 @@ llvm::Value *Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUGE(L, R_FP);
     }
-
-    return builder.CreateICmpSGE(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateICmpSGE(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
 }
 
 llvm::Value *Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R)
@@ -377,8 +396,12 @@ llvm::Value *Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFCmpUGT(L, R_FP);
     }
-
-    return builder.CreateICmpSGT(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateICmpSGT(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
 }
 
 llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionContext *context)
@@ -405,7 +428,7 @@ llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionConte
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException(NOW_FUNC_NAME + "Undefined Operator!");
     }
 }
 
@@ -424,8 +447,12 @@ llvm::Value *Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::V
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFAdd(L, R_FP);
     }
-
-    return builder.CreateAdd(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateAdd(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator \'+\'");
 }
 
 llvm::Value *Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm::Value *L, llvm::Value *R)
@@ -443,7 +470,12 @@ llvm::Value *Visitor::visitOpMinus(PascalSParser::OpMinusContext *context, llvm:
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFSub(L, R_FP);
     }
-    return builder.CreateSub(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateSub(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator \'-\'");
 }
 
 llvm::Value *Visitor::visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R)
@@ -482,7 +514,7 @@ llvm::Value *Visitor::visitTerm(PascalSParser::TermContext *context)
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException(NOW_FUNC_NAME + "Undefined Operator!");
     }
 }
 
@@ -501,13 +533,19 @@ llvm::Value *Visitor::visitOpStar(PascalSParser::OpStarContext *context, llvm::V
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFMul(L, R_FP);
     }
-    return builder.CreateMul(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateMul(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator \'*\'");
 }
 
 llvm::Value *Visitor::visitOpSlash(PascalSParser::OpSlashContext *context, llvm::Value *L, llvm::Value *R)
 {
     if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
         return builder.CreateFDiv(L, R);
+
     if (R->getType()->isFloatingPointTy() && L->getType()->isIntegerTy())
     {
         auto L_FP = builder.CreateSIToFP(L, llvm::Type::getFloatTy(*llvm_context));
@@ -518,7 +556,12 @@ llvm::Value *Visitor::visitOpSlash(PascalSParser::OpSlashContext *context, llvm:
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFDiv(L, R_FP);
     }
-    return builder.CreateSDiv(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateSDiv(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator \'*\'");
 }
 
 llvm::Value *Visitor::visitOpDiv(PascalSParser::OpDivContext *context, llvm::Value *L, llvm::Value *R)
@@ -536,7 +579,12 @@ llvm::Value *Visitor::visitOpDiv(PascalSParser::OpDivContext *context, llvm::Val
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFDiv(L, R_FP);
     }
-    return builder.CreateSDiv(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateSDiv(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator \'/\'");
 }
 
 llvm::Value *Visitor::visitOpMod(PascalSParser::OpModContext *context, llvm::Value *L, llvm::Value *R)
@@ -554,7 +602,12 @@ llvm::Value *Visitor::visitOpMod(PascalSParser::OpModContext *context, llvm::Val
         auto R_FP = builder.CreateSIToFP(R, llvm::Type::getFloatTy(*llvm_context));
         return builder.CreateFRem(L, R_FP);
     }
-    return builder.CreateSRem(L, R);
+    else if (L->getType()->isIntegerTy() && R->getType()->isIntegerTy())
+    {
+        return builder.CreateSRem(L, R);
+    }
+    else
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator \'MOD\'");
 }
 
 llvm::Value *Visitor::visitOpAnd(PascalSParser::OpAndContext *context, llvm::Value *L, llvm::Value *R)
@@ -586,7 +639,7 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
                 return builder.CreateMul(flag_v, value);
             }
             else
-                throw NotImplementedException();
+                throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator MINUS ");
 
         else
             return value;
@@ -608,7 +661,7 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
                 return builder.CreateMul(flag_v, value);
             }
             else
-                throw NotImplementedException();
+                throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator MINUS ");
         else
             return value;
     }
@@ -629,7 +682,7 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
                 return builder.CreateMul(flag_v, value);
             }
             else
-                throw NotImplementedException();
+                throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator MINUS ");
         else
             return value;
     }
@@ -650,7 +703,7 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
                 return builder.CreateMul(flag_v, value);
             }
             else
-                throw NotImplementedException();
+                throw DebugException(NOW_FUNC_NAME + "Unsupported Operands Type for Operator MINUS ");
         else
             return value;
     }
@@ -672,7 +725,7 @@ llvm::Value *Visitor::visitSignedFactor(PascalSParser::SignedFactorContext *cont
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException(NOW_FUNC_NAME);
     }
 }
 
@@ -718,7 +771,7 @@ llvm::Value *Visitor::visitFactorUnsConst(PascalSParser::FactorUnsConstContext *
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException(NOW_FUNC_NAME);
     }
 }
 
@@ -751,7 +804,7 @@ llvm::Value *Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *co
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException(NOW_FUNC_NAME);
     }
 
     if (context->NOT())
@@ -778,7 +831,7 @@ llvm::Value *Visitor::visitFactorBool(PascalSParser::FactorBoolContext *context)
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException(NOW_FUNC_NAME);
     }
 }
 
@@ -798,7 +851,7 @@ llvm::Value *Visitor::visitUnsignedConstUnsignedNum(PascalSParser::UnsignedConst
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException(NOW_FUNC_NAME);
     }
 }
 
