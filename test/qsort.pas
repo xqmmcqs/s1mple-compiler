@@ -2,7 +2,7 @@ Program qsort;
 
 Var 
   n,i: integer;
-  a: array[0..4] Of integer;
+  a: array[0..10000] Of integer;
 
 Procedure kp(l,r:integer);
 
