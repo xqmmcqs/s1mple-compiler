@@ -126,7 +126,7 @@ void Visitor::visitTypeDefinition(PascalSParser::TypeDefinitionContext *context)
         // visitTypeStructuredType(typeStructuredTypeContext);
     }
     else
-        throw NotImplementedException();
+        throw DebugException("Undefined type");
 }
 
 void Visitor::visitCompoundStatement(PascalSParser::CompoundStatementContext *context, llvm::Function *function)
@@ -992,7 +992,7 @@ void Visitor::visitConstantDefinition(PascalSParser::ConstantDefinitionContext *
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Undefined const type");
     }
 }
 
@@ -1011,7 +1011,7 @@ llvm::Constant *Visitor::visitConstIdentifier(PascalSParser::ConstIdentifierCont
         }
         else
         {
-            throw NotImplementedException();
+            throw DebugException("Invalid type of const identifier");
         }
     }
     else if (module->getNamedGlobal(s))
@@ -1046,7 +1046,7 @@ llvm::Constant *Visitor::visitConstSignedNumber(PascalSParser::ConstSignedNumber
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid sign");
     }
     if (auto intContext = dynamic_cast<PascalSParser::UnsignedNumberIntegerContext *>(context->unsignedNumber()))
     {
@@ -1062,7 +1062,7 @@ llvm::Constant *Visitor::visitConstSignedNumber(PascalSParser::ConstSignedNumber
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid const number type");
     }
 }
 
@@ -1082,7 +1082,7 @@ llvm::Constant *Visitor::visitConstUnsignedNumber(PascalSParser::ConstUnsignedNu
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid const number type");
     }
 }
 
@@ -1100,7 +1100,7 @@ llvm::Constant *Visitor::visitConstSignIdentifier(PascalSParser::ConstSignIdenti
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid sign");
     }
     auto s = visitIdentifier(context->identifier());
     if (getVariable(s))
@@ -1223,7 +1223,7 @@ llvm::Type *Visitor::visitVariableDeclaration(PascalSParser::VariableDeclaration
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid Variable type");
     }
 }
 
@@ -1244,7 +1244,7 @@ llvm::Type *Visitor::visitTypeStructuredType(PascalSParser::TypeStructuredTypeCo
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid structured type");
     }
 }
 
@@ -1260,7 +1260,7 @@ llvm::Type *Visitor::visitStructuredTypeArray(PascalSParser::StructuredTypeArray
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid array type");
     }
 }
 
@@ -1292,7 +1292,7 @@ llvm::Type *Visitor::visitArrayType1(PascalSParser::ArrayType1Context *context, 
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid variable type");
     }
 }
 
@@ -1319,7 +1319,7 @@ llvm::Type *Visitor::visitArrayType2(PascalSParser::ArrayType2Context *context, 
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid variable type");
     }
 }
 
@@ -1344,7 +1344,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     auto vec = context->constant();
     if (vec.size() != 2)
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid number of elements in period of array");
     }
     auto constContext = vec[0];
     llvm::Value *value1, *value2;
@@ -1355,7 +1355,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
         auto value = visitConstIdentifier(constIdentifierContext);
         if (!value->getType()->isIntegerTy())
         {
-            throw NotImplementedException();
+            throw DebugException("Invalid type(not integer)");
         }
         else
         {
@@ -1375,7 +1375,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
         auto value = visitConstSignIdentifier(ConstsIdentifierCtx);
         if (!value->getType()->isIntegerTy())
         {
-            throw NotImplementedException();
+            throw DebugException("Invalid type(not integer)");
         }
         else
         {
@@ -1384,7 +1384,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid type of elements in period of array");
     }
 
     constContext = vec[1]; // 分别得到两个下标的value表示
@@ -1393,7 +1393,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
         auto value = visitConstIdentifier(constIdentifierContext);
         if (!value->getType()->isIntegerTy())
         {
-            throw NotImplementedException();
+            throw DebugException("Invalid type(not integer)");
         }
         else
         {
@@ -1414,7 +1414,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
         // 判断常量的类型是否是int,不是的话不能作为数组下标，说明有语法错误
         if (!value->getType()->isIntegerTy())
         {
-            throw NotImplementedException();
+            throw DebugException("Invalid type(not integer)");
         }
         else
         {
@@ -1423,7 +1423,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid type of elements in period of array");
     }
     int constIntValue1, constIntValue2; // 将value转换为constInt，再转换为int
     if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(value1))
@@ -1432,7 +1432,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid type of elements in period of array");
     }
     if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(value2))
     {
@@ -1440,7 +1440,7 @@ std::vector<int> Visitor::visitPeriod(PascalSParser::PeriodContext *context)
     }
     else
     {
-        throw NotImplementedException();
+        throw DebugException("Invalid type of elements in period of array");
     }
     std::vector<int> range;
     range.push_back(constIntValue1);
@@ -1701,7 +1701,7 @@ void Visitor::visitStructuredStateRepetetive(PascalSParser::StructuredStateRepet
         visitRepetetiveStateWhile(repetiveStateWhileContext, function);
     }
     else
-        throw NotImplementedException();
+        throw DebugException("Invalid StructuredStateRepetetive");
 }
 
 void Visitor::visitRepetetiveStateFor(PascalSParser::RepetetiveStateForContext *context, llvm::Function *function)
@@ -1767,7 +1767,7 @@ void Visitor::visitForStatement(PascalSParser::ForStatementContext *context, llv
     else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
         visitStructuredState(structuredStatementContext, function);
     else
-        throw NotImplementedException();
+        throw DebugException("Invalid statement");
     // 循环变量增加
     auto i = builder.CreateLoad(llvm::IntegerType::getInt32Ty(*llvm_context), addr);
     auto tmp = builder.CreateAdd(i, con_1);
@@ -1844,7 +1844,7 @@ void Visitor::visitWhileStatement(PascalSParser::WhileStatementContext *context,
     else if (auto structuredStatementContext = dynamic_cast<PascalSParser::StructuredStateContext *>(context->statement()))
         visitStructuredState(structuredStatementContext, function);
     else
-        throw NotImplementedException();
+        throw DebugException("Invalid statement");
 
     builder.CreateBr(while_count);
     // while_end代码块
