@@ -286,7 +286,7 @@ llvm::Value *Visitor::visitOpEqual(PascalSParser::OpEqualContext *context, llvm:
         return builder.CreateICmpEQ(L, R);
     }
     else
-        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type for Operator '='");
 }
 
 llvm::Value *Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context, llvm::Value *L, llvm::Value *R)
@@ -309,7 +309,7 @@ llvm::Value *Visitor::visitOpNotEqual(PascalSParser::OpNotEqualContext *context,
         return builder.CreateICmpNE(L, R);
     }
     else
-        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type for Operator '<>'");
 }
 
 llvm::Value *Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value *L, llvm::Value *R)
@@ -332,7 +332,7 @@ llvm::Value *Visitor::visitOpLt(PascalSParser::OpLtContext *context, llvm::Value
         return builder.CreateICmpSLT(L, R);
     }
     else
-        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type for Operator '<'");
 }
 
 llvm::Value *Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value *L, llvm::Value *R)
@@ -355,7 +355,7 @@ llvm::Value *Visitor::visitOpLe(PascalSParser::OpLeContext *context, llvm::Value
         return builder.CreateICmpSLE(L, R);
     }
     else
-        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type for Operator '<='");
 }
 
 llvm::Value *Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value *L, llvm::Value *R)
@@ -378,7 +378,7 @@ llvm::Value *Visitor::visitOpGe(PascalSParser::OpGeContext *context, llvm::Value
         return builder.CreateICmpSGE(L, R);
     }
     else
-        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type for Operator '>='");
 }
 
 llvm::Value *Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value *L, llvm::Value *R)
@@ -401,7 +401,7 @@ llvm::Value *Visitor::visitOpGt(PascalSParser::OpGtContext *context, llvm::Value
         return builder.CreateICmpSGT(L, R);
     }
     else
-        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type!");
+        throw DebugException(NOW_FUNC_NAME + "Unsupported Comparing Type for Operator '>'");
 }
 
 llvm::Value *Visitor::visitSimpleExpression(PascalSParser::SimpleExpressionContext *context)
