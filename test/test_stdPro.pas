@@ -1,7 +1,8 @@
 Program test_stdPro;
+
 Var 
-  intVar:integer;
-  realVar:real;
+  intVar: integer;
+  realVar: real;
   a: array[-4..4, -4..4] Of real;
 Begin
   {test readln}

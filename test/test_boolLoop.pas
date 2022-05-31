@@ -1,4 +1,4 @@
-Program test_repeat;
+Program test_boolLoop;
 
 Var c,b: integer;
 Begin
@@ -8,6 +8,8 @@ Begin
     c := c+1;
     b := b*2;
     writeln(114451);
-  Until c>5;
+  Until TRUE;
+  While FALSE Do
+    writeln(114415);
   writeln(b);
 End.
