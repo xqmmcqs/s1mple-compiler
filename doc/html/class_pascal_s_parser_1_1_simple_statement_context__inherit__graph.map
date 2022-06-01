@@ -1,0 +1,7 @@
+<map id="PascalSParser::SimpleStatementContext" name="PascalSParser::SimpleStatementContext">
+<area shape="rect" id="node1" title=" " alt="" coords="227,71,444,112"/>
+<area shape="rect" id="node3" href="$class_pascal_s_parser_1_1_simple_state_assign_context.html" title=" " alt="" coords="492,5,680,47"/>
+<area shape="rect" id="node4" href="$class_pascal_s_parser_1_1_simple_state_empty_context.html" title=" " alt="" coords="492,71,680,112"/>
+<area shape="rect" id="node5" href="$class_pascal_s_parser_1_1_simple_state_proc_context.html" title=" " alt="" coords="492,136,680,177"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,78,179,105"/>
+</map>
