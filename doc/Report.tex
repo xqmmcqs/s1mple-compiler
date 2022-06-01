@@ -125,7 +125,7 @@ ANTLR对词法和语法文件进行分析后，生成PascalSParserVisitor库，�
 常量的定义如下：
 
 \begin{code}
-\begin{minted}{text}
+    \begin{minted}{text}
 constant
     : unsignedNumber         #ConstUnsignedNumber
     | sign unsignedNumber    #ConstSignedNumber
@@ -139,7 +139,7 @@ constant
 访问到如上这些节点时，返回值为对应常量的值，由\mintinline{C++}{auto value = visitConst...(Context);}接收，之后将其作为Pascal-S程序的全局常量存储起来，以便后续调用，并且防止常量被修改。
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 auto value = visitConst...(Context);
 module->getOrInsertGlobal(id, value->getType());
 auto global = module->getNamedGlobal(id);
@@ -153,7 +153,7 @@ global->setConstant(true);
 有如下四种简单类型：
 
 \begin{code}
-\begin{minted}{text}
+    \begin{minted}{text}
 simpleType
     : (CHAR | BOOLEAN | INTEGER | REAL)
     ;
@@ -161,7 +161,7 @@ simpleType
 \end{code}
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 for (const auto &id : idList)
 {
      // 对于每个声明的变量，都为其分配空间，并插入到变量表中
@@ -177,7 +177,7 @@ for (const auto &id : idList)
 \paragraph{数组变量声明} 核心代码如下：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 auto ranges = visitPeriods(context->periods()); // 数组的下标范围（每两个数字代表着一个数组的维度范围）
 int eleNum = 1;
 // 计算数组的元素个数
@@ -193,7 +193,7 @@ for (auto iter = ranges.begin(); iter != ranges.end(); iter++)
 从\mintinline{C++}{period}分支得到数组下标范围的\mintinline{C++}{vector}，计算得到每一维度数组的元素个数
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 auto type = visitType...(Context);
 
 return llvm::ArrayType::get(type, eleNum);
@@ -207,7 +207,7 @@ return llvm::ArrayType::get(type, eleNum);
 \paragraph{record变量声明} record的定义如下：
 
 \begin{code}
-\begin{minted}{text}
+    \begin{minted}{text}
 recordType
     : RECORD recordField? END
     ;
@@ -221,7 +221,7 @@ recordField
 可见，record是包含多个\mintinline{C++}{variableDeclaration}的自定义类型，因此可以使用LLVM中的结构体类型将其声明
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 std::vector<llvm::Type *> elements; // 存储多个variable类型
 
 for (const auto &varDeclareCtx : context->variableDeclaration())
@@ -258,7 +258,7 @@ for (auto id : idList)
     \item 根据得到的过程名、参数类型生成该过程对应的\mintinline{C++}{llvm::function}；
     \item 为生成的\mintinline{C++}{llvm::function}生成对应的基本块；
     \item 为过程的参数设置对应的参数名，并将参数添加到\mintinline{C++}{Scope}中；
-    \item 访问基本块。 
+    \item 访问基本块。
 \end{enumerate}
 
 \paragraph{函数声明} 在\mintinline{C++}{visitFunctionDeclaration}中分析函数声明，函数实现如下：
@@ -270,7 +270,7 @@ for (auto id : idList)
     \item 根据得到的函数名、参数类型生成该过程对应的\mintinline{C++}{llvm::function}；
     \item 为生成的\mintinline{C++}{llvm::function}生成对应的基本块；
     \item 为函数的参数设置对应的参数名，并将参数添加到\mintinline{C++}{Scope}中；
-    \item 访问基本块。 
+    \item 访问基本块。
 \end{enumerate}
 
 \paragraph{参数列表访问} 在\mintinline{C++}{visitFormalParameterList}函数中分析参数列表：
@@ -327,7 +327,7 @@ Pascal-S中运算符按照运算优先级由低到高有：
 \mintinline{text}{SimpleExpression}的语法定义如下：
 
 \begin{code}
-\begin{minted}{text}
+    \begin{minted}{text}
 simpleExpression
     : term (additiveoperator term)?
     ;
@@ -337,7 +337,7 @@ simpleExpression
 相应的处理流程为：首先程序首先会计算优先级更高的表达式的值：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 if (!context->additiveoperator())
 {
     return visitTerm(context->term(0));
@@ -351,7 +351,7 @@ auto R = visitTerm(context->term(1));
 然后根据运算符\mintinline{C++}{additiveoperator()}的类型调用相应的运算函数\mintinline{C++}{visitOpxxx()}进行计算并返回，或抛出异常：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 if (auto plusContext = dynamic_cast<PascalSParser::OpPlusContext *>(context->additiveoperator()))
 {
     return visitOpPlus(plusContext, L, R);
@@ -374,7 +374,7 @@ else
 大部分运算函数都为不同类型的操作数匹配了相应的\mintinline{C++}{IRBuilder}接口。以\mintinline{C++}{visitOpPlus()}为例：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 llvm::Value *Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::Value *L, llvm::Value *R)
 {
     if (R->getType()->isFloatingPointTy() && L->getType()->isFloatingPointTy())
@@ -403,7 +403,7 @@ llvm::Value *Visitor::visitOpPlus(PascalSParser::OpPlusContext *context, llvm::V
 逻辑运算函数\mintinline{C++}{visitOpOr()}等少数运算函数无需限制操作数类型：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 llvm::Value *Visitor::visitOpOr(PascalSParser::OpOrContext *context, llvm::Value *L, llvm::Value *R)
 {
     return builder.CreateOr(L, R);
@@ -427,7 +427,7 @@ llvm::Value *Visitor::visitOpOr(PascalSParser::OpOrContext *context, llvm::Value
 表达式因子\mintinline{text}{Factor}是Pascal-S表达式运算中的最小单元，其语法定义为：
 
 \begin{code}
-\begin{minted}{text}
+    \begin{minted}{text}
 factor
     : variable                   #FactorVar
     | LPAREN expression RPAREN   #FactorExpr
@@ -441,8 +441,8 @@ factor
 
 \begin{itemize}
     \item \mintinline{text}{FactorVar}：获取变量的地址或值。调用了\mintinline{C++}{visitVariable()}。默认返回变量值，仅当构造\mintinline{Pascal}{readln}参数时返回地址：
-    \begin{code}
-    \begin{minted}{C++}
+          \begin{code}
+              \begin{minted}{C++}
 llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
     auto varName = visitIdentifier(context->variable()->identifier(0));
@@ -459,13 +459,13 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
     }
 }
     \end{minted}
-    \end{code}
+          \end{code}
     \item \mintinline{text}{FactorExpr}：计算内部表达式的值。调用了\mintinline{C++}{visitExpression()}。
     \item \mintinline{text}{FactorFunc}：调用函数并获取返回值。调用了函数声明\mintinline{C++}{FunctionDesignator}。见\ref{proccall}节。
     \item \mintinline{text}{FactorUnsConst}：获取无符号常量值。包括无符号常量字符串、无符号常量整型和无符号常量浮点型。
     \item \mintinline{text}{FactorNotFact}：实现逻辑运算符\mintinline{C++}{NOT}。右递归文法，\mintinline{C++}{visitFactorNotFact()}如下：
-    \begin{code}
-    \begin{minted}{C++}
+          \begin{code}
+              \begin{minted}{C++}
 llvm::Value *Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *context)
 {
     llvm::Value *value;
@@ -508,7 +508,7 @@ llvm::Value *Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *co
     }
 }
     \end{minted}
-    \end{code}
+          \end{code}
     \item \mintinline{text}{FactorBool}：获取\mintinline{Pascal}{bool}类型的常量值。
 \end{itemize}
 
@@ -534,24 +534,24 @@ llvm::Value *Visitor::visitFactorNotFact(PascalSParser::FactorNotFactContext *co
 
 \begin{enumerate}
     \item 获取原型：程序首先会根据函数名在作用域中查找\mintinline{C++}{llvm::Function}类型的变量，若未找到则抛出异常：
-    \begin{code}
-    \begin{minted}{C++}
+          \begin{code}
+              \begin{minted}{C++}
 auto function = llvm::dyn_cast_or_null<llvm::Function>(getVariable(funcName))
     \end{minted}
-    \end{code}
+          \end{code}
     \item 构造参数表：然后程序会通过\mintinline{C++}{visitParameterList()}遍历构造函数参数表：
-    \begin{code}
-    \begin{minted}{C++}
+          \begin{code}
+              \begin{minted}{C++}
 auto paraList = visitParameterList(context->parameterList());
 llvm::ArrayRef<llvm::Value *> argsRef(paraList);
     \end{minted}
-    \end{code}
+          \end{code}
     \item 调用函数：最后程序会通过\mintinline{C++}{IRBuilder}创建一个函数调用指令：
-    \begin{code}
-    \begin{minted}{C++}
+          \begin{code}
+              \begin{minted}{C++}
 builder.CreateCall(procedure, argsRef);
     \end{minted}
-    \end{code}
+          \end{code}
 \end{enumerate}
 
 函数和过程的调用分别实现于：\mintinline{C++}{visitFunctionDesignator()}和\mintinline{C++}{visitProcedureStatement()}。
@@ -582,7 +582,7 @@ builder.CreateCall(procedure, argsRef);
 \paragraph{循环} 以\mintinline{Pascal}{for}循环为例，其定义如下：
 
 \begin{code}
-\begin{minted}{text}
+    \begin{minted}{text}
 forStatement
     : FOR identifier ASSIGN forList DO statement
     ;
@@ -598,7 +598,7 @@ forList
 循环的实现可以分为三个代码块：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 // 创建循环的基本块
 // 判断循环是否完成的块
 auto while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0);
@@ -612,7 +612,7 @@ llvm::BasicBlock *while_end = llvm::BasicBlock::Create(*llvm_context, "while_end
 首先创建循环变量，为其分配空间：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 auto con_1 = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*llvm_context), 1);
 auto addr = builder.CreateAlloca(llvm::Type::getInt32Ty(*llvm_context), nullptr);
 builder.CreateStore(initial, addr);
@@ -622,7 +622,7 @@ builder.CreateStore(initial, addr);
 之后从原本的代码块调转到判断循环是否完成的块，取出循环变量的值，判断是否满足循环退出条件，根据判断结果跳转到不同的基本块：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 builder.CreateBr(while_count); // 跳转语句
 builder.SetInsertPoint(while_count); // 为基本块添加语句
 auto tmp_i = builder.CreateLoad(llvm::Type::getInt32Ty(*llvm_context), addr);
@@ -634,7 +634,7 @@ builder.CreateCondBr(cmp, while_body, while_end); // 比较，跳转
 在循环体中，每次执行完语句后，循环变量的值要加一，之后跳转到循环判断块，重复执行判断：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 builder.SetInsertPoint(while_body);
 ...
 // 循环中的循环变量，每次循环加一
@@ -649,7 +649,7 @@ builder.CreateBr(while_count);
 最后是循环结束块，在此语句之后的语句，都将成为循环结束后执行的语句：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 builder.SetInsertPoint(while_end);
 \end{minted}
 \end{code}
@@ -665,22 +665,81 @@ builder.SetInsertPoint(while_end);
 
 我们对中间代码使用clang的\mintinline{text}{O3}级别的优化，我们选取了部分优化选项解释其意义：
 
+\paragraph{\mintinline{text}{-instcombine}} 冗余指令合并。
+
+实现基本块内部的优化，比如将下面的内容：
+
+\begin{code}
+    \begin{minted}{text}
+%Y = add i32 %X , 1
+%Z = add i32 %Y , 1
+\end{minted}
+\end{code}
+
+优化为：
+
+\begin{code}
+    \begin{minted}{text}
+%Z = add i32 %X , 2
+\end{minted}
+\end{code}
+
+还包括：
+
+\begin{enumerate}
+    \item 如果二元运算符有一个常量操作数，则将其移至右侧。
+    \item 将具有常量操作数的位运算符分组，以便首先执行移位，然后是或运算，然后是与运算，然后是异或运算。
+    \item 如果可能，把比较指令从 <、>、$\leq$ 或 $\geq$ 转换为 = 或 $\not=$。
+    \item 将布尔值的cmp指令都将替换为逻辑运算。
+    \item 将\mintinline{text}{add X, X}替换为\mintinline{text}{shl X, 1}。
+    \item 将为2的幂次的乘法转换为移位。
+\end{enumerate}
+
+此过程还可以简化对特定常用的函数调用（例如运行时库函数）的调用。例如，在\mintinline{C++}{main()}函数中发生的调用\mintinline{C++}{exit(3)}可以简单地转换为\mintinline{C++}{return 3}。
+
+\paragraph{\mintinline{text}{-simplifycfg}} 简化CFG。
+
+执行死代码消除和基本块合并。 具体来说：
+
+\begin{enumerate}
+    \item 删除没有前置块的基本块。
+    \item 如果该基本块没有后续块，且其前置块只有一个后续块，则将该基本块合并到其前置块中。
+    \item 消除具有单个前置块的基本块的PHI节点。
+    \item 消除仅包含无条件分支的基本块。
+\end{enumerate}
+
+此过程还可以简化对特定常用的函数调用（例如运行时库函数）的调用。例如，在\mintinline{C++}{main()}函数中发生的调用\mintinline{C++}{exit(3)}可以简单地转换为\mintinline{C++}{return 3}。
+
+\paragraph{\mintinline{text}{-strip-dead-prototypes}} 删除未使用的函数原型。
+
+在输入模块中循环遍历所有函数，查找死声明并删除它们。死声明是指没有被实现的函数的声明或是未使用的库函数的声明。
+
+\paragraph{\mintinline{text}{-mem2reg}}
+
+将内存引用优化为为寄存器引用。它优化了仅具有加载和存储功能的\mintinline{text}{alloca}指令。通过使用PHI节点来优化\mintinline{text}{alloca}，然后以深度优先的方法遍历函数以适当地重写加载和存储。
+
+\paragraph{\mintinline{text}{-functionattrs}}
+
+一个简单的过程间传递，它遍历调用图，寻找不访问或只读取非本地内存的函数，并将它们标记为readnone或readonly。
+
+\paragraph{\mintinline{text}{-globaldce}}
+
+消除程序中无法访问的内部全局变量。它搜索已知存在的全局变量。在找到所需的所有全局变量后，它会删除剩余的全局变量。
+
 \paragraph{\mintinline{text}{-jump-threading}}
 
-这是一个\mintinline{text}{O1}级别的优化。
-
-通过基本块尝试查找正在运行的不同的控制流线程。此传递将查看具有多个前置任务和多个后续任务的块。如果可以证明块的一个或多个前置任务总是导致程序跳转到其中一个后续任务，此优化将通过复制此块的内容从而将边缘从前置任务转发到后续任务。
+通过基本块尝试查找正在运行的不同的控制流。此传递将查看具有多个前置任务和多个后续任务的块。如果可以证明块的一个或多个前置任务总是导致程序跳转到其中一个后续任务，此优化将通过复制此块的内容从而将控制流从前置任务转移到后续任务。
 
 例如：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 if()
 {
     ...
     X = 4;
 }
-if(x < 3)
+if(X < 3)
 {
 \end{minted}
 \end{code}
@@ -689,14 +748,12 @@ if(x < 3)
 
 \paragraph{\mintinline{text}{-lcssa}}
 
-这是一个\mintinline{text}{O1}级别的优化。
-
-此优化通过在循环边界上处于活动状态的所有值的循环末尾放置phi节点来转换循环。
+此优化通过在循环边界上处于活动状态的所有值的循环末尾放置PHI节点来转换循环。
 
 例如，它将代码：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 for(...)
     if(c)
         x1 = ...
@@ -711,7 +768,7 @@ for(...)
 转换为以下代码：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 for(...)
     if(c)
         x1 = ...
@@ -723,7 +780,102 @@ x4 = phi(x3)
 \end{minted}
 \end{code}
 
-这仍然是有效的LLVM代码,多余的 phi 节点纯粹是冗余的，将被简单地通过\mintinline{text}{InstCombine}消除。这种转换的主要好处是它使许多其他循环优化更简单。
+这仍然是有效的LLVM代码,多余的PHI节点纯粹是冗余的，将被简单地通过\mintinline{text}{InstCombine}消除。这种转换的主要好处是它使许多其他循环优化更简单。
+
+\paragraph{\mintinline{text}{-indvars}} 规范化迭代变量。
+
+\mintinline{text}{-indvars}将迭代变量（以及源于它们的计算）分析并转换为便于后续操作（分析与转换）的简单形式。
+
+\mintinline{text}{-indvars}对于每一个具有可识别迭代变量的循环都将应用如下规则：
+
+1. 循环被转换为具有单个规范化迭代变量（Single Canonical Induction），该迭代变量从0开始且步长为1。
+2. 这个规范化迭代变量保证是循环头部块（Loop Header Block）中的第一个PHI结点。
+3. 任何指针算术递归（Pointer Arithmetic Recurrences）都将被提取以使用数组下标。
+
+如果循环的行程计数（Trip Count）是可计算的，则\mintinline{text}{-indvars}会额外应用如下更改：
+
+循环的退出条件将被规范化以对比循环的归纳值（Induction Value）和退出值。
+
+例如循环：
+
+\begin{code}
+    \begin{minted}{C++}
+for(i = 7; i*i < 1000; ++i)
+\end{minted}
+\end{code}
+
+将被转换为：
+
+\begin{code}
+    \begin{minted}{C++}
+for(i = 0; i != 25; ++i)
+\end{minted}
+\end{code}
+
+对于迭代变量派生表达式（Expression Derived From The Induction Variable）的任何循环外部使用（Use Outside Of The Loop），\mintinline{text}{-indvars}都将改变它们以计算循环外派生值，从而消除对迭代变量的退出值的依赖性。如果循环的唯一目的是计算某些派生表达式的退出值，则\mintinline{text}{-indvars}将使循环失效。
+
+\paragraph{\mintinline{text}{-loop-unroll-and-jam}} 展开和阻塞循环。
+
+实现了简单的经典循环展开、阻塞优化过程。
+
+例如循环：
+
+\begin{code}
+    \begin{minted}{C++}
+for i.. i+= 1
+    for j..
+      code(i, j)    
+\end{minted}
+\end{code}
+
+将被转换为：
+
+\begin{code}
+    \begin{minted}{C++}
+for i.. i+= 4
+    for j..
+        code(i, j)
+        code(i+1, j)
+        code(i+2, j)
+        code(i+3, j)
+        remainder loop
+\end{minted}
+\end{code}
+
+这可以看作是展开外环并将内环融合（Fusing）为一个。当变量或负载可以在新的内部循环中共享时，此优化可以显著提高性能。\mintinline{text}{-loop-unroll-and-jam}使用依赖分析（Dependence Analysis）来证明这些转换是安全的。
+
+\paragraph{\mintinline{text}{-loop-unswitch}} 展开和阻塞循环。
+
+\mintinline{text}{-loop-unswitch}将那些包含循环不变条件分支（Branches On Loop-Invariant Conditions）的循环转换为多个循环。
+
+例如循环：
+
+\begin{code}
+    \begin{minted}{C++}
+for (...)    
+    A        
+    if (lic) 
+        B    
+    C        
+\end{minted}
+\end{code}
+
+将被转换为：
+
+\begin{code}
+    \begin{minted}{C++}
+if (lic)
+    for (...)
+        A; B; C
+else
+    for (...)
+        A; C
+\end{minted}
+\end{code}
+
+\mintinline{text}{-loop-unswitch}会指数级地增加代码数（每次取消切换循环时将其加倍），因此我们仅在结果代码小于阈值时才取消切换。
+
+\mintinline{text}{-loop-unswitch}运行之前推荐使用\mintinline{text}{-licm}将循环不变条件提出循环，使得取消切换与否更加显而易见。
 
 \section{用户指南}
 
@@ -736,7 +888,7 @@ x4 = phi(x3)
 \paragraph{通过GitHub Packages下载} 执行如下命令：
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 docker pull ghcr.io/xqmmcqs/s1mple-compiler:0.11
 docker tag ghcr.io/xqmmcqs/s1mple-compiler:0.11 s1mple-compiler
 \end{minted}
@@ -745,7 +897,7 @@ docker tag ghcr.io/xqmmcqs/s1mple-compiler:0.11 s1mple-compiler
 \paragraph{通过归档文件加载} 获取到\mintinline{text}{s1mple-compiler.tar}，执行如下命令：
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 docker load -i s1mple-compiler.tar
 \end{minted}
 \end{code}
@@ -753,7 +905,7 @@ docker load -i s1mple-compiler.tar
 \paragraph{自行构建镜像} 在项目目录下执行如下命令：
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 docker build . -t s1mple-compiler
 \end{minted}
 \end{code}
@@ -763,7 +915,7 @@ docker build . -t s1mple-compiler
 启动Docker，在项目目录下执行：
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 ./dev.sh
 \end{minted}
 \end{code}
@@ -775,7 +927,7 @@ docker build . -t s1mple-compiler
 在Docker环境内执行：
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 ./build.sh
 \end{minted}
 \end{code}
@@ -787,7 +939,7 @@ docker build . -t s1mple-compiler
 执行：
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 ./compile.sh ./test.pas
 \end{minted}
 \end{code}
@@ -797,7 +949,7 @@ docker build . -t s1mple-compiler
 若有调试需求，可以执行：
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 ./disas.sh ./test.bc
 \end{minted}
 \end{code}
@@ -815,7 +967,7 @@ docker build . -t s1mple-compiler
 \paragraph{测试程序} 见\href{run:../test/test_stdPro.pas}{test\_stdPro.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_stdPro;
 
 Var 
@@ -836,7 +988,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_stdPro.ll}{test\_stdPro.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 1 2.34 3.28345
 1
 2.340000
@@ -851,7 +1003,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_funcCall.pas}{test\_funcCall.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_funcCall;
 
 Function testFunc1(intVarTem:integer): integer;
@@ -886,7 +1038,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_funcCall.ll}{test\_funcCall.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 2023
 3.141590
 2021
@@ -901,7 +1053,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_assign.pas}{test\_assign.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_assign;
 
 Const conInt = 27;
@@ -931,7 +1083,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_assign.ll}{test\_assign.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 729
 54
 2289.060059
@@ -947,7 +1099,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_cmp.pas}{test\_cmp.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_cmp;
 
 Var 
@@ -989,7 +1141,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_cmp.ll}{test\_cmp.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 0
 1
 1
@@ -1021,7 +1173,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_calculate.pas}{test\_calculate.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_calculate;
 
 Const conInt = 27;
@@ -1052,7 +1204,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_calculate.ll}{test\_calculate.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 729
 54
 2289.060059
@@ -1068,7 +1220,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_for.pas}{test\_for.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_for;
 
 Var n,i: integer;
@@ -1084,7 +1236,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_for.ll}{test\_for.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 5
 4
 3
@@ -1105,7 +1257,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_while.pas}{test\_while.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_while;
 
 Var 
@@ -1124,7 +1276,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_while.ll}{test\_while.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 10
 15
 \end{minted}
@@ -1137,7 +1289,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_repeat.pas}{test\_repeat.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_repeat;
 
 Var c,b: integer;
@@ -1157,7 +1309,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_repeat.ll}{test\_repeat.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 114451
 114451
 114451
@@ -1174,7 +1326,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_boolLoop.pas}{test\_boolLoop.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_boolLoop;
 
 Var c,b: integer;
@@ -1196,7 +1348,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_boolLoop.ll}{test\_boolLoop.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 114451
 2
 \end{minted}
@@ -1209,7 +1361,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_infiLoop.pas}{test\_infiLoop.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_infiLoop;
 
 Var c,b: integer;
@@ -1224,7 +1376,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_infiLoop.ll}{test\_infiLoop.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 114415
 114415
 114415
@@ -1242,7 +1394,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_ifThenElse.pas}{test\_ifThenElse.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_ifThenElse;
 
 Var b: integer;
@@ -1265,7 +1417,7 @@ End.
 输出斐波那契数列第十项。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 55
 \end{minted}
 \end{code}
@@ -1277,7 +1429,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_ifThen.pas}{test\_ifThen.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_ifThen;
 
 Var a: integer;
@@ -1299,7 +1451,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/test_ifThen.ll}{test\_ifThen.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 111
 333
 \end{minted}
@@ -1312,7 +1464,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/test_varDec.pas}{test\_varDec.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program test_varDec;
 
 Type m = integer;
@@ -1351,7 +1503,7 @@ End.
 \paragraph{测试程序} 见\href{run:../test/qsort.pas}{qsort.pas}。
 
 \begin{code}
-\begin{minted}{Pascal}
+    \begin{minted}{Pascal}
 Program qsort;
 
 Var 
@@ -1397,7 +1549,7 @@ End.
 \paragraph{测试结果} 中间代码见\href{run:../test/qsort.ll}{qsort.ll}。
 
 \begin{code}
-\begin{minted}{shell}
+    \begin{minted}{shell}
 10
 5 8 7 6 2 4 9 0 3 1 
 0
@@ -1418,7 +1570,7 @@ End.
 \subsubsection{Visitor模式中类的继承关系}
 
 \begin{code}
-\begin{minted}{text}
+    \begin{minted}{text}
 type_
     : simpleType     #TypeSimpleType
     | structuredType #TypeStructuredType
@@ -1429,7 +1581,7 @@ type_
 对于上述的g4语法，ANTLR生成代码时，将会把TypeSimpleType和TypeStructuredType作为type\_的子类，这时候，如果要获得子类的context，可以从父类的context直接进行\mintinline{C++}{dynamic_cast}操作，如下：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 if (auto ...Context = dynamic_cast<PascalSParser::...Context *>(...Context))
 \end{minted}
 \end{code}
@@ -1445,7 +1597,7 @@ if (auto ...Context = dynamic_cast<PascalSParser::...Context *>(...Context))
 查阅资料得知，LLVM中有创建全局变量的对应方法，并且可以设置全局变量为constant，不能被修改；所以，我们的解决思路是，创建常量为全局变量，设置为constant，保证其不能被修改，同时，把常量写入符号表中，通过符号表来控制常量的作用域；如下：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 auto value = visitConstIdentifier(constIdentifierContext); // 获得常量的值
 module->getOrInsertGlobal(id, value->getType()); // 创建常量
 auto global = module->getNamedGlobal(id);
@@ -1462,7 +1614,7 @@ scopes.back().setVariable(id, global); // 写入符号表中
 查阅资料得知，\mintinline{C++}{LLVM::constantInt}类型可以转换为\mintinline{C++}{int}类型，方式如下：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 if (llvm::ConstantInt *CI = llvm::dyn_cast<llvm::ConstantInt>(value))
 {
     constIntValue1 = CI->getSExtValue();
@@ -1553,7 +1705,7 @@ LLVM是一个强类型体系，其中每一个value都具有type属性；这不�
 ​此时又面临了一个问题，就是返回值变量的标识符与函数名相同，且两者都需要存储在变量表（\mintinline{C++}{identifier->value}）中，但是同一个\mintinline{C++}{identifier}无法对应两个值，为了解决此问题选择将返回值在变量表中的\mintinline{C++}{identifier}加上一个"ret"的后缀以作区分，即 \mintinline{C++}{identifier->(llvm *value)function}，\mintinline{C++}{identifier+"ret"->(llvm *value)ret_vlaue} ，同时对\mintinline{C++}{visitVariable}函数进行修改，因为该函数只用于取出传入的\mintinline{C++}{identifier}对应的变量的值的地址，而调用函数时所要根据\mintinline{C++}{identifier}取\mintinline{C++}{(llvm *value)function}使用的时另外的函数，所以可以在\mintinline{C++}{visitVariable}函数中进行判断，如果当前\mintinline{C++}{identifier}对应的\mintinline{C++}{value}是一个\mintinline{Pascal}{function}类型，那么就将当前的\mintinline{C++}{identifier}转换成返回值对应的\mintinline{C++}{identifier}，即\mintinline{C++}{identifier+"ret"}，代码如下：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 if (auto func = llvm::dyn_cast_or_null<llvm::Function>(addr))
 {
     addr = getVariable(varName + "ret");
@@ -1568,7 +1720,7 @@ if (auto func = llvm::dyn_cast_or_null<llvm::Function>(addr))
 遇到分支的入口块，\mintinline{Pascal}{then}块，\mintinline{Pascal}{else}块与\mintinline{Pascal}{end}块中对应内容的顺序混乱，以及对应的preds错误的问题。
 
 \begin{code}
-\begin{minted}{text}
+    \begin{minted}{text}
 ifStatement
     : IF expression THEN statement (: ELSE statement)?
     ;
@@ -1602,7 +1754,7 @@ ifStatement
 一个简单的实现如下：
 
 \begin{code}
-\begin{minted}{C++}
+    \begin{minted}{C++}
 auto while_count = llvm::BasicBlock::Create(*llvm_context, "while_count", function, 0); // 创建基本块
 
 builder.CreateBr(while_count); // 无条件跳转
@@ -1632,11 +1784,17 @@ builder.CreateCondBr(cmp, while_body, while_end); // 有条件跳转
 
 \section{实验总结}
 
-\paragraph{李康童} 本次实验，通过对ANTLR4，LLVM工具的学习，我们完成了一个PASCAL-S编译器的编写，在这个过程中，学习掌握了编译相关工具的使用（包括ANTLR，LLVM），并且对于代码开发过程中的代码规范和代码管理的工具更加熟悉（如Docker，GitHub）。
+\paragraph{李康童} 本次实验，通过对ANTLR，LLVM工具的学习，我们完成了一个PASCAL-S编译器的编写，在这个过程中，学习掌握了编译相关工具的使用（包括ANTLR，LLVM），并且对于代码开发过程中的代码规范和代码管理的工具更加熟悉（如Docker，GitHub）。
 
 另外，我详细了解了一个编译器的运行过程，包括词法分析，语法分析，中间代码生成等，对编译原理课程的知识学以致用并且有了更加深刻的理解。
 
 在编写代码的过程中，尤其是使用LLVM相关函数API时，遇到的很多问题都找不到比较详细的文档资料来解答，并且查找到的资料大多也是英文的，因此这次实验也提升了我们对于英文文献的阅读理解能力。
+
+\paragraph{班建龙} 这次课设让我学习到了Docker，ANTLR和LLVM的相关知识，同时也加强了我对Git的运用与掌握，了解了团队开发项目的流程和操作。
+
+特别是在编写LLVM相关代码进行语义分析的过程中，我充分的体会到上学期编译原理课程中所学的理论知识，尤其是写到基本块内容以及它们之间的顺序执行，跳转执行时，感受尤深，这也使得我对控制流图的相关内容有了更深刻的理解，以及为后面对基本块进行优化时提供了理论支持。
+
+而后期编写代码时阅读LLVM官方文档也增强了我的英文文档阅读能力，同时也使我对LLVM的基本组成部分：Module、Function、BasicBlock、Instruction以及它们间的关系有了更全面的理解，走完整个课程设计的过程我觉得我对LLVM应该是有了初步的掌握，同时也对上学期所学的编译原理的理论知识进行了实践运用。
 
 \paragraph{毛子恒} 本次实验我们实现了一个简单的Pascal-S语言编译器，将上学期所学习的编译原理知识应用到实际项目中，使我对相关的原理知识有了更加深入的理解和体会。
 
@@ -1673,7 +1831,7 @@ builder.CreateCondBr(cmp, while_body, while_end); // 有条件跳转
 \label{PascalS}
 
 \begin{code}
-\begin{minted}{text}
+    \begin{minted}{text}
 program
    => programHeading block DOT
    
