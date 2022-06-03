@@ -167,10 +167,8 @@ void Visitor::visitSimpleStateAssign(PascalSParser::SimpleStateAssignContext *co
 void Visitor::visitAssignmentStatement(PascalSParser::AssignmentStatementContext *context)
 {
     auto value = visitExpression(context->expression());
-    if (auto varAddr = visitVariable(context->variable()))
-        builder.CreateStore(value, varAddr);
-    else
-        throw VariableNotFoundException(visitIdentifier(context->variable()->identifier(0)));
+    auto varAddr = visitVariable(context->variable());
+    builder.CreateStore(value, varAddr);
 }
 
 llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
@@ -182,8 +180,12 @@ llvm::Value *Visitor::visitVariable(PascalSParser::VariableContext *context)
     addr = getVariable(varName);
     if (!addr)
         addr = module->getGlobalVariable(varName);
+    // global中依然找不到则抛出异常
+    if (!addr)
+        throw VariableNotFoundException(varName);
 
-    if (context->LBRACK(0) && addr != nullptr)
+    // 如果存在方括号，则视作数组进行处理
+    if (context->LBRACK(0))
     {
         auto ranges = arrayRanges[varName]; // 数组索引的合法范围（来自定义）
         std::vector<llvm::Value *> indexes; // 获取数组变量的索引值
@@ -733,9 +735,6 @@ llvm::Value *Visitor::visitFactorVar(PascalSParser::FactorVarContext *context)
 {
     auto varName = visitIdentifier(context->variable()->identifier(0));
     auto varAddr = visitVariable(context->variable());
-    // 找不到变量返回空指针
-    if (!varAddr)
-        throw VariableNotFoundException(varName);
 
     // 为readln构造参数时需要传递地址而非值
     if (readlnArgFlag == true && arrayIndexFlag == false)
@@ -763,7 +762,8 @@ llvm::Value *Visitor::visitFactorUnsConst(PascalSParser::FactorUnsConstContext *
     if (auto unsignedConstStrCtx = dynamic_cast<PascalSParser::UnsignedConstStrContext *>(context->unsignedConstant()))
     {
         auto v = visitUnsignedConstStr(unsignedConstStrCtx);
-        return llvm::ConstantDataArray::getString(*llvm_context, v);
+        auto v_words = v.substr(1, v.length() - 2);
+        return builder.CreateGlobalStringPtr(v_words);
     }
     else if (auto unsignedConstUnsignedNumCtx = dynamic_cast<PascalSParser::UnsignedConstUnsignedNumContext *>(context->unsignedConstant()))
     {
@@ -884,7 +884,7 @@ std::vector<llvm::Value *> Visitor::visitParameterList(PascalSParser::ParameterL
         for (auto actualPara : context->actualParameter())
         {
             auto param = visitActualParameter(actualPara);
-            if (param->getType()->isFloatingPointTy() && changeFP) // 在调用printf输出浮点数时，必须转换为double类型
+            if (param->getType()->isFloatingPointTy() && changeFP) // 在输入输出浮点数时，必须转换为double类型
                 param = builder.CreateFPExt(param, llvm::Type::getDoubleTy(*llvm_context));
             params.push_back(param);
         }
