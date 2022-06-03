@@ -85,6 +85,8 @@ void StandardProcedure::writelnArgsConstructor(llvm::IRBuilder<> *builder, std::
             formats.push_back("%d");
         else if (type->isDoubleTy())
             formats.push_back("%lf");
+        else if (type->isPointerTy())
+            formats.push_back("%s");
         else
             throw DebugException(NOW_FUNC_NAME + "Unsupported writeln Arguments Type!");
     }
