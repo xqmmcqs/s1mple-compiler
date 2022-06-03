@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>s1mple-compiler: src/Visitor.cpp 文件参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">s1mple-compiler
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.9.1 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">Visitor.cpp 文件参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>通过visitor模式访问语法树  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="_visitor_8h_source.html">Visitor.h</a>&quot;</code><br />
+<code>#include &quot;exceptions/DebugException.h&quot;</code><br />
+<code>#include &quot;exceptions/NotImplementedException.h&quot;</code><br />
+<code>#include &quot;exceptions/VariableNotFoundException.h&quot;</code><br />
+<code>#include &quot;exceptions/ProcedureNotFoundException.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="_standard_procedure_8h_source.html">builtin/StandardProcedure.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Visitor.cpp 的引用(Include)关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="_visitor_8cpp__incl.png" border="0" usemap="#asrc_2_visitor_8cpp" alt=""/></div>
+<map name="asrc_2_visitor_8cpp" id="asrc_2_visitor_8cpp">
+<area shape="rect" title="通过visitor模式访问语法树" alt="" coords="592,5,697,32"/>
+<area shape="rect" href="_visitor_8h.html" title="通过Visitor模式访问语法树" alt="" coords="1107,87,1177,114"/>
+<area shape="rect" href="_debug_exception_8h_source.html" title=" " alt="" coords="5,87,201,114"/>
+<area shape="rect" href="_not_implemented_exception_8h_source.html" title=" " alt="" coords="443,80,628,121"/>
+<area shape="rect" href="_variable_not_found_exception_8h_source.html" title=" " alt="" coords="226,80,418,121"/>
+<area shape="rect" href="_procedure_not_found_exception_8h_source.html" title=" " alt="" coords="653,80,858,121"/>
+<area shape="rect" href="_standard_procedure_8h.html" title="标准过程库" alt="" coords="883,87,1065,114"/>
+<area shape="rect" title=" " alt="" coords="1179,177,1238,203"/>
+<area shape="rect" title=" " alt="" coords="684,177,816,203"/>
+<area shape="rect" title=" " alt="" coords="1473,177,1595,203"/>
+<area shape="rect" title=" " alt="" coords="1619,177,1726,203"/>
+<area shape="rect" title=" " alt="" coords="966,177,1105,203"/>
+<area shape="rect" href="_pascal_s_lexer_8h_source.html" title=" " alt="" coords="1062,333,1222,360"/>
+<area shape="rect" href="_pascal_s_parser_base_visitor_8h_source.html" title=" " alt="" coords="1262,169,1449,211"/>
+<area shape="rect" href="_scope_8h.html" title="变量作用域" alt="" coords="841,177,942,203"/>
+<area shape="rect" title=" " alt="" coords="1251,408,1363,435"/>
+<area shape="rect" href="_pascal_s_parser_visitor_8h_source.html" title=" " alt="" coords="1297,259,1453,285"/>
+<area shape="rect" href="_pascal_s_parser_8h_source.html" title=" " alt="" coords="1297,333,1416,360"/>
+<area shape="rect" title=" " alt="" coords="836,259,947,285"/>
+<area shape="rect" title=" " alt="" coords="459,259,513,285"/>
+<area shape="rect" title=" " alt="" coords="645,259,756,285"/>
+<area shape="rect" title=" " alt="" coords="392,177,471,203"/>
+</map>
+</div>
+</div><a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>通过visitor模式访问语法树 </p>
+<dl class="section author"><dt>作者</dt><dd>Ziheng Mao, Aolun Xie, Kangtong Li, Jianlong Ban, Junhui Li, Yongqi Qiao </dd></dl>
+<dl class="section date"><dt>日期</dt><dd>2022/4/20 </dd></dl>
+<dl class="section copyright"><dt>版权所有</dt><dd>GNU General Public License, version 3 (GPL-3.0)</dd></dl>
+<p>本文件实现了通过Visitor模式访问语法树并且利用IRBuilder构造中间代码。 </p>
+</div></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+制作者&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+</small></address>
+</body>
+</html>

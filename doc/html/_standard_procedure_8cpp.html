@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>s1mple-compiler: src/builtin/StandardProcedure.cpp 文件参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">s1mple-compiler
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.9.1 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_373c2c7059a28a5fb56f71d9101aecc4.html">builtin</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">StandardProcedure.cpp 文件参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>标准过程库  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="_standard_procedure_8h_source.html">StandardProcedure.h</a>&quot;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;llvm/IR/Module.h&gt;</code><br />
+<code>#include &quot;../exceptions/DebugException.h&quot;</code><br />
+<code>#include &quot;../exceptions/NotImplementedException.h&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+StandardProcedure.cpp 的引用(Include)关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="_standard_procedure_8cpp__incl.png" border="0" usemap="#asrc_2builtin_2_standard_procedure_8cpp" alt=""/></div>
+<map name="asrc_2builtin_2_standard_procedure_8cpp" id="asrc_2builtin_2_standard_procedure_8cpp">
+<area shape="rect" title="标准过程库" alt="" coords="285,5,503,32"/>
+<area shape="rect" href="_standard_procedure_8h.html" title="标准过程库" alt="" coords="71,87,215,114"/>
+<area shape="rect" title=" " alt="" coords="239,87,309,114"/>
+<area shape="rect" title=" " alt="" coords="333,87,455,114"/>
+<area shape="rect" href="_debug_exception_8h_source.html" title=" " alt="" coords="701,87,909,114"/>
+<area shape="rect" href="_not_implemented_exception_8h_source.html" title=" " alt="" coords="479,80,677,121"/>
+<area shape="rect" title=" " alt="" coords="5,169,137,196"/>
+<area shape="rect" title=" " alt="" coords="161,169,272,196"/>
+<area shape="rect" title=" " alt="" coords="607,169,685,196"/>
+<area shape="rect" title=" " alt="" coords="777,169,832,196"/>
+</map>
+</div>
+</div><a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>标准过程库 </p>
+<dl class="section author"><dt>作者</dt><dd>Ziheng Mao, Aolun Xie </dd></dl>
+<dl class="section date"><dt>日期</dt><dd>2022/4/20 </dd></dl>
+<dl class="section copyright"><dt>版权所有</dt><dd>GNU General Public License, version 3 (GPL-3.0)</dd></dl>
+<p>本文件中实现了部分标准过程库的过程原型构造和参数构造。 </p>
+</div></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+制作者&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+</small></address>
+</body>
+</html>

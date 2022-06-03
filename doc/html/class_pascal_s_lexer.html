@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>s1mple-compiler: PascalSLexer类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">s1mple-compiler
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.9.1 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="class_pascal_s_lexer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">PascalSLexer类 参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="dynheader">
+类 PascalSLexer 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_pascal_s_lexer__inherit__graph.png" border="0" usemap="#a_pascal_s_lexer_inherit__map" alt="Inheritance graph"/></div>
+<map name="a_pascal_s_lexer_inherit__map" id="a_pascal_s_lexer_inherit__map">
+<area shape="rect" title=" " alt="" coords="5,80,108,107"/>
+<area shape="rect" title=" " alt="" coords="9,5,104,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+PascalSLexer 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_pascal_s_lexer__coll__graph.png" border="0" usemap="#a_pascal_s_lexer_coll__map" alt="Collaboration graph"/></div>
+<map name="a_pascal_s_lexer_coll__map" id="a_pascal_s_lexer_coll__map">
+<area shape="rect" title=" " alt="" coords="5,80,108,107"/>
+<area shape="rect" title=" " alt="" coords="9,5,104,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:afc621ad79767be53f7470ef99147c448"><td class="memItemLeft" align="right" valign="top"><a id="afc621ad79767be53f7470ef99147c448"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <br />
+&#160;&#160;<b>AND</b> = 1
+, <b>ARRAY</b> = 2
+, <b>BEGIN</b> = 3
+, <b>BOOLEAN</b> = 4
+, <br />
+&#160;&#160;<b>CASE</b> = 5
+, <b>CHAR</b> = 6
+, <b>CONST</b> = 7
+, <b>DIV</b> = 8
+, <br />
+&#160;&#160;<b>DO</b> = 9
+, <b>DOWNTO</b> = 10
+, <b>ELSE</b> = 11
+, <b>END</b> = 12
+, <br />
+&#160;&#160;<b>FOR</b> = 13
+, <b>FUNCTION</b> = 14
+, <b>IF</b> = 15
+, <b>INTEGER</b> = 16
+, <br />
+&#160;&#160;<b>MOD</b> = 17
+, <b>NOT</b> = 18
+, <b>OF</b> = 19
+, <b>OR</b> = 20
+, <br />
+&#160;&#160;<b>PROCEDURE</b> = 21
+, <b>PROGRAM</b> = 22
+, <b>REAL</b> = 23
+, <b>RECORD</b> = 24
+, <br />
+&#160;&#160;<b>REPEAT</b> = 25
+, <b>THEN</b> = 26
+, <b>TO</b> = 27
+, <b>TYPE</b> = 28
+, <br />
+&#160;&#160;<b>UNTIL</b> = 29
+, <b>VAR</b> = 30
+, <b>WHILE</b> = 31
+, <b>PLUS</b> = 32
+, <br />
+&#160;&#160;<b>MINUS</b> = 33
+, <b>STAR</b> = 34
+, <b>SLASH</b> = 35
+, <b>ASSIGN</b> = 36
+, <br />
+&#160;&#160;<b>COMMA</b> = 37
+, <b>SEMI</b> = 38
+, <b>COLON</b> = 39
+, <b>EQUAL</b> = 40
+, <br />
+&#160;&#160;<b>NOT_EQUAL</b> = 41
+, <b>LT</b> = 42
+, <b>LE</b> = 43
+, <b>GE</b> = 44
+, <br />
+&#160;&#160;<b>GT</b> = 45
+, <b>LPAREN</b> = 46
+, <b>RPAREN</b> = 47
+, <b>LBRACK</b> = 48
+, <br />
+&#160;&#160;<b>LBRACK2</b> = 49
+, <b>RBRACK</b> = 50
+, <b>RBRACK2</b> = 51
+, <b>DOT</b> = 52
+, <br />
+&#160;&#160;<b>DOTDOT</b> = 53
+, <b>LCURLY</b> = 54
+, <b>RCURLY</b> = 55
+, <b>TRUE</b> = 56
+, <br />
+&#160;&#160;<b>FALSE</b> = 57
+, <b>WS</b> = 58
+, <b>COMMENT_1</b> = 59
+, <b>COMMENT_2</b> = 60
+, <br />
+&#160;&#160;<b>IDENT</b> = 61
+, <b>STRING_LITERAL</b> = 62
+, <b>NUM_INT</b> = 63
+, <b>NUM_REAL</b> = 64
+<br />
+ }</td></tr>
+<tr class="separator:afc621ad79767be53f7470ef99147c448"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aeb30b5f7292a6a1fec69dcc5e0953ec8"><td class="memItemLeft" align="right" valign="top"><a id="aeb30b5f7292a6a1fec69dcc5e0953ec8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PascalSLexer</b> (antlr4::CharStream *input)</td></tr>
+<tr class="separator:aeb30b5f7292a6a1fec69dcc5e0953ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01bf9aabff5095ac084466db9bc47975"><td class="memItemLeft" align="right" valign="top"><a id="a01bf9aabff5095ac084466db9bc47975"></a>
+virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getGrammarFileName</b> () const override</td></tr>
+<tr class="separator:a01bf9aabff5095ac084466db9bc47975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8c621586fd03908bdd7f870d83dd603"><td class="memItemLeft" align="right" valign="top"><a id="ad8c621586fd03908bdd7f870d83dd603"></a>
+virtual const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getRuleNames</b> () const override</td></tr>
+<tr class="separator:ad8c621586fd03908bdd7f870d83dd603"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd2b5e89c8d22c9edb5cc72db95fe2dd"><td class="memItemLeft" align="right" valign="top"><a id="abd2b5e89c8d22c9edb5cc72db95fe2dd"></a>
+virtual const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getChannelNames</b> () const override</td></tr>
+<tr class="separator:abd2b5e89c8d22c9edb5cc72db95fe2dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e6052280d669502cf1a8fc6fd3122b4"><td class="memItemLeft" align="right" valign="top"><a id="a9e6052280d669502cf1a8fc6fd3122b4"></a>
+virtual const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getModeNames</b> () const override</td></tr>
+<tr class="separator:a9e6052280d669502cf1a8fc6fd3122b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfaf3791186414ea3a4dfae78cd0b2fa"><td class="memItemLeft" align="right" valign="top"><a id="abfaf3791186414ea3a4dfae78cd0b2fa"></a>
+virtual const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getTokenNames</b> () const override</td></tr>
+<tr class="separator:abfaf3791186414ea3a4dfae78cd0b2fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab463ac848b4d4da822686cb07c885979"><td class="memItemLeft" align="right" valign="top"><a id="ab463ac848b4d4da822686cb07c885979"></a>
+virtual antlr4::dfa::Vocabulary &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getVocabulary</b> () const override</td></tr>
+<tr class="separator:ab463ac848b4d4da822686cb07c885979"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7e55a2fd7850686cba022025fd34624"><td class="memItemLeft" align="right" valign="top"><a id="ad7e55a2fd7850686cba022025fd34624"></a>
+virtual const std::vector&lt; uint16_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSerializedATN</b> () const override</td></tr>
+<tr class="separator:ad7e55a2fd7850686cba022025fd34624"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae47c49496186917ed79e029407a3ba84"><td class="memItemLeft" align="right" valign="top"><a id="ae47c49496186917ed79e029407a3ba84"></a>
+virtual const antlr4::atn::ATN &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getATN</b> () const override</td></tr>
+<tr class="separator:ae47c49496186917ed79e029407a3ba84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/runtime/<a class="el" href="_pascal_s_lexer_8h_source.html">PascalSLexer.h</a></li>
+<li>src/runtime/PascalSLexer.cpp</li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+制作者&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+</small></address>
+</body>
+</html>

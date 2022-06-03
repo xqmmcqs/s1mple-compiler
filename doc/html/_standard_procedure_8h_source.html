@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>s1mple-compiler: src/builtin/StandardProcedure.h 源文件</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">s1mple-compiler
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.9.1 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_373c2c7059a28a5fb56f71d9101aecc4.html">builtin</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">StandardProcedure.h</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="_standard_procedure_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;llvm/IR/IRBuilder.h&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>PascalS</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="class_pascal_s_1_1_standard_procedure.html">   18</a></span>&#160;    <span class="keyword">class </span><a class="code" href="class_pascal_s_1_1_standard_procedure.html">StandardProcedure</a></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="class_pascal_s_1_1_standard_procedure.html#aab11441370e6a7b362672a5fa90c8a9d">   21</a></span>&#160;        <span class="keyword">static</span> std::unordered_map&lt;std::string, llvm::Function *(*)(llvm::Module *)&gt; <a class="code" href="class_pascal_s_1_1_standard_procedure.html#aab11441370e6a7b362672a5fa90c8a9d">prototypeMap</a>; </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="class_pascal_s_1_1_standard_procedure.html#a51fbe915803e9f8bb78d66ad64bad95e">   23</a></span>&#160;        <span class="keyword">static</span> std::unordered_map&lt;std::string, void (*)(llvm::IRBuilder&lt;&gt; *, std::vector&lt;llvm::Value *&gt; &amp;)&gt; <a class="code" href="class_pascal_s_1_1_standard_procedure.html#a51fbe915803e9f8bb78d66ad64bad95e">argsConstructorMap</a>; </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="class_pascal_s_1_1_standard_procedure.html#a3eda699a1a5dd8b7621cfd94411236d8">init</a>();</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="class_pascal_s_1_1_standard_procedure.html#a7955b60065081bdc254f699e1ced5945">hasProcedure</a>(std::string name);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keyword">static</span> llvm::Function *<a class="code" href="class_pascal_s_1_1_standard_procedure.html#afafa04450a6a02c7b992a3e5932d9613">readlnPrototype</a>(llvm::Module *module);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="class_pascal_s_1_1_standard_procedure.html#a09ca9dd3650cd71927aace250553ef28">readlnArgsConstructor</a>(llvm::IRBuilder&lt;&gt; *builder, std::vector&lt;llvm::Value *&gt; &amp;args);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keyword">static</span> llvm::Function *<a class="code" href="class_pascal_s_1_1_standard_procedure.html#a7b9a1f9b039714b2d1b8bf5b9f097e5b">writelnPrototype</a>(llvm::Module *module);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="class_pascal_s_1_1_standard_procedure.html#a743b9540660619e61688ab23342dc1f1">writelnArgsConstructor</a>(llvm::IRBuilder&lt;&gt; *builder, std::vector&lt;llvm::Value *&gt; &amp;args);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    };</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;} <span class="comment">// namespace PascalS</span></div>
+<div class="ttc" id="aclass_pascal_s_1_1_standard_procedure_html"><div class="ttname"><a href="class_pascal_s_1_1_standard_procedure.html">PascalS::StandardProcedure</a></div><div class="ttdef"><b>Definition:</b> StandardProcedure.h:19</div></div>
+<div class="ttc" id="aclass_pascal_s_1_1_standard_procedure_html_a09ca9dd3650cd71927aace250553ef28"><div class="ttname"><a href="class_pascal_s_1_1_standard_procedure.html#a09ca9dd3650cd71927aace250553ef28">PascalS::StandardProcedure::readlnArgsConstructor</a></div><div class="ttdeci">static void readlnArgsConstructor(llvm::IRBuilder&lt;&gt; *builder, std::vector&lt; llvm::Value * &gt; &amp;args)</div><div class="ttdoc">readln过程参数构造</div><div class="ttdef"><b>Definition:</b> StandardProcedure.cpp:47</div></div>
+<div class="ttc" id="aclass_pascal_s_1_1_standard_procedure_html_a3eda699a1a5dd8b7621cfd94411236d8"><div class="ttname"><a href="class_pascal_s_1_1_standard_procedure.html#a3eda699a1a5dd8b7621cfd94411236d8">PascalS::StandardProcedure::init</a></div><div class="ttdeci">static void init()</div><div class="ttdoc">初始化</div><div class="ttdef"><b>Definition:</b> StandardProcedure.cpp:26</div></div>
+<div class="ttc" id="aclass_pascal_s_1_1_standard_procedure_html_a51fbe915803e9f8bb78d66ad64bad95e"><div class="ttname"><a href="class_pascal_s_1_1_standard_procedure.html#a51fbe915803e9f8bb78d66ad64bad95e">PascalS::StandardProcedure::argsConstructorMap</a></div><div class="ttdeci">static std::unordered_map&lt; std::string, void(*)(llvm::IRBuilder&lt;&gt; *, std::vector&lt; llvm::Value * &gt; &amp;)&gt; argsConstructorMap</div><div class="ttdoc">过程名到过程参数构造函数的映射</div><div class="ttdef"><b>Definition:</b> StandardProcedure.h:23</div></div>
+<div class="ttc" id="aclass_pascal_s_1_1_standard_procedure_html_a743b9540660619e61688ab23342dc1f1"><div class="ttname"><a href="class_pascal_s_1_1_standard_procedure.html#a743b9540660619e61688ab23342dc1f1">PascalS::StandardProcedure::writelnArgsConstructor</a></div><div class="ttdeci">static void writelnArgsConstructor(llvm::IRBuilder&lt;&gt; *builder, std::vector&lt; llvm::Value * &gt; &amp;args)</div><div class="ttdoc">writeln过程参数构造</div><div class="ttdef"><b>Definition:</b> StandardProcedure.cpp:77</div></div>
+<div class="ttc" id="aclass_pascal_s_1_1_standard_procedure_html_a7955b60065081bdc254f699e1ced5945"><div class="ttname"><a href="class_pascal_s_1_1_standard_procedure.html#a7955b60065081bdc254f699e1ced5945">PascalS::StandardProcedure::hasProcedure</a></div><div class="ttdeci">static bool hasProcedure(std::string name)</div><div class="ttdoc">判断是否有某个标准过程</div><div class="ttdef"><b>Definition:</b> StandardProcedure.cpp:34</div></div>
+<div class="ttc" id="aclass_pascal_s_1_1_standard_procedure_html_a7b9a1f9b039714b2d1b8bf5b9f097e5b"><div class="ttname"><a href="class_pascal_s_1_1_standard_procedure.html#a7b9a1f9b039714b2d1b8bf5b9f097e5b">PascalS::StandardProcedure::writelnPrototype</a></div><div class="ttdeci">static llvm::Function * writelnPrototype(llvm::Module *module)</div><div class="ttdoc">writeln过程原型构造</div><div class="ttdef"><b>Definition:</b> StandardProcedure.cpp:69</div></div>
+<div class="ttc" id="aclass_pascal_s_1_1_standard_procedure_html_aab11441370e6a7b362672a5fa90c8a9d"><div class="ttname"><a href="class_pascal_s_1_1_standard_procedure.html#aab11441370e6a7b362672a5fa90c8a9d">PascalS::StandardProcedure::prototypeMap</a></div><div class="ttdeci">static std::unordered_map&lt; std::string, llvm::Function *(*)(llvm::Module *)&gt; prototypeMap</div><div class="ttdoc">过程名到过程原型构造函数的映射</div><div class="ttdef"><b>Definition:</b> StandardProcedure.h:21</div></div>
+<div class="ttc" id="aclass_pascal_s_1_1_standard_procedure_html_afafa04450a6a02c7b992a3e5932d9613"><div class="ttname"><a href="class_pascal_s_1_1_standard_procedure.html#afafa04450a6a02c7b992a3e5932d9613">PascalS::StandardProcedure::readlnPrototype</a></div><div class="ttdeci">static llvm::Function * readlnPrototype(llvm::Module *module)</div><div class="ttdoc">readln过程原型构造</div><div class="ttdef"><b>Definition:</b> StandardProcedure.cpp:39</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+制作者&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+</small></address>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>s1mple-compiler: PascalSParserVisitor类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">s1mple-compiler
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.9.1 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="class_pascal_s_parser_visitor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">PascalSParserVisitor类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_pascal_s_parser_visitor_8h_source.html">PascalSParserVisitor.h</a>&gt;</code></p>
+<div class="dynheader">
+类 PascalSParserVisitor 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_pascal_s_parser_visitor__inherit__graph.png" border="0" usemap="#a_pascal_s_parser_visitor_inherit__map" alt="Inheritance graph"/></div>
+<map name="a_pascal_s_parser_visitor_inherit__map" id="a_pascal_s_parser_visitor_inherit__map">
+<area shape="rect" title=" " alt="" coords="20,95,167,121"/>
+<area shape="rect" href="class_pascal_s_parser_base_visitor.html" title=" " alt="" coords="5,169,181,196"/>
+<area shape="rect" title=" " alt="" coords="6,5,181,47"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+PascalSParserVisitor 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_pascal_s_parser_visitor__coll__graph.png" border="0" usemap="#a_pascal_s_parser_visitor_coll__map" alt="Collaboration graph"/></div>
+<map name="a_pascal_s_parser_visitor_coll__map" id="a_pascal_s_parser_visitor_coll__map">
+<area shape="rect" title=" " alt="" coords="19,95,166,121"/>
+<area shape="rect" title=" " alt="" coords="5,5,180,47"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad77e2caa0199e64dc6a105c947a83a16"><td class="memItemLeft" align="right" valign="top">virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_pascal_s_parser_visitor.html#ad77e2caa0199e64dc6a105c947a83a16">visitProgram</a> (<a class="el" href="class_pascal_s_parser_1_1_program_context.html">PascalSParser::ProgramContext</a> *context)=0</td></tr>
+<tr class="separator:ad77e2caa0199e64dc6a105c947a83a16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96c5a46819f6f2b974d3d68de2d75809"><td class="memItemLeft" align="right" valign="top"><a id="a96c5a46819f6f2b974d3d68de2d75809"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitProgramHeading</b> (<a class="el" href="class_pascal_s_parser_1_1_program_heading_context.html">PascalSParser::ProgramHeadingContext</a> *context)=0</td></tr>
+<tr class="separator:a96c5a46819f6f2b974d3d68de2d75809"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62e509e21877907955fb002606f64344"><td class="memItemLeft" align="right" valign="top"><a id="a62e509e21877907955fb002606f64344"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitIdentifier</b> (<a class="el" href="class_pascal_s_parser_1_1_identifier_context.html">PascalSParser::IdentifierContext</a> *context)=0</td></tr>
+<tr class="separator:a62e509e21877907955fb002606f64344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1411f153394c09ae8aa26e9ebb675249"><td class="memItemLeft" align="right" valign="top"><a id="a1411f153394c09ae8aa26e9ebb675249"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitBlock</b> (<a class="el" href="class_pascal_s_parser_1_1_block_context.html">PascalSParser::BlockContext</a> *context)=0</td></tr>
+<tr class="separator:a1411f153394c09ae8aa26e9ebb675249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51f69b4c54900a9f3ee8e031e45008f7"><td class="memItemLeft" align="right" valign="top"><a id="a51f69b4c54900a9f3ee8e031e45008f7"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConstantDefinitionPart</b> (<a class="el" href="class_pascal_s_parser_1_1_constant_definition_part_context.html">PascalSParser::ConstantDefinitionPartContext</a> *context)=0</td></tr>
+<tr class="separator:a51f69b4c54900a9f3ee8e031e45008f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a718cfec97ba66687004c18335bf3b20f"><td class="memItemLeft" align="right" valign="top"><a id="a718cfec97ba66687004c18335bf3b20f"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConstantDefinition</b> (<a class="el" href="class_pascal_s_parser_1_1_constant_definition_context.html">PascalSParser::ConstantDefinitionContext</a> *context)=0</td></tr>
+<tr class="separator:a718cfec97ba66687004c18335bf3b20f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34ca5ca3414fb8c28c74f4328372fb55"><td class="memItemLeft" align="right" valign="top"><a id="a34ca5ca3414fb8c28c74f4328372fb55"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConstUnsignedNumber</b> (<a class="el" href="class_pascal_s_parser_1_1_const_unsigned_number_context.html">PascalSParser::ConstUnsignedNumberContext</a> *context)=0</td></tr>
+<tr class="separator:a34ca5ca3414fb8c28c74f4328372fb55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0341bf9b5b3b49d0d4e9f46ec7525d6a"><td class="memItemLeft" align="right" valign="top"><a id="a0341bf9b5b3b49d0d4e9f46ec7525d6a"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConstSignedNumber</b> (<a class="el" href="class_pascal_s_parser_1_1_const_signed_number_context.html">PascalSParser::ConstSignedNumberContext</a> *context)=0</td></tr>
+<tr class="separator:a0341bf9b5b3b49d0d4e9f46ec7525d6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a891a98bdc29e45c3f8785e592d789dfd"><td class="memItemLeft" align="right" valign="top"><a id="a891a98bdc29e45c3f8785e592d789dfd"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConstIdentifier</b> (<a class="el" href="class_pascal_s_parser_1_1_const_identifier_context.html">PascalSParser::ConstIdentifierContext</a> *context)=0</td></tr>
+<tr class="separator:a891a98bdc29e45c3f8785e592d789dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44532eefe0f8ab1389bee0ac1c9f7851"><td class="memItemLeft" align="right" valign="top"><a id="a44532eefe0f8ab1389bee0ac1c9f7851"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConstSignIdentifier</b> (<a class="el" href="class_pascal_s_parser_1_1_const_sign_identifier_context.html">PascalSParser::ConstSignIdentifierContext</a> *context)=0</td></tr>
+<tr class="separator:a44532eefe0f8ab1389bee0ac1c9f7851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a718dcff229c5ffd340d2e3797963dce7"><td class="memItemLeft" align="right" valign="top"><a id="a718dcff229c5ffd340d2e3797963dce7"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConstString</b> (<a class="el" href="class_pascal_s_parser_1_1_const_string_context.html">PascalSParser::ConstStringContext</a> *context)=0</td></tr>
+<tr class="separator:a718dcff229c5ffd340d2e3797963dce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30f325ccdc2434fe6106c1d02c9bf09a"><td class="memItemLeft" align="right" valign="top"><a id="a30f325ccdc2434fe6106c1d02c9bf09a"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitUnsignedNumberInteger</b> (<a class="el" href="class_pascal_s_parser_1_1_unsigned_number_integer_context.html">PascalSParser::UnsignedNumberIntegerContext</a> *context)=0</td></tr>
+<tr class="separator:a30f325ccdc2434fe6106c1d02c9bf09a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaf7f64cc9933b175b5dd2c6a2c23bea"><td class="memItemLeft" align="right" valign="top"><a id="adaf7f64cc9933b175b5dd2c6a2c23bea"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitUnsignedNumberReal</b> (<a class="el" href="class_pascal_s_parser_1_1_unsigned_number_real_context.html">PascalSParser::UnsignedNumberRealContext</a> *context)=0</td></tr>
+<tr class="separator:adaf7f64cc9933b175b5dd2c6a2c23bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fc6855fdbf20a4f02e599d126df9ac3"><td class="memItemLeft" align="right" valign="top"><a id="a0fc6855fdbf20a4f02e599d126df9ac3"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitUnsignedInteger</b> (<a class="el" href="class_pascal_s_parser_1_1_unsigned_integer_context.html">PascalSParser::UnsignedIntegerContext</a> *context)=0</td></tr>
+<tr class="separator:a0fc6855fdbf20a4f02e599d126df9ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7179d190a45506ab96f28d8ba51fbef"><td class="memItemLeft" align="right" valign="top"><a id="ac7179d190a45506ab96f28d8ba51fbef"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitUnsignedReal</b> (<a class="el" href="class_pascal_s_parser_1_1_unsigned_real_context.html">PascalSParser::UnsignedRealContext</a> *context)=0</td></tr>
+<tr class="separator:ac7179d190a45506ab96f28d8ba51fbef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36c5b2b855b16fe86552f09e3f38f1d7"><td class="memItemLeft" align="right" valign="top"><a id="a36c5b2b855b16fe86552f09e3f38f1d7"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitSignPlus</b> (<a class="el" href="class_pascal_s_parser_1_1_sign_plus_context.html">PascalSParser::SignPlusContext</a> *context)=0</td></tr>
+<tr class="separator:a36c5b2b855b16fe86552f09e3f38f1d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab35e8d7826c5d9c870851c1e8733db1a"><td class="memItemLeft" align="right" valign="top"><a id="ab35e8d7826c5d9c870851c1e8733db1a"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitSignMinus</b> (<a class="el" href="class_pascal_s_parser_1_1_sign_minus_context.html">PascalSParser::SignMinusContext</a> *context)=0</td></tr>
+<tr class="separator:ab35e8d7826c5d9c870851c1e8733db1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af840ebec6154aa80fcc43a04a8ab93af"><td class="memItemLeft" align="right" valign="top"><a id="af840ebec6154aa80fcc43a04a8ab93af"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitBoolTrue</b> (<a class="el" href="class_pascal_s_parser_1_1_bool_true_context.html">PascalSParser::BoolTrueContext</a> *context)=0</td></tr>
+<tr class="separator:af840ebec6154aa80fcc43a04a8ab93af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a492cc7e0138ede5ab3fa55d0c6033662"><td class="memItemLeft" align="right" valign="top"><a id="a492cc7e0138ede5ab3fa55d0c6033662"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitBoolFalse</b> (<a class="el" href="class_pascal_s_parser_1_1_bool_false_context.html">PascalSParser::BoolFalseContext</a> *context)=0</td></tr>
+<tr class="separator:a492cc7e0138ede5ab3fa55d0c6033662"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a633fe391fb48b09ffc3ffff52399a7df"><td class="memItemLeft" align="right" valign="top"><a id="a633fe391fb48b09ffc3ffff52399a7df"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitString</b> (<a class="el" href="class_pascal_s_parser_1_1_string_context.html">PascalSParser::StringContext</a> *context)=0</td></tr>
+<tr class="separator:a633fe391fb48b09ffc3ffff52399a7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9747764ea1ae6666d46ed184b93f44c"><td class="memItemLeft" align="right" valign="top"><a id="af9747764ea1ae6666d46ed184b93f44c"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitTypeDefinitionPart</b> (<a class="el" href="class_pascal_s_parser_1_1_type_definition_part_context.html">PascalSParser::TypeDefinitionPartContext</a> *context)=0</td></tr>
+<tr class="separator:af9747764ea1ae6666d46ed184b93f44c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e69af4515a48bfd4bf16e6907b69823"><td class="memItemLeft" align="right" valign="top"><a id="a9e69af4515a48bfd4bf16e6907b69823"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitTypeDefinition</b> (<a class="el" href="class_pascal_s_parser_1_1_type_definition_context.html">PascalSParser::TypeDefinitionContext</a> *context)=0</td></tr>
+<tr class="separator:a9e69af4515a48bfd4bf16e6907b69823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad547073e71271c46f6c4731f3c5a808c"><td class="memItemLeft" align="right" valign="top"><a id="ad547073e71271c46f6c4731f3c5a808c"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitTypeSimpleType</b> (<a class="el" href="class_pascal_s_parser_1_1_type_simple_type_context.html">PascalSParser::TypeSimpleTypeContext</a> *context)=0</td></tr>
+<tr class="separator:ad547073e71271c46f6c4731f3c5a808c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab817739fa7776298e3e973094b2f6970"><td class="memItemLeft" align="right" valign="top"><a id="ab817739fa7776298e3e973094b2f6970"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitTypeStructuredType</b> (<a class="el" href="class_pascal_s_parser_1_1_type_structured_type_context.html">PascalSParser::TypeStructuredTypeContext</a> *context)=0</td></tr>
+<tr class="separator:ab817739fa7776298e3e973094b2f6970"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a597d0bb6615439612e9107327847cb9d"><td class="memItemLeft" align="right" valign="top"><a id="a597d0bb6615439612e9107327847cb9d"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitSimpleType</b> (<a class="el" href="class_pascal_s_parser_1_1_simple_type_context.html">PascalSParser::SimpleTypeContext</a> *context)=0</td></tr>
+<tr class="separator:a597d0bb6615439612e9107327847cb9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b0807a7dd3f8e872e40bc1d14ebdfd"><td class="memItemLeft" align="right" valign="top"><a id="a57b0807a7dd3f8e872e40bc1d14ebdfd"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitStructuredTypeArray</b> (<a class="el" href="class_pascal_s_parser_1_1_structured_type_array_context.html">PascalSParser::StructuredTypeArrayContext</a> *context)=0</td></tr>
+<tr class="separator:a57b0807a7dd3f8e872e40bc1d14ebdfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48e9d62e274552b752033f9a2d2b53ad"><td class="memItemLeft" align="right" valign="top"><a id="a48e9d62e274552b752033f9a2d2b53ad"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitStructuredTypeRecord</b> (<a class="el" href="class_pascal_s_parser_1_1_structured_type_record_context.html">PascalSParser::StructuredTypeRecordContext</a> *context)=0</td></tr>
+<tr class="separator:a48e9d62e274552b752033f9a2d2b53ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b83adcec0f5aca1c8ba2598e3b9a2e0"><td class="memItemLeft" align="right" valign="top"><a id="a2b83adcec0f5aca1c8ba2598e3b9a2e0"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitArrayType1</b> (<a class="el" href="class_pascal_s_parser_1_1_array_type1_context.html">PascalSParser::ArrayType1Context</a> *context)=0</td></tr>
+<tr class="separator:a2b83adcec0f5aca1c8ba2598e3b9a2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3b48519e8f8c4db32646c967c23d59a"><td class="memItemLeft" align="right" valign="top"><a id="ac3b48519e8f8c4db32646c967c23d59a"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitArrayType2</b> (<a class="el" href="class_pascal_s_parser_1_1_array_type2_context.html">PascalSParser::ArrayType2Context</a> *context)=0</td></tr>
+<tr class="separator:ac3b48519e8f8c4db32646c967c23d59a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a145179d08bf9cad839e778c46cbd39d3"><td class="memItemLeft" align="right" valign="top"><a id="a145179d08bf9cad839e778c46cbd39d3"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitPeriods</b> (<a class="el" href="class_pascal_s_parser_1_1_periods_context.html">PascalSParser::PeriodsContext</a> *context)=0</td></tr>
+<tr class="separator:a145179d08bf9cad839e778c46cbd39d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b7dabf06533d8dff587c879118233a6"><td class="memItemLeft" align="right" valign="top"><a id="a0b7dabf06533d8dff587c879118233a6"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitPeriod</b> (<a class="el" href="class_pascal_s_parser_1_1_period_context.html">PascalSParser::PeriodContext</a> *context)=0</td></tr>
+<tr class="separator:a0b7dabf06533d8dff587c879118233a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c4489e87379be9aadbee0a719a29824"><td class="memItemLeft" align="right" valign="top"><a id="a7c4489e87379be9aadbee0a719a29824"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitRecordType</b> (<a class="el" href="class_pascal_s_parser_1_1_record_type_context.html">PascalSParser::RecordTypeContext</a> *context)=0</td></tr>
+<tr class="separator:a7c4489e87379be9aadbee0a719a29824"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef7932ac22b74b775198c609f3cf87b0"><td class="memItemLeft" align="right" valign="top"><a id="aef7932ac22b74b775198c609f3cf87b0"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitRecordField</b> (<a class="el" href="class_pascal_s_parser_1_1_record_field_context.html">PascalSParser::RecordFieldContext</a> *context)=0</td></tr>
+<tr class="separator:aef7932ac22b74b775198c609f3cf87b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68a6bf8928c89f4c7cfbc7188542cdb3"><td class="memItemLeft" align="right" valign="top"><a id="a68a6bf8928c89f4c7cfbc7188542cdb3"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitVariableDeclarationPart</b> (<a class="el" href="class_pascal_s_parser_1_1_variable_declaration_part_context.html">PascalSParser::VariableDeclarationPartContext</a> *context)=0</td></tr>
+<tr class="separator:a68a6bf8928c89f4c7cfbc7188542cdb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7708adc4038d0158b0c5b893bfb680d"><td class="memItemLeft" align="right" valign="top"><a id="ae7708adc4038d0158b0c5b893bfb680d"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitVariableDeclaration</b> (<a class="el" href="class_pascal_s_parser_1_1_variable_declaration_context.html">PascalSParser::VariableDeclarationContext</a> *context)=0</td></tr>
+<tr class="separator:ae7708adc4038d0158b0c5b893bfb680d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3317373dff061bbf9d43f9cbb097e9b"><td class="memItemLeft" align="right" valign="top"><a id="ad3317373dff061bbf9d43f9cbb097e9b"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitProcedureAndFunctionDeclarationPart</b> (<a class="el" href="class_pascal_s_parser_1_1_procedure_and_function_declaration_part_context.html">PascalSParser::ProcedureAndFunctionDeclarationPartContext</a> *context)=0</td></tr>
+<tr class="separator:ad3317373dff061bbf9d43f9cbb097e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81592c9e11d9b267a28a51c3f599f4e7"><td class="memItemLeft" align="right" valign="top"><a id="a81592c9e11d9b267a28a51c3f599f4e7"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitProOrFuncDecPro</b> (<a class="el" href="class_pascal_s_parser_1_1_pro_or_func_dec_pro_context.html">PascalSParser::ProOrFuncDecProContext</a> *context)=0</td></tr>
+<tr class="separator:a81592c9e11d9b267a28a51c3f599f4e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08d6ad50e1158be225e6bd0e8a2e8893"><td class="memItemLeft" align="right" valign="top"><a id="a08d6ad50e1158be225e6bd0e8a2e8893"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitProOrFuncDecFunc</b> (<a class="el" href="class_pascal_s_parser_1_1_pro_or_func_dec_func_context.html">PascalSParser::ProOrFuncDecFuncContext</a> *context)=0</td></tr>
+<tr class="separator:a08d6ad50e1158be225e6bd0e8a2e8893"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a011f6e90a86496049decb88140d9271f"><td class="memItemLeft" align="right" valign="top"><a id="a011f6e90a86496049decb88140d9271f"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitProcedureDeclaration</b> (<a class="el" href="class_pascal_s_parser_1_1_procedure_declaration_context.html">PascalSParser::ProcedureDeclarationContext</a> *context)=0</td></tr>
+<tr class="separator:a011f6e90a86496049decb88140d9271f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad9ba3597a86b5c271ec855879868cf6"><td class="memItemLeft" align="right" valign="top"><a id="aad9ba3597a86b5c271ec855879868cf6"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFormalParameterList</b> (<a class="el" href="class_pascal_s_parser_1_1_formal_parameter_list_context.html">PascalSParser::FormalParameterListContext</a> *context)=0</td></tr>
+<tr class="separator:aad9ba3597a86b5c271ec855879868cf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f1d21066db04cd3cc7de7c45cec1b48"><td class="memItemLeft" align="right" valign="top"><a id="a9f1d21066db04cd3cc7de7c45cec1b48"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFormalParaSecGroup</b> (<a class="el" href="class_pascal_s_parser_1_1_formal_para_sec_group_context.html">PascalSParser::FormalParaSecGroupContext</a> *context)=0</td></tr>
+<tr class="separator:a9f1d21066db04cd3cc7de7c45cec1b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5da93f76e3516449447012451f3b13c9"><td class="memItemLeft" align="right" valign="top"><a id="a5da93f76e3516449447012451f3b13c9"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFormalParaSecVarGroup</b> (<a class="el" href="class_pascal_s_parser_1_1_formal_para_sec_var_group_context.html">PascalSParser::FormalParaSecVarGroupContext</a> *context)=0</td></tr>
+<tr class="separator:a5da93f76e3516449447012451f3b13c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a224fd0183b57ad68d27b70bd7f750052"><td class="memItemLeft" align="right" valign="top"><a id="a224fd0183b57ad68d27b70bd7f750052"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitParameterGroup</b> (<a class="el" href="class_pascal_s_parser_1_1_parameter_group_context.html">PascalSParser::ParameterGroupContext</a> *context)=0</td></tr>
+<tr class="separator:a224fd0183b57ad68d27b70bd7f750052"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3834c8277046974b770391dfac170782"><td class="memItemLeft" align="right" valign="top"><a id="a3834c8277046974b770391dfac170782"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitIdentifierList</b> (<a class="el" href="class_pascal_s_parser_1_1_identifier_list_context.html">PascalSParser::IdentifierListContext</a> *context)=0</td></tr>
+<tr class="separator:a3834c8277046974b770391dfac170782"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adeb97d7b09da339280e12d84460acd24"><td class="memItemLeft" align="right" valign="top"><a id="adeb97d7b09da339280e12d84460acd24"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConstList</b> (<a class="el" href="class_pascal_s_parser_1_1_const_list_context.html">PascalSParser::ConstListContext</a> *context)=0</td></tr>
+<tr class="separator:adeb97d7b09da339280e12d84460acd24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46133fa5a618b3705808fb2a60e1a7dd"><td class="memItemLeft" align="right" valign="top"><a id="a46133fa5a618b3705808fb2a60e1a7dd"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFunctionDeclaration</b> (<a class="el" href="class_pascal_s_parser_1_1_function_declaration_context.html">PascalSParser::FunctionDeclarationContext</a> *context)=0</td></tr>
+<tr class="separator:a46133fa5a618b3705808fb2a60e1a7dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4586ded17de585cc6ca1cdcabbe41d3"><td class="memItemLeft" align="right" valign="top"><a id="ac4586ded17de585cc6ca1cdcabbe41d3"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitSimpleState</b> (<a class="el" href="class_pascal_s_parser_1_1_simple_state_context.html">PascalSParser::SimpleStateContext</a> *context)=0</td></tr>
+<tr class="separator:ac4586ded17de585cc6ca1cdcabbe41d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ff1bf1e757338c83f792dc7d6778b56"><td class="memItemLeft" align="right" valign="top"><a id="a2ff1bf1e757338c83f792dc7d6778b56"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitStructuredState</b> (<a class="el" href="class_pascal_s_parser_1_1_structured_state_context.html">PascalSParser::StructuredStateContext</a> *context)=0</td></tr>
+<tr class="separator:a2ff1bf1e757338c83f792dc7d6778b56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eae86799d119f55db68646d30d46a01"><td class="memItemLeft" align="right" valign="top"><a id="a3eae86799d119f55db68646d30d46a01"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitSimpleStateAssign</b> (<a class="el" href="class_pascal_s_parser_1_1_simple_state_assign_context.html">PascalSParser::SimpleStateAssignContext</a> *context)=0</td></tr>
+<tr class="separator:a3eae86799d119f55db68646d30d46a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23c3bd5be930621b53b3103399dfc2cc"><td class="memItemLeft" align="right" valign="top"><a id="a23c3bd5be930621b53b3103399dfc2cc"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitSimpleStateProc</b> (<a class="el" href="class_pascal_s_parser_1_1_simple_state_proc_context.html">PascalSParser::SimpleStateProcContext</a> *context)=0</td></tr>
+<tr class="separator:a23c3bd5be930621b53b3103399dfc2cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74348d81cccb08802542fdb64a6a3ff5"><td class="memItemLeft" align="right" valign="top"><a id="a74348d81cccb08802542fdb64a6a3ff5"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitSimpleStateEmpty</b> (<a class="el" href="class_pascal_s_parser_1_1_simple_state_empty_context.html">PascalSParser::SimpleStateEmptyContext</a> *context)=0</td></tr>
+<tr class="separator:a74348d81cccb08802542fdb64a6a3ff5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada1e34574ad7fa011da3de4437fe8329"><td class="memItemLeft" align="right" valign="top"><a id="ada1e34574ad7fa011da3de4437fe8329"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitAssignmentStatement</b> (<a class="el" href="class_pascal_s_parser_1_1_assignment_statement_context.html">PascalSParser::AssignmentStatementContext</a> *context)=0</td></tr>
+<tr class="separator:ada1e34574ad7fa011da3de4437fe8329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a117a271b117c5304f53e91cf50d4db3e"><td class="memItemLeft" align="right" valign="top"><a id="a117a271b117c5304f53e91cf50d4db3e"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitVariable</b> (<a class="el" href="class_pascal_s_parser_1_1_variable_context.html">PascalSParser::VariableContext</a> *context)=0</td></tr>
+<tr class="separator:a117a271b117c5304f53e91cf50d4db3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a675cd040e58c6bc023f6a07e78897c16"><td class="memItemLeft" align="right" valign="top"><a id="a675cd040e58c6bc023f6a07e78897c16"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitExpression</b> (<a class="el" href="class_pascal_s_parser_1_1_expression_context.html">PascalSParser::ExpressionContext</a> *context)=0</td></tr>
+<tr class="separator:a675cd040e58c6bc023f6a07e78897c16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a653332d461a9b606fdf5e975585b60c6"><td class="memItemLeft" align="right" valign="top"><a id="a653332d461a9b606fdf5e975585b60c6"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpEqual</b> (<a class="el" href="class_pascal_s_parser_1_1_op_equal_context.html">PascalSParser::OpEqualContext</a> *context)=0</td></tr>
+<tr class="separator:a653332d461a9b606fdf5e975585b60c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23a483051cc5ead2471963548f4b7835"><td class="memItemLeft" align="right" valign="top"><a id="a23a483051cc5ead2471963548f4b7835"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpNotEqual</b> (<a class="el" href="class_pascal_s_parser_1_1_op_not_equal_context.html">PascalSParser::OpNotEqualContext</a> *context)=0</td></tr>
+<tr class="separator:a23a483051cc5ead2471963548f4b7835"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d1b455d9699c4fe5fdb71bda1d2bf6a"><td class="memItemLeft" align="right" valign="top"><a id="a1d1b455d9699c4fe5fdb71bda1d2bf6a"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpLt</b> (<a class="el" href="class_pascal_s_parser_1_1_op_lt_context.html">PascalSParser::OpLtContext</a> *context)=0</td></tr>
+<tr class="separator:a1d1b455d9699c4fe5fdb71bda1d2bf6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab31800d9462fb69c97981046dfe0d6bd"><td class="memItemLeft" align="right" valign="top"><a id="ab31800d9462fb69c97981046dfe0d6bd"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpLe</b> (<a class="el" href="class_pascal_s_parser_1_1_op_le_context.html">PascalSParser::OpLeContext</a> *context)=0</td></tr>
+<tr class="separator:ab31800d9462fb69c97981046dfe0d6bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a21128540f379e7c7a7d08a4434fda7"><td class="memItemLeft" align="right" valign="top"><a id="a2a21128540f379e7c7a7d08a4434fda7"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpGe</b> (<a class="el" href="class_pascal_s_parser_1_1_op_ge_context.html">PascalSParser::OpGeContext</a> *context)=0</td></tr>
+<tr class="separator:a2a21128540f379e7c7a7d08a4434fda7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0d87976411128ffe52bd161aacf8cd5"><td class="memItemLeft" align="right" valign="top"><a id="ac0d87976411128ffe52bd161aacf8cd5"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpGt</b> (<a class="el" href="class_pascal_s_parser_1_1_op_gt_context.html">PascalSParser::OpGtContext</a> *context)=0</td></tr>
+<tr class="separator:ac0d87976411128ffe52bd161aacf8cd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36b8926bcd64e2fca34ea71c19a8cfca"><td class="memItemLeft" align="right" valign="top"><a id="a36b8926bcd64e2fca34ea71c19a8cfca"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitSimpleExpression</b> (<a class="el" href="class_pascal_s_parser_1_1_simple_expression_context.html">PascalSParser::SimpleExpressionContext</a> *context)=0</td></tr>
+<tr class="separator:a36b8926bcd64e2fca34ea71c19a8cfca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a340cf2987c250c7494241e8524928a43"><td class="memItemLeft" align="right" valign="top"><a id="a340cf2987c250c7494241e8524928a43"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpPlus</b> (<a class="el" href="class_pascal_s_parser_1_1_op_plus_context.html">PascalSParser::OpPlusContext</a> *context)=0</td></tr>
+<tr class="separator:a340cf2987c250c7494241e8524928a43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad27686f542e1bcc05e9d742ecbfd7399"><td class="memItemLeft" align="right" valign="top"><a id="ad27686f542e1bcc05e9d742ecbfd7399"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpMinus</b> (<a class="el" href="class_pascal_s_parser_1_1_op_minus_context.html">PascalSParser::OpMinusContext</a> *context)=0</td></tr>
+<tr class="separator:ad27686f542e1bcc05e9d742ecbfd7399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a122008fc15eb2d89f587b9e01ed1e590"><td class="memItemLeft" align="right" valign="top"><a id="a122008fc15eb2d89f587b9e01ed1e590"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpOr</b> (<a class="el" href="class_pascal_s_parser_1_1_op_or_context.html">PascalSParser::OpOrContext</a> *context)=0</td></tr>
+<tr class="separator:a122008fc15eb2d89f587b9e01ed1e590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48e2c6cbf48a223fb4ec4d201c7296e0"><td class="memItemLeft" align="right" valign="top"><a id="a48e2c6cbf48a223fb4ec4d201c7296e0"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitTerm</b> (<a class="el" href="class_pascal_s_parser_1_1_term_context.html">PascalSParser::TermContext</a> *context)=0</td></tr>
+<tr class="separator:a48e2c6cbf48a223fb4ec4d201c7296e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7c38c9cdcd6cf42be801cfc82385782"><td class="memItemLeft" align="right" valign="top"><a id="aa7c38c9cdcd6cf42be801cfc82385782"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpStar</b> (<a class="el" href="class_pascal_s_parser_1_1_op_star_context.html">PascalSParser::OpStarContext</a> *context)=0</td></tr>
+<tr class="separator:aa7c38c9cdcd6cf42be801cfc82385782"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb75b4301de3dbc56923e7384f000c6a"><td class="memItemLeft" align="right" valign="top"><a id="abb75b4301de3dbc56923e7384f000c6a"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpSlash</b> (<a class="el" href="class_pascal_s_parser_1_1_op_slash_context.html">PascalSParser::OpSlashContext</a> *context)=0</td></tr>
+<tr class="separator:abb75b4301de3dbc56923e7384f000c6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07c40cc52764d7a40b0ff0a9bb97be38"><td class="memItemLeft" align="right" valign="top"><a id="a07c40cc52764d7a40b0ff0a9bb97be38"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpDiv</b> (<a class="el" href="class_pascal_s_parser_1_1_op_div_context.html">PascalSParser::OpDivContext</a> *context)=0</td></tr>
+<tr class="separator:a07c40cc52764d7a40b0ff0a9bb97be38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f96b1ad55cc9d9592c90fd3a31321f2"><td class="memItemLeft" align="right" valign="top"><a id="a3f96b1ad55cc9d9592c90fd3a31321f2"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpMod</b> (<a class="el" href="class_pascal_s_parser_1_1_op_mod_context.html">PascalSParser::OpModContext</a> *context)=0</td></tr>
+<tr class="separator:a3f96b1ad55cc9d9592c90fd3a31321f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91cc86afa2d376208ec9bd47b8d5e27a"><td class="memItemLeft" align="right" valign="top"><a id="a91cc86afa2d376208ec9bd47b8d5e27a"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitOpAnd</b> (<a class="el" href="class_pascal_s_parser_1_1_op_and_context.html">PascalSParser::OpAndContext</a> *context)=0</td></tr>
+<tr class="separator:a91cc86afa2d376208ec9bd47b8d5e27a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a144c5756c6618eb399bd5a1ed69cc703"><td class="memItemLeft" align="right" valign="top"><a id="a144c5756c6618eb399bd5a1ed69cc703"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitSignedFactor</b> (<a class="el" href="class_pascal_s_parser_1_1_signed_factor_context.html">PascalSParser::SignedFactorContext</a> *context)=0</td></tr>
+<tr class="separator:a144c5756c6618eb399bd5a1ed69cc703"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accf1711dcd57892c06344401a7e5d85d"><td class="memItemLeft" align="right" valign="top"><a id="accf1711dcd57892c06344401a7e5d85d"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFactorVar</b> (<a class="el" href="class_pascal_s_parser_1_1_factor_var_context.html">PascalSParser::FactorVarContext</a> *context)=0</td></tr>
+<tr class="separator:accf1711dcd57892c06344401a7e5d85d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac71f0c72411997b92bb2bcf764671e68"><td class="memItemLeft" align="right" valign="top"><a id="ac71f0c72411997b92bb2bcf764671e68"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFactorExpr</b> (<a class="el" href="class_pascal_s_parser_1_1_factor_expr_context.html">PascalSParser::FactorExprContext</a> *context)=0</td></tr>
+<tr class="separator:ac71f0c72411997b92bb2bcf764671e68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5df5ba28a0bfa88d920158bd244d504"><td class="memItemLeft" align="right" valign="top"><a id="ae5df5ba28a0bfa88d920158bd244d504"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFactorFunc</b> (<a class="el" href="class_pascal_s_parser_1_1_factor_func_context.html">PascalSParser::FactorFuncContext</a> *context)=0</td></tr>
+<tr class="separator:ae5df5ba28a0bfa88d920158bd244d504"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66ec4617c79c31eb98877cc4317979c7"><td class="memItemLeft" align="right" valign="top"><a id="a66ec4617c79c31eb98877cc4317979c7"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFactorUnsConst</b> (<a class="el" href="class_pascal_s_parser_1_1_factor_uns_const_context.html">PascalSParser::FactorUnsConstContext</a> *context)=0</td></tr>
+<tr class="separator:a66ec4617c79c31eb98877cc4317979c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeff4caba3f02a2302fd7945f2818737"><td class="memItemLeft" align="right" valign="top"><a id="afeff4caba3f02a2302fd7945f2818737"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFactorNotFact</b> (<a class="el" href="class_pascal_s_parser_1_1_factor_not_fact_context.html">PascalSParser::FactorNotFactContext</a> *context)=0</td></tr>
+<tr class="separator:afeff4caba3f02a2302fd7945f2818737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56547dc4379cac9bf0f21ade12d5c2c0"><td class="memItemLeft" align="right" valign="top"><a id="a56547dc4379cac9bf0f21ade12d5c2c0"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFactorBool</b> (<a class="el" href="class_pascal_s_parser_1_1_factor_bool_context.html">PascalSParser::FactorBoolContext</a> *context)=0</td></tr>
+<tr class="separator:a56547dc4379cac9bf0f21ade12d5c2c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaadcaee587755d70af22725a3a6846a9"><td class="memItemLeft" align="right" valign="top"><a id="aaadcaee587755d70af22725a3a6846a9"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitUnsignedConstUnsignedNum</b> (<a class="el" href="class_pascal_s_parser_1_1_unsigned_const_unsigned_num_context.html">PascalSParser::UnsignedConstUnsignedNumContext</a> *context)=0</td></tr>
+<tr class="separator:aaadcaee587755d70af22725a3a6846a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28d84b3453dfe10d10b0d38831f1e286"><td class="memItemLeft" align="right" valign="top"><a id="a28d84b3453dfe10d10b0d38831f1e286"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitUnsignedConstStr</b> (<a class="el" href="class_pascal_s_parser_1_1_unsigned_const_str_context.html">PascalSParser::UnsignedConstStrContext</a> *context)=0</td></tr>
+<tr class="separator:a28d84b3453dfe10d10b0d38831f1e286"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0b97731c7d84e7ee0cefe76e6767527"><td class="memItemLeft" align="right" valign="top"><a id="ab0b97731c7d84e7ee0cefe76e6767527"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFunctionDesignator</b> (<a class="el" href="class_pascal_s_parser_1_1_function_designator_context.html">PascalSParser::FunctionDesignatorContext</a> *context)=0</td></tr>
+<tr class="separator:ab0b97731c7d84e7ee0cefe76e6767527"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40bfbae7f5c17024ca69a7452b7a1406"><td class="memItemLeft" align="right" valign="top"><a id="a40bfbae7f5c17024ca69a7452b7a1406"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitParameterList</b> (<a class="el" href="class_pascal_s_parser_1_1_parameter_list_context.html">PascalSParser::ParameterListContext</a> *context)=0</td></tr>
+<tr class="separator:a40bfbae7f5c17024ca69a7452b7a1406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21bd73191c9928cf682cdf9dee8a5bce"><td class="memItemLeft" align="right" valign="top"><a id="a21bd73191c9928cf682cdf9dee8a5bce"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitProcedureStatement</b> (<a class="el" href="class_pascal_s_parser_1_1_procedure_statement_context.html">PascalSParser::ProcedureStatementContext</a> *context)=0</td></tr>
+<tr class="separator:a21bd73191c9928cf682cdf9dee8a5bce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68c67fece0eadc58fd90bcea6d719104"><td class="memItemLeft" align="right" valign="top"><a id="a68c67fece0eadc58fd90bcea6d719104"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitActualParameter</b> (<a class="el" href="class_pascal_s_parser_1_1_actual_parameter_context.html">PascalSParser::ActualParameterContext</a> *context)=0</td></tr>
+<tr class="separator:a68c67fece0eadc58fd90bcea6d719104"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84cbe7ae29de08138d2c37971db1522"><td class="memItemLeft" align="right" valign="top"><a id="af84cbe7ae29de08138d2c37971db1522"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitParameterwidth</b> (<a class="el" href="class_pascal_s_parser_1_1_parameterwidth_context.html">PascalSParser::ParameterwidthContext</a> *context)=0</td></tr>
+<tr class="separator:af84cbe7ae29de08138d2c37971db1522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41adc8f8d6815cc460ffa26c826d3a24"><td class="memItemLeft" align="right" valign="top"><a id="a41adc8f8d6815cc460ffa26c826d3a24"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitEmptyStatement_</b> (<a class="el" href="class_pascal_s_parser_1_1_empty_statement___context.html">PascalSParser::EmptyStatement_Context</a> *context)=0</td></tr>
+<tr class="separator:a41adc8f8d6815cc460ffa26c826d3a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a851830e069f5ebc9ea0557ef178faa98"><td class="memItemLeft" align="right" valign="top"><a id="a851830e069f5ebc9ea0557ef178faa98"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitEmpty_</b> (<a class="el" href="class_pascal_s_parser_1_1_empty___context.html">PascalSParser::Empty_Context</a> *context)=0</td></tr>
+<tr class="separator:a851830e069f5ebc9ea0557ef178faa98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f86a9a7338025e464eb6143cc3be236"><td class="memItemLeft" align="right" valign="top"><a id="a8f86a9a7338025e464eb6143cc3be236"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitStructuredStateCompound</b> (<a class="el" href="class_pascal_s_parser_1_1_structured_state_compound_context.html">PascalSParser::StructuredStateCompoundContext</a> *context)=0</td></tr>
+<tr class="separator:a8f86a9a7338025e464eb6143cc3be236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc5ad93b4a8796011b41847d7ed6ea6f"><td class="memItemLeft" align="right" valign="top"><a id="afc5ad93b4a8796011b41847d7ed6ea6f"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitStructuredStateConditional</b> (<a class="el" href="class_pascal_s_parser_1_1_structured_state_conditional_context.html">PascalSParser::StructuredStateConditionalContext</a> *context)=0</td></tr>
+<tr class="separator:afc5ad93b4a8796011b41847d7ed6ea6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f9c72e2e0f9022053d5c975ce41e606"><td class="memItemLeft" align="right" valign="top"><a id="a1f9c72e2e0f9022053d5c975ce41e606"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitStructuredStateRepetetive</b> (<a class="el" href="class_pascal_s_parser_1_1_structured_state_repetetive_context.html">PascalSParser::StructuredStateRepetetiveContext</a> *context)=0</td></tr>
+<tr class="separator:a1f9c72e2e0f9022053d5c975ce41e606"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0902d269e00f4b3b7cc2a361dc1de03e"><td class="memItemLeft" align="right" valign="top"><a id="a0902d269e00f4b3b7cc2a361dc1de03e"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitCompoundStatement</b> (<a class="el" href="class_pascal_s_parser_1_1_compound_statement_context.html">PascalSParser::CompoundStatementContext</a> *context)=0</td></tr>
+<tr class="separator:a0902d269e00f4b3b7cc2a361dc1de03e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94f121effaba45f7e02e5c3f270e40c8"><td class="memItemLeft" align="right" valign="top"><a id="a94f121effaba45f7e02e5c3f270e40c8"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitStatements</b> (<a class="el" href="class_pascal_s_parser_1_1_statements_context.html">PascalSParser::StatementsContext</a> *context)=0</td></tr>
+<tr class="separator:a94f121effaba45f7e02e5c3f270e40c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0987346a16ef3b3edeb2e684fb8324b7"><td class="memItemLeft" align="right" valign="top"><a id="a0987346a16ef3b3edeb2e684fb8324b7"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConditionalStateIf</b> (<a class="el" href="class_pascal_s_parser_1_1_conditional_state_if_context.html">PascalSParser::ConditionalStateIfContext</a> *context)=0</td></tr>
+<tr class="separator:a0987346a16ef3b3edeb2e684fb8324b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20131bc2bc6472400db812c27690f7ab"><td class="memItemLeft" align="right" valign="top"><a id="a20131bc2bc6472400db812c27690f7ab"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitConditionalStateCase</b> (<a class="el" href="class_pascal_s_parser_1_1_conditional_state_case_context.html">PascalSParser::ConditionalStateCaseContext</a> *context)=0</td></tr>
+<tr class="separator:a20131bc2bc6472400db812c27690f7ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af03b07965627066484c53a0614066f06"><td class="memItemLeft" align="right" valign="top"><a id="af03b07965627066484c53a0614066f06"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitIfStatement</b> (<a class="el" href="class_pascal_s_parser_1_1_if_statement_context.html">PascalSParser::IfStatementContext</a> *context)=0</td></tr>
+<tr class="separator:af03b07965627066484c53a0614066f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72ae19f7debd13e07d3a506149e216b7"><td class="memItemLeft" align="right" valign="top"><a id="a72ae19f7debd13e07d3a506149e216b7"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitCaseStatement</b> (<a class="el" href="class_pascal_s_parser_1_1_case_statement_context.html">PascalSParser::CaseStatementContext</a> *context)=0</td></tr>
+<tr class="separator:a72ae19f7debd13e07d3a506149e216b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41968d650ce5b4a7202e2370ca1c12e2"><td class="memItemLeft" align="right" valign="top"><a id="a41968d650ce5b4a7202e2370ca1c12e2"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitCaseListElement</b> (<a class="el" href="class_pascal_s_parser_1_1_case_list_element_context.html">PascalSParser::CaseListElementContext</a> *context)=0</td></tr>
+<tr class="separator:a41968d650ce5b4a7202e2370ca1c12e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac650164798d15109e7bf588611d27975"><td class="memItemLeft" align="right" valign="top"><a id="ac650164798d15109e7bf588611d27975"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitRepetetiveStateWhile</b> (<a class="el" href="class_pascal_s_parser_1_1_repetetive_state_while_context.html">PascalSParser::RepetetiveStateWhileContext</a> *context)=0</td></tr>
+<tr class="separator:ac650164798d15109e7bf588611d27975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a167a874704ce03792139e9b51892790f"><td class="memItemLeft" align="right" valign="top"><a id="a167a874704ce03792139e9b51892790f"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitRepetetiveStateRepeat</b> (<a class="el" href="class_pascal_s_parser_1_1_repetetive_state_repeat_context.html">PascalSParser::RepetetiveStateRepeatContext</a> *context)=0</td></tr>
+<tr class="separator:a167a874704ce03792139e9b51892790f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0955a0ce0eed517450dd063cb0bc73a3"><td class="memItemLeft" align="right" valign="top"><a id="a0955a0ce0eed517450dd063cb0bc73a3"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitRepetetiveStateFor</b> (<a class="el" href="class_pascal_s_parser_1_1_repetetive_state_for_context.html">PascalSParser::RepetetiveStateForContext</a> *context)=0</td></tr>
+<tr class="separator:a0955a0ce0eed517450dd063cb0bc73a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad821c7355a8a5e228c369322e515dec8"><td class="memItemLeft" align="right" valign="top"><a id="ad821c7355a8a5e228c369322e515dec8"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitWhileStatement</b> (<a class="el" href="class_pascal_s_parser_1_1_while_statement_context.html">PascalSParser::WhileStatementContext</a> *context)=0</td></tr>
+<tr class="separator:ad821c7355a8a5e228c369322e515dec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a521bd6350083561df3180bf1341b9c2c"><td class="memItemLeft" align="right" valign="top"><a id="a521bd6350083561df3180bf1341b9c2c"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitRepeatStatement</b> (<a class="el" href="class_pascal_s_parser_1_1_repeat_statement_context.html">PascalSParser::RepeatStatementContext</a> *context)=0</td></tr>
+<tr class="separator:a521bd6350083561df3180bf1341b9c2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd676c602cd5195959805378cd8ac09f"><td class="memItemLeft" align="right" valign="top"><a id="abd676c602cd5195959805378cd8ac09f"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitForStatement</b> (<a class="el" href="class_pascal_s_parser_1_1_for_statement_context.html">PascalSParser::ForStatementContext</a> *context)=0</td></tr>
+<tr class="separator:abd676c602cd5195959805378cd8ac09f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bcfdb7a422e084404cb616da81a56de"><td class="memItemLeft" align="right" valign="top"><a id="a8bcfdb7a422e084404cb616da81a56de"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitForList</b> (<a class="el" href="class_pascal_s_parser_1_1_for_list_context.html">PascalSParser::ForListContext</a> *context)=0</td></tr>
+<tr class="separator:a8bcfdb7a422e084404cb616da81a56de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a049bb6698acf44fbae2d0610486470d2"><td class="memItemLeft" align="right" valign="top"><a id="a049bb6698acf44fbae2d0610486470d2"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitInitialValue</b> (<a class="el" href="class_pascal_s_parser_1_1_initial_value_context.html">PascalSParser::InitialValueContext</a> *context)=0</td></tr>
+<tr class="separator:a049bb6698acf44fbae2d0610486470d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1687889017000c4b120925916414fe9"><td class="memItemLeft" align="right" valign="top"><a id="ad1687889017000c4b120925916414fe9"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitFinalValue</b> (<a class="el" href="class_pascal_s_parser_1_1_final_value_context.html">PascalSParser::FinalValueContext</a> *context)=0</td></tr>
+<tr class="separator:ad1687889017000c4b120925916414fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2158b0bf1c8acd70ef47697473c03b2e"><td class="memItemLeft" align="right" valign="top"><a id="a2158b0bf1c8acd70ef47697473c03b2e"></a>
+virtual antlrcpp::Any&#160;</td><td class="memItemRight" valign="bottom"><b>visitRecordVariableList</b> (<a class="el" href="class_pascal_s_parser_1_1_record_variable_list_context.html">PascalSParser::RecordVariableListContext</a> *context)=0</td></tr>
+<tr class="separator:a2158b0bf1c8acd70ef47697473c03b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>This class defines an abstract visitor for a parse tree produced by <a class="el" href="class_pascal_s_parser.html">PascalSParser</a>. </p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ad77e2caa0199e64dc6a105c947a83a16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad77e2caa0199e64dc6a105c947a83a16">&#9670;&nbsp;</a></span>visitProgram()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual antlrcpp::Any PascalSParserVisitor::visitProgram </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_pascal_s_parser_1_1_program_context.html">PascalSParser::ProgramContext</a> *&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Visit parse trees produced by <a class="el" href="class_pascal_s_parser.html">PascalSParser</a>. </p>
+
+<p>在 <a class="el" href="class_pascal_s_parser_base_visitor.html#a2807deac3e97456ce8589f7aafd4ada2">PascalSParserBaseVisitor</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/runtime/<a class="el" href="_pascal_s_parser_visitor_8h_source.html">PascalSParserVisitor.h</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+制作者&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+</small></address>
+</body>
+</html>
